@@ -1,0 +1,656 @@
+<title>Electrosoft Exploded</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a pinned WebGL test bay where a real 3D control panel assembles, opens and explodes into seven layers on scroll; then a counted proof band, a word-fill statement, a pinned sideways product run, a live X'mer Prime oscilloscope, client tickers and a brand-blue close. Single light world by choice, with one dark band. */
+:root{
+  --bg:#F4F5F7;
+  --paper:#FFFFFF;
+  --ink:#0E1116;
+  --muted:#5B616B;
+  --faint:#A3A7AF;
+  --line:#DCDFE4;
+  --brand:#0B5BD3;
+  --brand-2:#3D86FF;
+  --night:#06080D;
+  --night-2:#10141C;
+  --night-line:#232A36;
+  --night-muted:#9AA3B2;
+  --r:#FF453A; --y:#FFD60A; --b:#0A84FF; --ok:#30D158;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --hdr:60px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:rgba(244,245,247,.85)}
+h1,h2,h3{font-family:var(--f-display);font-stretch:112%;margin:0;letter-spacing:-.035em;text-wrap:balance}
+p{margin:0}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:4px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+
+/* header */
+.hdr{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:50;background:rgba(244,245,247,.72);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(14,17,22,.06)}
+.hdr .wrap{height:var(--hdr);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-stretch:118%;font-size:17px;letter-spacing:.02em;color:var(--ink);text-decoration:none}
+.logo svg{width:14px;height:20px}
+.nav{display:flex;gap:28px;font-size:14px}
+.nav a{color:var(--ink);text-decoration:none;opacity:.75}
+.nav a:hover{opacity:1}
+.pill{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:#fff;background:var(--brand);padding:10px 18px;border-radius:999px;text-decoration:none;transition:transform .3s,box-shadow .3s}
+.pill:hover{box-shadow:0 10px 30px -8px rgba(11,91,211,.6);transform:translateY(-1px)}
+.progress{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + var(--hdr));height:2px;z-index:51;transform-origin:left;transform:scaleX(0);background:var(--brand)}
+@media (max-width:820px){.nav{display:none}}
+
+/* stage */
+#stage{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden;background:radial-gradient(ellipse 70% 70% at 66% 50%,#FFFFFF 0%,#EDEFF3 55%,#E1E4EA 100%)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(14,17,22,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(14,17,22,.045) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 60% 60% at 62% 50%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse 60% 60% at 62% 50%,#000 30%,transparent 80%);pointer-events:none}
+.hero-copy{position:absolute;z-index:3;left:max(24px,calc((100% - 1240px)/2 + 16px));top:calc(var(--hdr) + env(safe-area-inset-top,0px) + clamp(40px,10vh,120px));max-width:min(560px,calc(100% - 48px));display:flex;flex-direction:column;gap:22px}
+.eyebrow{display:flex;align-items:center;gap:10px;color:var(--brand)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(11,91,211,.18);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 9px rgba(11,91,211,0)}}
+.h1{font-size:clamp(48px,7.4vw,112px);line-height:.92;font-weight:900;letter-spacing:-.05em}
+.h1 .ln{display:block;overflow:hidden;padding-bottom:.04em}
+.h1 .ln > span{display:inline-block}
+.h1 em{font-style:normal;color:var(--brand)}
+.lede{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:44ch}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ghost{font-weight:600;font-size:14px;color:var(--ink);padding:10px 4px;text-decoration:none}
+.scrollcue{display:flex;align-items:center;gap:12px;color:var(--muted)}
+.mouse{width:22px;height:34px;border:1.5px solid var(--faint);border-radius:12px;display:flex;justify-content:center;padding-top:6px}
+.mouse i{width:3px;height:8px;border-radius:2px;background:var(--ink);animation:wheel 1.6s ease-in-out infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:1}100%{transform:translateY(10px);opacity:0}}
+
+.caps{position:absolute;z-index:3;left:max(24px,calc((100% - 1240px)/2 + 16px));bottom:clamp(70px,12vh,120px);width:min(460px,calc(100% - 48px));height:190px;pointer-events:none}
+.cap{position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px}
+.cap h2{font-size:clamp(30px,3.4vw,46px);line-height:1;font-weight:800}
+.cap p{color:var(--muted);font-size:17px;max-width:40ch}
+.cap .mono{color:var(--brand)}
+
+.hud{position:absolute;z-index:3;right:max(24px,calc((100% - 1240px)/2 + 16px));bottom:clamp(24px,5vh,44px);display:flex;align-items:center;gap:14px;color:var(--muted)}
+.hud .bar{width:160px;height:3px;border-radius:2px;background:var(--line);overflow:hidden}
+.hud .bar i{display:block;height:100%;width:100%;background:var(--brand);transform-origin:left;transform:scaleX(0)}
+.hud b{color:var(--ink);font-weight:600}
+
+.tag{position:absolute;left:0;top:0;z-index:4;opacity:0;pointer-events:none;will-change:transform}
+.tag .pin{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--brand);box-shadow:0 0 0 6px rgba(11,91,211,.16)}
+.tag .lbl{position:absolute;left:18px;top:-30px;white-space:nowrap;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:10px;padding:8px 12px;box-shadow:0 14px 40px -18px rgba(14,17,22,.35)}
+.tag .lbl small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--brand)}
+.tag .lbl b{display:block;font-family:var(--f-display);font-stretch:108%;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.tag .lbl span{display:block;font-size:12px;color:var(--muted)}
+.fallback{position:absolute;inset:auto 24px 40% auto;z-index:2;color:var(--muted)}
+@media (max-width:760px){
+  .hero-copy{gap:14px;top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 24px)}
+  .scrollcue{display:none}
+  .caps{bottom:auto;top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 24px);height:170px}
+  .cap h2{font-size:28px}.cap p{font-size:15px}
+  .tag .lbl span{display:none}.tag .lbl{padding:6px 9px}.tag .lbl b{font-size:13px}
+  .hud .bar{width:90px}
+}
+
+/* proof */
+.proof{background:var(--paper);border-bottom:1px solid var(--line)}
+.proof .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding-block:clamp(56px,9vh,96px)}
+.stat{display:flex;flex-direction:column;gap:10px;padding:8px 28px;border-left:1px solid var(--line)}
+.stat:first-child{border-left:0;padding-left:0}
+.stat .n{font-family:var(--f-display);font-stretch:118%;font-weight:900;font-size:clamp(48px,6vw,84px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.stat .n sup{font-size:.42em;vertical-align:top;margin-left:4px;color:var(--brand);letter-spacing:0}
+.stat p{color:var(--muted);font-size:15px}
+@media (max-width:860px){.proof .wrap{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:36px}.stat:nth-child(3){border-left:0;padding-left:0}}
+
+/* statement */
+.statement{padding-block:clamp(100px,18vh,200px)}
+.statement p{font-family:var(--f-display);font-stretch:110%;font-weight:800;font-size:clamp(34px,5.2vw,78px);line-height:1.04;letter-spacing:-.045em;max-width:16ch;max-width:none}
+.statement .w{color:var(--faint);transition:none}
+.statement .w.hl{font-style:normal}
+
+/* lineup */
+#lineup{background:var(--paper);overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.lineup-in{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:40px;padding-block:calc(var(--hdr) + 40px) 40px}
+.lineup-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px}
+.lineup-head h2{font-size:clamp(40px,5.6vw,80px);line-height:.95;font-weight:900}
+.lineup-head .mono{color:var(--brand);margin-bottom:12px}
+.lineup-head .meter{display:flex;align-items:center;gap:12px;color:var(--muted)}
+.meter .bar{width:200px;height:3px;border-radius:2px;background:var(--line);overflow:hidden}
+.meter .bar i{display:block;height:100%;background:var(--brand);transform-origin:left;transform:scaleX(0)}
+.track{display:flex;gap:22px;width:max-content;padding-left:max(16px,calc((100vw - 1240px)/2 + 16px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{width:clamp(280px,26vw,360px);min-height:470px;background:var(--bg);border-radius:30px;padding:28px;display:flex;flex-direction:column;gap:12px;color:var(--ink);text-decoration:none;position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s}
+.card:hover{transform:translateY(-8px);box-shadow:0 40px 70px -40px rgba(11,91,211,.55)}
+.card .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:var(--brand)}
+.card h3{font-size:30px;font-weight:800;line-height:1.02}
+.card p{font-size:15px;color:var(--muted)}
+.card .art{margin-top:auto;height:190px;border-radius:20px;background:linear-gradient(180deg,#E9EBEF,#DDE1E7);display:flex;align-items:flex-end;justify-content:center;perspective:700px;overflow:hidden}
+.cab{width:104px;height:164px;border-radius:6px 6px 2px 2px;background:linear-gradient(100deg,#CFD2CC,#F3F4F1 45%,#C9CCC6);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 30px 40px -18px rgba(0,0,0,.45);transform:rotateY(-20deg);position:relative;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.card:hover .cab{transform:rotateY(8deg) translateY(-6px)}
+.cab .scr{position:absolute;left:18%;right:18%;top:16px;height:36px;border-radius:3px;background:#0B0E14;overflow:hidden}
+.cab .scr::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(61,134,255,.7),transparent);animation:scan 2.4s linear infinite}
+@keyframes scan{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.cab .lt{position:absolute;left:50%;top:64px;transform:translateX(-50%);display:flex;gap:6px}
+.cab .lt i{width:8px;height:8px;border-radius:50%;display:block}
+.cab.two{width:150px}.cab.desk{width:170px;height:110px;border-radius:6px;transform:rotateX(18deg) rotateY(-14deg)}
+@media (max-width:760px){.card{width:78vw;min-height:420px}}
+
+/* testing */
+.night{background:var(--night);color:#F2F4F8}
+.night .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(32px,6vw,80px);align-items:center;padding-block:clamp(90px,15vh,160px)}
+.night .mono{color:var(--brand-2)}
+.night h2{font-size:clamp(40px,5.4vw,80px);line-height:.95;font-weight:900;margin:14px 0 20px}
+.night .lede{color:var(--night-muted)}
+.modes{margin-top:34px;display:flex;flex-direction:column}
+.mode{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;padding:18px 0;border-top:1px solid var(--night-line);align-items:baseline}
+.mode:last-child{border-bottom:1px solid var(--night-line)}
+.mode b{font-family:var(--f-display);font-stretch:110%;font-size:22px;font-weight:700}
+.mode span{color:var(--night-muted);font-size:14px;text-align:right}
+.win{background:var(--night-2);border:1px solid var(--night-line);border-radius:20px;overflow:hidden;box-shadow:0 60px 120px -40px rgba(11,91,211,.45)}
+.win-top{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--night-line);font-family:var(--f-mono);font-size:12px;color:var(--night-muted)}
+.win-top i{width:11px;height:11px;border-radius:50%;display:block}
+.win-top span{margin-left:8px}
+.win-top em{margin-left:auto;font-style:normal;color:var(--ok)}
+#scope{display:block;width:100%;height:220px}
+.tests{padding:6px 18px 16px;display:flex;flex-direction:column}
+.trow{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--night-line);font-size:15px}
+.trow:last-child{border-bottom:0}
+.trow s{text-decoration:none;font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--night-muted)}
+.trow s.pass{color:var(--ok)}.trow s.run{color:var(--y)}
+@media (max-width:900px){.night .wrap{grid-template-columns:1fr}}
+
+/* clients */
+.clients{padding-block:clamp(90px,14vh,150px);overflow:hidden;display:flex;flex-direction:column;gap:20px}
+.clients h2{font-size:clamp(36px,5vw,68px);font-weight:900;line-height:1;text-align:center;margin-bottom:28px}
+.marq{display:flex;width:max-content;gap:64px;font-family:var(--f-display);font-stretch:115%;font-weight:800;font-size:clamp(28px,3.4vw,44px);letter-spacing:-.03em;white-space:nowrap;animation:mq 46s linear infinite}
+.marq.rev{animation-direction:reverse;color:var(--faint)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.clients .note{text-align:center;color:var(--muted);margin-top:18px}
+
+/* close */
+.close{padding-block:0 clamp(80px,12vh,120px)}
+.close-box{position:relative;overflow:hidden;border-radius:36px;background:var(--brand);color:#fff;padding:clamp(56px,10vw,140px) clamp(24px,5vw,72px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px}
+.close-box canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+.close-box > *:not(canvas){position:relative}
+.close-box h2{font-size:clamp(48px,8vw,128px);font-weight:900;line-height:.9;letter-spacing:-.055em}
+.close-box p{font-size:20px;opacity:.85;max-width:40ch}
+.mag{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:var(--brand);background:#fff;padding:18px 32px;border-radius:999px;text-decoration:none;will-change:transform}
+.contact-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;font-family:var(--f-mono);font-size:13px;opacity:.9}
+.certs{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.certs span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;border:1px solid rgba(255,255,255,.4);padding:6px 12px;border-radius:999px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:26px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){.marq,.dot,.mouse i,.cab .scr::after{animation:none}}
+</style>
+
+<header class="hdr gut">
+  <div class="wrap">
+    <a class="logo" href="#stage" aria-label="Electrosoft home"><svg viewBox="0 0 16 22" aria-hidden="true"><path d="M10 0L0 13h6l-2 9 12-14H9z" fill="#0B5BD3"/></svg>ELECTROSOFT</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#lineup">Products</a><a href="#testing">Testing Solutions</a><a href="#clients">Clients</a><a href="#contact">Contact</a>
+    </nav>
+    <a class="pill" href="#contact">Get a Quote</a>
+  </div>
+</header>
+<div class="progress" id="progress"></div>
+
+<section id="stage" aria-label="An Electrosoft control panel, assembled and exploded">
+  <div class="grid-bg"></div>
+  <canvas id="gl" aria-hidden="true"></canvas>
+  <div class="hero-copy" id="heroCopy">
+    <div class="eyebrow mono"><span class="dot"></span>Electrosoft Automation · Since 1989</div>
+    <h1 class="h1"><span class="ln"><span>Power,</span></span><span class="ln"><span>engineered</span></span><span class="ln"><span><em>layer by layer.</em></span></span></h1>
+    <p class="lede">Control panels, plant automation and transformer test systems, designed, built and commissioned in Thane.</p>
+    <div class="ctas"><a class="pill" href="#contact">Get a Quote</a><a class="ghost" href="#lineup">Explore the lineup ›</a></div>
+    <div class="scrollcue mono"><span class="mouse"><i></i></span>Scroll to open the panel</div>
+  </div>
+  <div class="caps" aria-live="polite">
+    <div class="cap" id="cap1"><span class="mono">Step 1 · Open</span><h2>Built to stand 20 years in a plant.</h2><p>Every enclosure follows our CPRI-approved 65kA, IP65 design.</p></div>
+    <div class="cap" id="cap2"><span class="mono">Step 2 · Explode</span><h2>Seven layers. Nothing left to chance.</h2><p>Busbars, protection, PLC, drives and terminals, each laid out to be serviced.</p></div>
+    <div class="cap" id="cap3"><span class="mono">Step 3 · Prove</span><h2>100% tested before dispatch.</h2><p>A 3-step Quality Assurance Plan on every panel that leaves our floor.</p></div>
+  </div>
+  <div class="hud mono"><span id="hudState"><b>Assembled</b></span><span class="bar"><i id="hudBar"></i></span><span id="hudCount">0 / 7</span></div>
+  <div id="tags"></div>
+  <p class="fallback mono" id="fallback" hidden>3D view unavailable in this browser</p>
+</section>
+
+<section class="proof gut" aria-label="Electrosoft in numbers">
+  <div class="wrap">
+    <div class="stat"><span class="n" data-count="1989" data-from="1950">1989</span><p>Building panels since</p></div>
+    <div class="stat"><span class="n"><span data-count="80">80</span><sup>%+</sup></span><p>Orders from repeat customers</p></div>
+    <div class="stat"><span class="n"><span data-count="65">65</span><sup>kA</sup></span><p>CPRI approved short-circuit design</p></div>
+    <div class="stat"><span class="n"><span data-count="160">160</span><sup>MVA</sup></span><p>Largest transformer our benches test</p></div>
+  </div>
+</section>
+
+<section class="statement gut">
+  <div class="wrap"><p id="statement">From a single distribution board to a 160 MVA test bay, we design it, build it, wire it, test it and commission it. One company. One standard. Since 1989.</p></div>
+</section>
+
+<section id="lineup" aria-label="Products">
+  <div class="lineup-in">
+    <div class="wrap gut" style="width:100%">
+      <div class="lineup-head">
+        <div><div class="mono">The lineup · 12</div><h2>Every panel your<br>plant runs on.</h2></div>
+        <div class="meter mono"><span class="bar"><i id="lineBar"></i></span><span id="lineCount">01 / 12</span></div>
+      </div>
+    </div>
+    <div class="track" id="track"></div>
+  </div>
+</section>
+
+<section id="testing" class="night gut" aria-label="Transformer Testing Suite">
+  <div class="wrap">
+    <div>
+      <span class="mono">Transformer Testing Suite</span>
+      <h2>Test it without touching a cable.</h2>
+      <p class="lede">Electrosoft X'mer Prime™ switches the physical connections, runs every test, does every calculation and writes the report. ERP-connected, and live online for your buyer.</p>
+      <div class="modes">
+        <div class="mode"><b>Fully Automatic</b><span>MSEDCL · up to 1500 kVA / 33 kV</span></div>
+        <div class="mode"><b>Semi Automatic</b><span>Tata Power · up to 10 MVA / 33 kV</span></div>
+        <div class="mode"><b>Manual</b><span>Crompton Greaves · up to 150 MVA / 66 kV</span></div>
+      </div>
+    </div>
+    <div class="win" id="win">
+      <div class="win-top"><i style="background:var(--r)"></i><i style="background:var(--y)"></i><i style="background:var(--ok)"></i><span>X'mer Prime™ · Bay 01</span><em>● LIVE</em></div>
+      <canvas id="scope" aria-label="Three-phase waveform, R Y B" role="img"></canvas>
+      <div class="tests" id="tests"></div>
+    </div>
+  </div>
+</section>
+
+<section id="clients" class="clients" aria-label="Clients">
+  <h2 class="gut">Trusted where failure<br>isn't an option.</h2>
+  <div class="marq"><span>Godrej</span><span>Reliance</span><span>Indian Oil</span><span>BARC</span><span>GAIL</span><span>Tata Power</span><span>JSW</span><span>Aditya Birla</span><span>Air India</span><span>Emirates</span><span>Godrej</span><span>Reliance</span><span>Indian Oil</span><span>BARC</span><span>GAIL</span><span>Tata Power</span><span>JSW</span><span>Aditya Birla</span><span>Air India</span><span>Emirates</span></div>
+  <div class="marq rev"><span>Crompton Greaves</span><span>MSEDCL</span><span>Fuji Electric</span><span>Lupin</span><span>Areva</span><span>Indiabulls</span><span>Gammon Skanska</span><span>Nucon</span><span>Crompton Greaves</span><span>MSEDCL</span><span>Fuji Electric</span><span>Lupin</span><span>Areva</span><span>Indiabulls</span><span>Gammon Skanska</span><span>Nucon</span></div>
+  <p class="note gut">And 20+ more. Over 80% of our business is repeat orders.</p>
+</section>
+
+<section id="contact" class="close gut" aria-label="Contact">
+  <div class="wrap">
+    <div class="close-box">
+      <canvas id="sparks" aria-hidden="true"></canvas>
+      <div class="certs"><span>CPRI 65kA</span><span>CPRI IP65</span><span>ISO</span><span>MSME</span></div>
+      <h2>Let's build yours.</h2>
+      <p>Tell us what your plant needs. We take it from drawing to commissioning.</p>
+      <a class="mag" id="mag" href="#contact">Get a quote →</a>
+      <div class="contact-row"><span>+91 86928 88444</span><span>info@electrosoftindia.com</span><span>Kalher, Bhiwandi Road, Thane 421 302</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="gut"><div class="wrap"><span>© Electrosoft Automation Pvt. Ltd.</span><span>PLC/SCADA · PCC · MCC · APFC · VFD · DC · Test Benches</span></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const BRAND = '#0B5BD3';
+const hasGsap = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
+if (hasGsap) gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- product cards ---------- */
+const products = [
+  ['01','Automation','PLC / SCADA','Plant automation and SCADA on WinCC, Citect, Wonderware and FactoryTalk.','two'],
+  ['02','Power','PCC','Heavy-duty power control centres to our CPRI 65kA, IP65 design.','two'],
+  ['03','Motors','MCC','Motor control centres built for a 20+ year life cycle.','two'],
+  ['04','Critical','Draw-Out MCC','Swap any starter or feeder module without isolating main power.',''],
+  ['05','Energy','SmartAPFC','Automatic power factor correction. 8 levels of protection.',''],
+  ['06','Energy','VFD Panels','Motor speed matched to load, so you pay for less energy.',''],
+  ['07','Power','DC Panels','Stable, adjustable DC for reactor testing and special DC motors.',''],
+  ['08','Power','Distribution Boards','AC and DC boards engineered to perform for years.',''],
+  ['09','Control','Control Desk','Printed acrylic mimic panels with intuitive controls.','desk'],
+  ['10','Control','Console / Workstation','PC and monitor consoles for SCADA control rooms.','desk'],
+  ['11','Service','Assembly & Wiring','Volume or custom builds, 100% tested before dispatch.',''],
+  ['12','Service','Turnkey Projects','Design, engineering and commissioning from one partner.','two']
+];
+const track = document.getElementById('track');
+track.innerHTML = products.map(p => `<a class="card" href="#contact"><span class="k">${p[0]} · ${p[1].toUpperCase()}</span><h3>${p[2]}</h3><p>${p[3]}</p><div class="art"><div class="cab ${p[4]}"><div class="scr"></div><div class="lt"><i style="background:#30D158"></i><i style="background:#FFD60A"></i><i style="background:#FF453A"></i></div></div></div></a>`).join('');
+
+/* ---------- tests list ---------- */
+const testNames = ['Winding resistance','Ratio & vector group','No-load loss','Load loss & impedance','Induced over-voltage','Report generated'];
+const testsEl = document.getElementById('tests');
+testsEl.innerHTML = testNames.map((t,i)=>`<div class="trow"><span>${t}</span><s id="ts${i}">QUEUED</s></div>`).join('');
+function setTests(p){ testNames.forEach((_,i)=>{ const el=document.getElementById('ts'+i); const a=i/testNames.length, b=(i+1)/testNames.length; if(p>=b){el.textContent=i===testNames.length-1?'AUTO':'PASS';el.className='pass';} else if(p>=a){el.textContent='RUNNING';el.className='run';} else {el.textContent='QUEUED';el.className='';} }); }
+setTests(1);
+
+/* ---------- 3D panel ---------- */
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('gl');
+let three = null;
+try {
+  if (typeof THREE === 'undefined') throw new Error('no three');
+  three = buildScene();
+} catch(e){ document.getElementById('fallback').hidden = false; }
+
+function buildScene(){
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xaeb4bf, 0.95));
+  const key = new THREE.DirectionalLight(0xffffff, 1.15);
+  key.position.set(4, 7, 6); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, {left:-7,right:7,top:7,bottom:-7,near:1,far:30});
+  key.shadow.bias = -0.0004;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(new THREE.Color(BRAND), 0.55); rim.position.set(-6, 3, -4); scene.add(rim);
+  const busLight = new THREE.PointLight(0xff8a2a, 0, 4); busLight.position.set(0, 1.05, 0.2); scene.add(busLight);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({opacity:0.16}));
+  floor.rotation.x = -Math.PI/2; floor.position.y = -1.72; floor.receiveShadow = true; scene.add(floor);
+
+  const M = {
+    steel: new THREE.MeshStandardMaterial({color:0xD3D6D0, roughness:0.42, metalness:0.35}),
+    steelDark: new THREE.MeshStandardMaterial({color:0xB9BCB6, roughness:0.5, metalness:0.35}),
+    plinth: new THREE.MeshStandardMaterial({color:0x2A2D33, roughness:0.7}),
+    plate: new THREE.MeshStandardMaterial({color:0xE47A2C, roughness:0.55, metalness:0.15}),
+    copper: new THREE.MeshStandardMaterial({color:0xC8763A, roughness:0.28, metalness:0.95, emissive:0xff6a10, emissiveIntensity:0}),
+    white: new THREE.MeshStandardMaterial({color:0xF3F3F0, roughness:0.45}),
+    black: new THREE.MeshStandardMaterial({color:0x1C1D21, roughness:0.5}),
+    dark: new THREE.MeshStandardMaterial({color:0x2C2F35, roughness:0.45, metalness:0.2}),
+    grey: new THREE.MeshStandardMaterial({color:0x8E939B, roughness:0.5}),
+    duct: new THREE.MeshStandardMaterial({color:0x9DA2AA, roughness:0.6}),
+    rail: new THREE.MeshStandardMaterial({color:0xC9CDD3, roughness:0.25, metalness:0.9}),
+    insul: new THREE.MeshStandardMaterial({color:0xE9E6DD, roughness:0.6}),
+    termG: new THREE.MeshStandardMaterial({color:0x9AA0A8, roughness:0.5}),
+    termB: new THREE.MeshStandardMaterial({color:0x2B6FD6, roughness:0.5}),
+    termE: new THREE.MeshStandardMaterial({color:0x3E9B4F, roughness:0.5}),
+    yellow: new THREE.MeshStandardMaterial({color:0xF4C400, roughness:0.45}),
+    red: new THREE.MeshStandardMaterial({color:0xD92B22, roughness:0.4, emissive:0x400000, emissiveIntensity:0.6}),
+    ledG: new THREE.MeshStandardMaterial({color:0x30D158, emissive:0x30D158, emissiveIntensity:1.2}),
+    ledO: new THREE.MeshStandardMaterial({color:0xFF9F0A, emissive:0xFF9F0A, emissiveIntensity:1}),
+    lampR: new THREE.MeshStandardMaterial({color:0xFF453A, emissive:0xFF2A1F, emissiveIntensity:1.4}),
+    lampY: new THREE.MeshStandardMaterial({color:0xFFD60A, emissive:0xFFC400, emissiveIntensity:1.2}),
+    lampB: new THREE.MeshStandardMaterial({color:0x0A84FF, emissive:0x0A6CFF, emissiveIntensity:1.4}),
+    vfdScr: new THREE.MeshBasicMaterial({color:new THREE.Color(BRAND)})
+  };
+
+  function mesh(geo, mat, x, y, z, parent){ const m = new THREE.Mesh(geo, mat); m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; }
+  const box = (w,h,d,mat,x,y,z,p) => mesh(new THREE.BoxGeometry(w,h,d), mat, x,y,z,p);
+  function cylZ(r,h,mat,x,y,z,p){ const m = mesh(new THREE.CylinderGeometry(r,r,h,32), mat, x,y,z,p); m.rotation.x = Math.PI/2; return m; }
+  function cylX(r,h,mat,x,y,z,p){ const m = mesh(new THREE.CylinderGeometry(r,r,h,24), mat, x,y,z,p); m.rotation.z = Math.PI/2; return m; }
+
+  const rig = new THREE.Group(); scene.add(rig);
+  const L = {};
+  function layer(name){ const outer = new THREE.Group(), inner = new THREE.Group(); outer.add(inner); rig.add(outer); L[name] = {outer, inner}; return inner; }
+
+  // 1 enclosure
+  let g = layer('enc');
+  box(2.0, 3.0, 0.04, M.steelDark, 0, 0, -0.40, g);
+  box(0.04, 3.0, 0.84, M.steel, -1.0, 0, 0, g);
+  box(0.04, 3.0, 0.84, M.steel, 1.0, 0, 0, g);
+  box(2.04, 0.05, 0.84, M.steel, 0, 1.5, 0, g);
+  box(2.1, 0.05, 0.92, M.steelDark, 0, 1.55, 0.02, g);
+  box(2.04, 0.05, 0.84, M.steel, 0, -1.5, 0, g);
+  box(2.0, 0.16, 0.8, M.plinth, 0, -1.62, 0, g);
+  [-0.6, 0.6].forEach(x => box(0.22, 0.05, 0.12, M.grey, x, 1.6, -0.1, g)); // lifting eyes
+
+  // 2 mounting plate
+  g = layer('plate');
+  box(1.84, 2.84, 0.03, M.plate, 0, 0, -0.36, g);
+
+  // 3 busbars (R Y B)
+  g = layer('bus');
+  [1.18, 1.06, 0.94].forEach((y,i) => {
+    cylX(0.034, 1.62, M.copper, 0, y, -0.24, g);
+    const sleeve = [M.lampR, M.lampY, M.lampB][i];
+    cylX(0.04, 0.08, sleeve, -0.74, y, -0.24, g);
+    cylX(0.04, 0.08, sleeve, 0.74, y, -0.24, g);
+  });
+  [-0.62, 0.0, 0.62].forEach(x => box(0.09, 0.36, 0.1, M.insul, x, 1.06, -0.3, g));
+
+  // 4 protection: DIN rail + MCCB + MCBs + top duct
+  g = layer('prot');
+  box(1.7, 0.035, 0.012, M.rail, 0, 0.56, -0.33, g);
+  box(0.34, 0.5, 0.24, M.black, -0.66, 0.6, -0.22, g);
+  box(0.06, 0.12, 0.05, M.grey, -0.66, 0.6, -0.08, g);
+  for (let i = 0; i < 7; i++){ const x = -0.36 + i*0.17; box(0.15, 0.34, 0.2, M.white, x, 0.56, -0.24, g); box(0.05, 0.08, 0.05, M.black, x, 0.6, -0.12, g); }
+  box(1.72, 0.1, 0.12, M.duct, 0, 0.2, -0.28, g);
+
+  // 5 control: PLC, VFD, contactors
+  g = layer('ctrl');
+  box(0.72, 0.42, 0.2, M.dark, -0.42, -0.14, -0.24, g);
+  for (let i = 0; i < 8; i++) box(0.03, 0.03, 0.02, i % 3 === 2 ? M.ledO : M.ledG, -0.68 + i*0.06, 0.0, -0.13, g);
+  for (let i = 0; i < 4; i++) box(0.12, 0.26, 0.02, M.black, -0.6 + i*0.15, -0.2, -0.13, g);
+  box(0.46, 0.68, 0.24, M.dark, 0.5, -0.16, -0.22, g);
+  box(0.22, 0.12, 0.01, M.vfdScr, 0.5, 0.05, -0.095, g);
+  box(0.3, 0.06, 0.01, M.grey, 0.5, -0.1, -0.095, g);
+  [-0.56, -0.36, -0.16].forEach(x => { box(0.16, 0.24, 0.2, M.grey, x, -0.62, -0.24, g); box(0.1, 0.06, 0.02, M.black, x, -0.58, -0.13, g); });
+
+  // 6 terminals + ducts
+  g = layer('term');
+  box(1.72, 0.1, 0.12, M.duct, 0, -0.88, -0.28, g);
+  box(0.1, 2.3, 0.12, M.duct, -0.86, -0.1, -0.28, g);
+  box(0.1, 2.3, 0.12, M.duct, 0.86, -0.1, -0.28, g);
+  for (let i = 0; i < 28; i++){ const mat = i % 9 === 8 ? M.termE : (i % 6 === 5 ? M.termB : M.termG); box(0.045, 0.17, 0.1, mat, -0.64 + i*0.047, -1.12, -0.3, g); }
+  box(1.4, 0.035, 0.012, M.rail, 0, -1.12, -0.35, g);
+
+  // 7 door with HMI
+  g = layer('door');
+  const pivot = new THREE.Group(); pivot.position.set(-1.0, 0, 0.44); g.add(pivot);
+  box(2.0, 3.0, 0.05, M.steel, 1.0, 0, 0, pivot);
+  box(0.04, 2.9, 0.02, M.steelDark, 0.04, 0, 0.03, pivot);
+  const hmiCanvas = document.createElement('canvas'); hmiCanvas.width = 512; hmiCanvas.height = 320;
+  const hctx = hmiCanvas.getContext('2d');
+  const hmiTex = new THREE.CanvasTexture(hmiCanvas); hmiTex.encoding = THREE.sRGBEncoding;
+  box(1.0, 0.66, 0.03, M.black, 1.0, 0.62, 0.035, pivot);
+  const hmi = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.5625), new THREE.MeshBasicMaterial({map:hmiTex})); hmi.position.set(1.0, 0.62, 0.052); pivot.add(hmi);
+  [[0.7, M.lampR],[1.0, M.lampY],[1.3, M.lampB]].forEach(([x,m]) => { cylZ(0.07, 0.03, M.black, x, 0.05, 0.035, pivot); cylZ(0.05, 0.05, m, x, 0.05, 0.055, pivot); });
+  cylZ(0.17, 0.02, M.yellow, 1.0, -0.42, 0.035, pivot);
+  cylZ(0.1, 0.1, M.red, 1.0, -0.42, 0.09, pivot);
+  cylZ(0.07, 0.04, M.black, 0.68, -0.42, 0.045, pivot); box(0.03, 0.1, 0.02, M.white, 0.68, -0.42, 0.07, pivot);
+  cylZ(0.07, 0.04, M.black, 1.32, -0.42, 0.045, pivot); box(0.03, 0.1, 0.02, M.white, 1.32, -0.42, 0.07, pivot);
+  box(0.06, 0.4, 0.07, M.black, 1.84, 0, 0.06, pivot);
+  for (let i = 0; i < 5; i++) box(0.8, 0.025, 0.02, M.steelDark, 1.0, -1.0 - i*0.07, 0.035, pivot);
+  const npCanvas = document.createElement('canvas'); npCanvas.width = 512; npCanvas.height = 96;
+  const nctx = npCanvas.getContext('2d');
+  nctx.fillStyle = '#E9EAE6'; nctx.fillRect(0,0,512,96);
+  nctx.fillStyle = BRAND; nctx.beginPath(); nctx.moveTo(52,14); nctx.lineTo(24,52); nctx.lineTo(40,52); nctx.lineTo(34,82); nctx.lineTo(66,44); nctx.lineTo(50,44); nctx.closePath(); nctx.fill();
+  nctx.fillStyle = '#16181C'; nctx.font = '800 44px Arial'; nctx.textBaseline = 'middle'; nctx.fillText('ELECTROSOFT', 84, 50);
+  const npTex = new THREE.CanvasTexture(npCanvas); npTex.encoding = THREE.sRGBEncoding;
+  const np = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.15), new THREE.MeshBasicMaterial({map:npTex})); np.position.set(1.0, 1.24, 0.03); pivot.add(np);
+
+  // particles
+  const pg = new THREE.BufferGeometry(); const pc = 420; const pos = new Float32Array(pc*3);
+  for (let i = 0; i < pc; i++){ pos[i*3] = (Math.random()-0.5)*14; pos[i*3+1] = (Math.random()-0.3)*8; pos[i*3+2] = (Math.random()-0.5)*10; }
+  pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const points = new THREE.Points(pg, new THREE.PointsMaterial({color:new THREE.Color(BRAND), size:0.028, transparent:true, opacity:0.55, depthWrite:false}));
+  scene.add(points);
+
+  // labels
+  const tagsEl = document.getElementById('tags');
+  const tagDefs = [
+    ['enc', 'Layer 1', 'IP65 Enclosure', 'CPRI-approved design', new THREE.Vector3(1.0, 1.5, -0.4)],
+    ['plate', 'Layer 2', 'Mounting Plate', 'Powder-coated, drilled to layout', new THREE.Vector3(0.92, -1.4, -0.35)],
+    ['bus', 'Layer 3', 'Copper Busbars', 'R · Y · B, rated 65kA', new THREE.Vector3(0.81, 1.18, -0.24)],
+    ['prot', 'Layer 4', 'Protection', 'MCCB and MCB on DIN rail', new THREE.Vector3(0.48, 0.73, -0.14)],
+    ['ctrl', 'Layer 5', 'PLC · VFD · Contactors', 'The control brain', new THREE.Vector3(0.73, 0.18, -0.1)],
+    ['term', 'Layer 6', 'Terminals & Ducts', 'Every wire numbered', new THREE.Vector3(0.66, -1.12, -0.25)],
+    ['door', 'Layer 7', 'Door · HMI · Indication', 'R Y B lamps, E-stop, selector', new THREE.Vector3(1.9, 1.5, 0.03)]
+  ];
+  const tags = tagDefs.map(d => { const el = document.createElement('div'); el.className = 'tag'; el.innerHTML = `<i class="pin"></i><div class="lbl"><small>${d[1].toUpperCase()}</small><b>${d[2]}</b><span>${d[3]}</span></div>`; tagsEl.appendChild(el); return {el, layer:d[0], v:d[4]}; });
+
+  const state = { r: 8.6, theta: 0.0, phi: 0.06, tx: -1.35, ty: 0.05, door: 0, glow: 0, labels: 0, spin: 0 };
+  const isNarrow = () => stage.clientWidth < 760;
+  function resize(){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  resize(); addEventListener('resize', resize);
+
+  function drawHMI(t){
+    const c = hctx, W = 512, H = 320;
+    c.fillStyle = '#0A0D13'; c.fillRect(0,0,W,H);
+    c.fillStyle = BRAND; c.fillRect(0,0,W,48);
+    c.fillStyle = '#fff'; c.font = '700 22px Arial'; c.textBaseline = 'middle'; c.fillText('ELECTROSOFT · MCC-01', 18, 25);
+    c.fillStyle = '#30D158'; c.beginPath(); c.arc(W-82, 25, 7, 0, 7); c.fill(); c.fillStyle = '#fff'; c.font = '700 18px Arial'; c.fillText('RUN', W-66, 25);
+    c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 1;
+    for (let x = 0; x <= W; x += 32){ c.beginPath(); c.moveTo(x, 60); c.lineTo(x, 230); c.stroke(); }
+    for (let y = 60; y <= 230; y += 34){ c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+    [['#FF453A',0],['#FFD60A',2.094],['#0A84FF',4.188]].forEach(([col,ph]) => { c.strokeStyle = col; c.lineWidth = 3; c.beginPath(); for (let x = 0; x <= W; x += 4){ const y = 145 + Math.sin(x/38 + t*3 + ph)*58; x ? c.lineTo(x,y) : c.moveTo(x,y); } c.stroke(); });
+    const vals = [['415 V','LINE'],['50.0 Hz','FREQ'],['0.99','PF']];
+    vals.forEach((v,i) => { const x = 14 + i*166; c.fillStyle = '#151A23'; c.fillRect(x, 244, 154, 64); c.fillStyle = '#7F8A9C'; c.font = '600 14px Arial'; c.fillText(v[1], x+12, 262); c.fillStyle = '#fff'; c.font = '700 26px Arial'; c.fillText(v[0], x+12, 290); });
+    hmiTex.needsUpdate = true;
+  }
+
+  const tmp = new THREE.Vector3(); const target = new THREE.Vector3();
+  function frame(now){
+    const t = now / 1000;
+    const narrow = isNarrow();
+    const fit = narrow ? 1.55 : 1;
+    const r = state.r * fit;
+    const theta = state.theta + state.spin;
+    target.set(narrow ? 0 : state.tx, narrow ? state.ty + 0.55 : state.ty, 0);
+    camera.position.set(target.x + r*Math.sin(theta)*Math.cos(state.phi), target.y + r*Math.sin(state.phi), r*Math.cos(theta)*Math.cos(state.phi));
+    camera.lookAt(target);
+    pivot.rotation.y = -state.door;
+    M.copper.emissiveIntensity = state.glow * (0.75 + 0.25*Math.sin(t*6));
+    busLight.intensity = state.glow * 2.2;
+    M.ledG.emissiveIntensity = 0.8 + 0.6*Math.sin(t*5);
+    points.rotation.y = t * 0.03;
+    drawHMI(t);
+    renderer.render(scene, camera);
+    const w = stage.clientWidth, h = stage.clientHeight;
+    tags.forEach((tg, i) => {
+      const obj = tg.layer === 'door' ? pivot : L[tg.layer].inner;
+      tmp.copy(tg.v); obj.localToWorld(tmp); tmp.project(camera);
+      const x = (tmp.x*0.5 + 0.5) * w, y = (-tmp.y*0.5 + 0.5) * h;
+      const a = Math.max(0, Math.min(1, state.labels*7 - i*0.9));
+      tg.el.style.opacity = a;
+      tg.el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  return {state, L, pivot};
+}
+
+/* ---------- motion ---------- */
+const capEls = [document.getElementById('cap1'), document.getElementById('cap2'), document.getElementById('cap3')];
+const hudState = document.getElementById('hudState'), hudBar = document.getElementById('hudBar'), hudCount = document.getElementById('hudCount');
+const explodeTo = { enc:{z:-1.25, y:0}, plate:{z:-0.45, y:0}, bus:{z:0.35, y:0.55}, prot:{z:0.95, y:0.3}, ctrl:{z:1.55, y:0}, term:{z:2.15, y:-0.35}, door:{z:3.1, x:-0.9, y:0} };
+
+function updateHud(p){
+  hudBar.style.transform = `scaleX(${p})`;
+  const n = Math.round(Math.max(0, Math.min(1, (p-0.3)/0.4)) * 7);
+  hudCount.textContent = n + ' / 7';
+  hudState.innerHTML = p < 0.12 ? '<b>Assembled</b>' : p < 0.3 ? '<b>Opening</b>' : p < 0.7 ? '<b>Exploding</b>' : '<b>Exploded view</b>';
+}
+
+if (hasGsap && three && !reduce){
+  const S = three.state, L = three.L;
+  // load-in assembly
+  const order = ['enc','plate','bus','prot','ctrl','term','door'];
+  order.forEach((k, i) => {
+    gsap.from(L[k].outer.position, { y: 5 + i*0.4, z: 2.5, duration: 1.6, delay: 0.15 + i*0.11, ease: 'expo.out' });
+    gsap.from(L[k].outer.rotation, { x: -0.6, y: 0.5, duration: 1.6, delay: 0.15 + i*0.11, ease: 'expo.out' });
+  });
+  gsap.from(S, { r: 14, theta: -0.5, duration: 2.2, ease: 'expo.out' });
+  gsap.from('.h1 .ln > span', { yPercent: 105, duration: 1.1, stagger: 0.12, ease: 'expo.out', delay: 0.2 });
+  gsap.from(['.eyebrow', '.lede', '.ctas', '.scrollcue'], { y: 24, opacity: 0, duration: 1, stagger: 0.1, delay: 0.5, ease: 'expo.out' });
+
+  const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#stage', start: 'top top', end: '+=520%', scrub: 1, pin: true, anticipatePin: 1, onUpdate: s => updateHud(s.progress) } });
+  tl.to('#heroCopy', { opacity: 0, y: -80, duration: 0.1 }, 0)
+    .to(S, { theta: 0.62, phi: 0.2, r: 9.2, tx: -0.9, ty: 0.15, duration: 0.18 }, 0)
+    .to(capEls[0], { opacity: 1, duration: 0.05 }, 0.1)
+    .to(S, { door: 1.95, duration: 0.14 }, 0.12)
+    .to(capEls[0], { opacity: 0, duration: 0.04 }, 0.3)
+    .to(capEls[1], { opacity: 1, duration: 0.05 }, 0.32);
+  order.forEach(k => { const d = explodeTo[k]; tl.to(L[k].inner.position, { z: d.z, y: d.y, x: d.x || 0, duration: 0.36, ease: 'power2.inOut' }, 0.3); });
+  tl.to(S, { glow: 1, duration: 0.2 }, 0.4)
+    .to(S, { r: 12.5, theta: 0.85, phi: 0.24, tx: -0.2, ty: 0.25, duration: 0.36, ease: 'power2.inOut' }, 0.3)
+    .to(S, { labels: 1, duration: 0.2 }, 0.62)
+    .to(capEls[1], { opacity: 0, duration: 0.04 }, 0.72)
+    .to(capEls[2], { opacity: 1, duration: 0.05 }, 0.74)
+    .to(S, { spin: 0.35, duration: 0.26 }, 0.74);
+
+  // page progress
+  gsap.to('#progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
+
+  // counters
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const end = +el.dataset.count, from = +(el.dataset.from || 0), o = { v: from };
+    ScrollTrigger.create({ trigger: el, start: 'top 85%', once: true, onEnter: () => gsap.to(o, { v: end, duration: 1.8, ease: 'expo.out', onUpdate: () => el.textContent = Math.round(o.v) }) });
+  });
+  gsap.from('.stat', { y: 50, opacity: 0.2, duration: 1, stagger: 0.12, ease: 'expo.out', scrollTrigger: { trigger: '.proof', start: 'top 80%' } });
+
+  // word fill
+  const st = document.getElementById('statement');
+  st.innerHTML = st.textContent.split(' ').map(w => `<span class="w">${w}</span>`).join(' ');
+  gsap.to('#statement .w', { color: '#0E1116', stagger: 0.1, ease: 'none', scrollTrigger: { trigger: '#statement', start: 'top 80%', end: 'bottom 40%', scrub: true } });
+
+  // sideways lineup
+  const lineBar = document.getElementById('lineBar'), lineCount = document.getElementById('lineCount');
+  const dist = () => Math.max(0, track.scrollWidth - window.innerWidth + 32);
+  gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#lineup', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true, onUpdate: s => { lineBar.style.transform = `scaleX(${s.progress})`; lineCount.textContent = String(Math.min(12, 1 + Math.floor(s.progress*12))).padStart(2,'0') + ' / 12'; } } });
+  gsap.from('.card', { y: 80, rotate: 2, opacity: 0.3, stagger: 0.06, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '#lineup', start: 'top 70%' } });
+
+  // testing
+  gsap.from('#win', { y: 120, rotateX: 18, scale: 0.92, opacity: 0.3, transformPerspective: 1200, ease: 'none', scrollTrigger: { trigger: '#testing', start: 'top 85%', end: 'top 25%', scrub: true } });
+  gsap.from('.night h2, .night .lede, .mode', { y: 40, opacity: 0.2, stagger: 0.08, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '#testing', start: 'top 70%' } });
+  setTests(0);
+  ScrollTrigger.create({ trigger: '#testing', start: 'top 60%', end: 'bottom 60%', onUpdate: s => setTests(s.progress * 1.15), onLeave: () => setTests(1) });
+
+  // close
+  gsap.from('.close-box', { scale: 0.86, borderRadius: 80, ease: 'none', scrollTrigger: { trigger: '#contact', start: 'top 95%', end: 'top 40%', scrub: true } });
+  gsap.from('.close-box h2', { yPercent: 60, opacity: 0.2, ease: 'expo.out', duration: 1.2, scrollTrigger: { trigger: '.close-box', start: 'top 70%' } });
+
+  // magnetic button
+  const mag = document.getElementById('mag');
+  mag.addEventListener('mousemove', e => { const r = mag.getBoundingClientRect(); gsap.to(mag, { x: (e.clientX - r.left - r.width/2) * 0.35, y: (e.clientY - r.top - r.height/2) * 0.5, duration: 0.4 }); });
+  mag.addEventListener('mouseleave', () => gsap.to(mag, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1,0.4)' }));
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
+} else if (three) {
+  const S = three.state, L = three.L;
+  Object.assign(S, { theta: 0.85, phi: 0.24, r: 12.5, tx: -0.2, ty: 0.25, door: 1.95, glow: 0.6, labels: 1 });
+  Object.keys(explodeTo).forEach(k => { const d = explodeTo[k]; L[k].inner.position.set(d.x || 0, d.y, d.z); });
+  document.getElementById('heroCopy').style.opacity = 1;
+  updateHud(1);
+  track.parentElement.style.overflowX = 'auto';
+}
+
+/* ---------- oscilloscope ---------- */
+const scope = document.getElementById('scope'), sctx = scope.getContext('2d');
+function sizeScope(){ const d = Math.min(window.devicePixelRatio||1, 2); scope.width = scope.clientWidth * d; scope.height = scope.clientHeight * d; sctx.setTransform(d,0,0,d,0,0); }
+sizeScope(); addEventListener('resize', sizeScope);
+function drawScope(now){
+  const t = now/1000, W = scope.clientWidth, H = scope.clientHeight;
+  sctx.clearRect(0,0,W,H);
+  sctx.strokeStyle = 'rgba(255,255,255,.06)'; sctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 30){ sctx.beginPath(); sctx.moveTo(x,0); sctx.lineTo(x,H); sctx.stroke(); }
+  for (let y = 0; y <= H; y += 30){ sctx.beginPath(); sctx.moveTo(0,y); sctx.lineTo(W,y); sctx.stroke(); }
+  [['#FF453A',0],['#FFD60A',2.094],['#0A84FF',4.188]].forEach(([c,ph]) => { sctx.strokeStyle = c; sctx.lineWidth = 2.2; sctx.shadowColor = c; sctx.shadowBlur = 10; sctx.beginPath(); for (let x = 0; x <= W; x += 3){ const y = H/2 + Math.sin(x/42 + (reduce?0:t*2.6) + ph) * H*0.32; x ? sctx.lineTo(x,y) : sctx.moveTo(x,y); } sctx.stroke(); });
+  sctx.shadowBlur = 0;
+  sctx.fillStyle = 'rgba(154,163,178,.9)'; sctx.font = '600 11px JetBrains Mono, monospace';
+  sctx.fillText('R', 10, 18); sctx.fillStyle = '#FFD60A'; sctx.fillText('Y', 26, 18); sctx.fillStyle = '#0A84FF'; sctx.fillText('B', 42, 18);
+  if (!reduce) requestAnimationFrame(drawScope);
+}
+requestAnimationFrame(drawScope);
+
+/* ---------- sparks in close ---------- */
+const sp = document.getElementById('sparks'), spx = sp.getContext('2d');
+let sparks = [];
+function sizeSp(){ const d = Math.min(window.devicePixelRatio||1, 2); sp.width = sp.clientWidth*d; sp.height = sp.clientHeight*d; spx.setTransform(d,0,0,d,0,0); sparks = Array.from({length: 60}, () => ({x: Math.random()*sp.clientWidth, y: Math.random()*sp.clientHeight, v: 0.3 + Math.random()*1.2, l: 20 + Math.random()*60})); }
+sizeSp(); addEventListener('resize', sizeSp);
+function drawSp(){
+  const W = sp.clientWidth, H = sp.clientHeight; spx.clearRect(0,0,W,H);
+  spx.strokeStyle = 'rgba(255,255,255,.7)'; spx.lineWidth = 1;
+  sparks.forEach(s => { spx.beginPath(); spx.moveTo(s.x, s.y); spx.lineTo(s.x + s.l, s.y); spx.stroke(); s.x += s.v * 3; if (s.x > W) { s.x = -s.l; s.y = Math.random()*H; } });
+  if (!reduce) requestAnimationFrame(drawSp);
+}
+requestAnimationFrame(drawSp);
+})();
+</script>
