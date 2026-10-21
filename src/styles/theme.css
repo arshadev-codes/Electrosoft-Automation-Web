@@ -246,9 +246,44 @@ a{color:var(--brand)}
 }
 @media (prefers-reduced-motion:reduce){.lu-body,.lu-shot img{transition:none}.lu-grid.is-in .lu-body::before{animation:none}}
 
-/* placeholder below hero until next sections are built */
-.after-hero{padding-block:clamp(100px,18vh,200px);background:var(--paper);border-top:1px solid var(--line)}
-.after-hero p{color:var(--muted)}
+
+
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* 1.4 business lines: a pinned 3D turntable. The MCC opens, a scan ring rebuilds it as a transformer under test. */
+#lines{--edge:max(24px,calc((100% - 1240px) / 2 + 16px));position:relative;height:100vh;height:100svh;overflow:hidden;
+  background:radial-gradient(ellipse 60% 60% at 50% 60%,#C9CED5 0%,#A7AEB8 55%,#8F97A2 100%)}
+.lx-gl{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s cubic-bezier(.16,1,.3,1)}
+.lx-gl.ready{opacity:1}
+.lx-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 75% at 50% 52%,transparent 55%,rgba(52,58,68,.24) 100%)}
+.lx-copy{position:absolute;z-index:3;top:50%;width:min(390px,32vw);margin-top:-150px;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.lx-a{left:var(--edge)}
+.lx-b{right:var(--edge)}
+.lx-copy h3{font-size:clamp(28px,2.6vw,38px);font-weight:600;line-height:1.08;letter-spacing:-.03em;color:var(--ink)}
+.lx-copy p{font-size:16px;line-height:1.6;color:#363C45}
+.lx-copy .pill{padding:11px 20px;box-shadow:0 12px 28px -14px rgba(11,91,211,.75),inset 0 1px 0 rgba(255,255,255,.25)}
+/* rating plate: the figures stamped on the equipment */
+.lx-plate{display:flex;margin:2px 0 4px;border-radius:10px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 24px -16px rgba(10,24,52,.4)}
+.lx-plate div{padding:9px 16px 10px}
+.lx-plate div + div{border-left:1px solid rgba(14,17,22,.1)}
+.lx-plate dt{font-size:11.5px;color:#4A5059}
+.lx-plate dd{margin:2px 0 0;font:600 17px/1.2 var(--f-mono);letter-spacing:-.01em;color:var(--ink)}
+.lx-hud .on{color:var(--ink);font-weight:600}
+.lx-hud [data-k]{transition:color .3s}
+.lx-fallback{position:absolute;left:50%;bottom:40%;translate:-50% 0;z-index:2;color:#3B414A}
+
+/* reduced motion: one still frame, both lines readable */
+#lines.is-still .lx-b{opacity:1}
+
+@media (max-width:760px),(max-aspect-ratio:1/1){
+  .lx-copy{top:calc(var(--hdr) + env(safe-area-inset-top,0px) + 18px);margin:0;left:16px;right:16px;width:auto;max-width:520px;gap:12px}
+  .lx-copy h3{font-size:clamp(24px,6.6vw,30px)}
+  .lx-copy p{font-size:14.5px;line-height:1.5}
+  .lx-plate div{padding:7px 12px 8px}.lx-plate dd{font-size:15px}
+  .lx-copy .pill{padding:10px 16px;font-size:13.5px}
+  #lines.is-still{height:auto;min-height:100svh}
+  #lines.is-still .lx-b{top:auto;bottom:90px}
+}
 
 @media (prefers-reduced-motion:reduce){.live,.dot,.mouse i,.hero-copy.is-in .ln > span,.hero-copy.is-in .fade{animation:none}}
 

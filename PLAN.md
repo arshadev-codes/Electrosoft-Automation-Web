@@ -30,11 +30,11 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 ## 1. HOME (`/`)
 | # | Section | Status | What's in it / what's missing |
 |---|---|---|---|
-| 1.1 | **3D Exploded Hero** | ✅ | Panel assembles on load, opens + explodes into 7 layers on scroll, labels, captions, HUD |
-| 1.2 | Proof numbers (1989 · 80%+ · 65kA · 160 MVA) | ✅ | Count-up on scroll |
-| 1.3 | Statement (word fill) | ✅ | |
-| 1.4 | **Two business lines** (Panels / Testing Systems) | ⬜ | In CONTENT.md, not designed yet |
-| 1.5 | Product lineup (12, sideways scroll) | 🟡 | Uses drawn cabinets — swap in real product photos |
+| 1.1 | **3D Exploded Hero** | 🟢 | Panel assembles on load, opens + explodes into 7 layers on scroll, labels, captions, HUD |
+| 1.2 | Proof numbers (1989 · 80%+ · 65kA · 160 MVA) | 🟢 | Count-up on scroll |
+| 1.3 | Statement (word fill) | ⛔ | Dropped at your request (too big, generic) |
+| 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
+| 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
 | 1.6 | Testing Suite (X'mer Prime window, live waveform) | ✅ | |
 | 1.7 | **Why Electrosoft** (Quality · Delivery · Pricing · Tracking) | ⬜ | |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
