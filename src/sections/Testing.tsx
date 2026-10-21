@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import Blueprint, { SPOTS } from '../components/Blueprint';
-import { createTestingMotion, testing } from './testingMotion';
+import { createTestingMotion } from './testingMotion';
 
 // TODO: CONFIRM — the tests list is [CONFIRM] in CONTENT.md (draft names, shared with the hero bench).
 // Descriptions are what each routine test checks in general terms; full detail lives on /transformer-testing#<id>.
@@ -19,6 +19,7 @@ const TESTS = [
     text: 'Applies above-rated voltage at a raised frequency and holds it, to prove the insulation between turns.' },
 ];
 const NAMES = TESTS.map(t => t.name);
+const CYCLE_MS = 5000; // time on each test before moving to the next
 
 export default function Testing() {
   const ref = useRef<HTMLElement>(null);
@@ -32,13 +33,26 @@ export default function Testing() {
     return () => mq.removeEventListener('change', on);
   }, []);
 
+  // tests change on a timer, not with scroll: start once the drawing is done, only while the section
+  // is on screen; hovering or clicking a test picks it and restarts the timer
+  const [drawn, setDrawn] = useState(false), [inView, setInView] = useState(false);
+  const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const ctx = gsap.context(() => createTestingMotion(el, TESTS.length, reduce, setActive), el);
-    return () => ctx.revert();
-  }, []);
+    const ctx = gsap.context(() => createTestingMotion(el, reduce, () => setDrawn(true)), el);
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.35 });
+    io.observe(el);
+    return () => { ctx.revert(); io.disconnect(); };
+  }, [reduce]);
+
+  const running = drawn && inView && !reduce;
+  useEffect(() => {
+    if (!running) return;
+    const id = window.setTimeout(() => setActive(a => (a + 1) % TESTS.length), CYCLE_MS);
+    return () => window.clearTimeout(id);
+  }, [running, active]);
 
   return (
     <section id="testing" ref={ref} aria-labelledby="testing-h">
@@ -51,7 +65,7 @@ export default function Testing() {
             <div className="tx-meta">
               <span>Test {active + 1} of {TESTS.length} · {SPOTS[active].part}</span>
               <span className="tx-steps">
-                {TESTS.map((t, i) => <button key={t.id} type="button" aria-label={t.name} className={i === active ? 'on' : ''} onClick={() => testing.goTo(i)} />)}
+                {TESTS.map((t, i) => <button key={t.id} type="button" aria-label={t.name} className={i === active ? (running ? 'on run' : 'on') : i < active ? 'done' : ''} onClick={() => setActive(i)}><i key={`${active}-${running}`} /></button>)}
               </span>
             </div>
             <h3 key={test.id}>{test.name}</h3>
@@ -64,7 +78,7 @@ export default function Testing() {
         </div>
 
         <div className="tx-sheet">
-          <Blueprint active={active} labels={NAMES} narrow={narrow} onPick={i => testing.goTo(i)} onHover={i => testing.show(i)} />
+          <Blueprint active={active} labels={NAMES} narrow={narrow} onPick={setActive} onHover={setActive} />
         </div>
       </div>
     </section>

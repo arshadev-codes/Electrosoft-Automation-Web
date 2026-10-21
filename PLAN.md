@@ -22,8 +22,8 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | Three.js + GSAP + ScrollTrigger installed | ⬜ | `npm i three gsap` |
 | Router (Home, About, Products, Testing, Projects, Gallery, Contact) | ⬜ | `react-router-dom` |
 | Images copied from old site into `public/img/` | ⬜ | Products, gallery, projects, client logos, certificates |
-| Header (sticky, blur) + scroll progress bar | ✅ | |
-| Footer (full: contact, product links, downloads, certs) | 🟡 | Prototype footer is one line; full version per CONTENT.md |
+| Header (sticky, blur) + scroll progress bar | 🟢 | Floating capsule: gliding hover pill, current-page dot, hides on scroll down, progress line inside, phone menu |
+| Footer (full: contact, product links, downloads, certs) | 🟢 | Full version. Download PDFs still to add to public/downloads/ (7 exist on the old site) |
 
 ---
 
@@ -35,10 +35,10 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | 1.3 | Statement (word fill) | ⛔ | Dropped at your request (too big, generic) |
 | 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
 | 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
-| 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, pinned step-through, each links to /transformer-testing#<test> (test names TODO: CONFIRM) |
-| 1.7 | **Why Electrosoft** | ⛔ | Dropped at your request; delivery + quality facts moved to 1.2, tracking goes in 1.12 |
+| 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, pinned step-through, each links to /transformer-testing#<test>; tests change on a 5 s timer, no pin (test names TODO: CONFIRM) |
+| 1.7 | **Why Electrosoft** | 🟢 | Rebuilt as a bento: real panel photo + 100% seal, 362 days, quote checklist, live order-tracking widget |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
-| 1.9 | Clients (tickers) | 🟡 | Names as text — swap for the 32 real logos |
+| 1.9 | Clients | 🟢 | Wall of the 32 real logos from the old site (greyscale → colour on hover). Emirates / Europoxy logo names TODO: CONFIRM |
 | 1.10 | **Certifications & downloads** | 🟡 | Only cert chips in CTA — needs download list (7 PDFs + brochure) |
 | 1.11 | **Track order** (project ID input) | ⬜ | Tracking is still used (confirmed 2026-10-21); what it shows still to define |
 | 1.12 | Contact CTA ("Let's build yours.") | ✅ | Add a "Track your order" box here (project number input) |
