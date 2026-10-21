@@ -34,7 +34,7 @@ function nameplate() {
   return canvasTexture(c);
 }
 
-function dangerTex() {
+export function dangerTex() {
   const { c, x } = makeCanvas(256, 192);
   x.fillStyle = '#F4F4F0'; x.fillRect(0, 0, 256, 192);
   x.fillStyle = '#D3271F'; x.fillRect(0, 0, 256, 52);
@@ -47,7 +47,7 @@ function dangerTex() {
 const METER_LABELS = ['VOLTAGE', 'HV VOLTAGE', 'FREQUENCY', 'POWER FACTOR', 'CURRENT', 'POWER'];
 
 /** Engraved traffolyte label: white letters cut through black. */
-function labelTex(text: string) {
+export function labelTex(text: string) {
   const { c, x } = makeCanvas(256, 40);
   x.fillStyle = '#16181C'; x.fillRect(0, 0, 256, 40);
   x.fillStyle = '#F2F2EE'; x.font = '700 22px Arial'; x.textAlign = 'center'; x.textBaseline = 'middle';
@@ -56,7 +56,7 @@ function labelTex(text: string) {
 }
 
 /** Recessed door gap drawn as a thin dark rectangle on a panel face. */
-function seams(parent: THREE.Object3D, mat: THREE.Material, cx: number, cy: number, w: number, h: number, z: number) {
+export function seams(parent: THREE.Object3D, mat: THREE.Material, cx: number, cy: number, w: number, h: number, z: number) {
   const t = 0.005;
   box(w, t, t, mat, parent, [cx, cy + h / 2, z]);
   box(w, t, t, mat, parent, [cx, cy - h / 2, z]);
@@ -65,14 +65,14 @@ function seams(parent: THREE.Object3D, mat: THREE.Material, cx: number, cy: numb
 }
 
 /** Panel swing handle: escutcheon plate, lock barrel, lever. */
-function swingHandle(parent: THREE.Object3D, M: Mats, x: number, y: number, z: number) {
+export function swingHandle(parent: THREE.Object3D, M: Mats, x: number, y: number, z: number) {
   rbox(0.034, 0.13, 0.012, 0.005, M.black, parent, [x, y, z + 0.006]);
   cyl(0.009, 0.009, 0.014, M.steelDark, parent, [x, y + 0.042, z + 0.014], [PI / 2, 0, 0], 12);
   rbox(0.018, 0.085, 0.016, 0.006, M.black, parent, [x, y - 0.012, z + 0.02]);
 }
 
 /** Pressed ventilation louvres: angled lips over dark slots. */
-function louvres(parent: THREE.Object3D, M: Mats, origins: [number, number][], rows: number, w: number, z: number) {
+export function louvres(parent: THREE.Object3D, M: Mats, origins: [number, number][], rows: number, w: number, z: number) {
   const lips: { p: V3; r: V3 }[] = [], slots: { p: V3 }[] = [];
   origins.forEach(([x, y0]) => {
     for (let i = 0; i < rows; i++) {
@@ -105,7 +105,7 @@ function mimic() {
   return canvasTexture(c);
 }
 
-function meterTex(value: string, unit: string, col: string) {
+export function meterTex(value: string, unit: string, col: string) {
   const { c, x } = makeCanvas(256, 112);
   x.fillStyle = '#0B0C0E'; x.fillRect(0, 0, 256, 112);
   x.fillStyle = col; x.font = '700 62px "Courier New", monospace'; x.textBaseline = 'middle';
