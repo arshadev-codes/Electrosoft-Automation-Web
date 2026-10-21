@@ -31,20 +31,20 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | # | Section | Status | What's in it / what's missing |
 |---|---|---|---|
 | 1.1 | **3D Exploded Hero** | 🟢 | Panel assembles on load, opens + explodes into 7 layers on scroll, labels, captions, HUD |
-| 1.2 | Proof numbers (1989 · 80%+ · 65kA · 160 MVA) | 🟢 | Count-up on scroll |
+| 1.2 | Proof numbers (1989 · 80%+ · 65kA · 160 MVA · 362 days · 100% tested) | 🟢 | Count-up on scroll; 3 × 2 grid. Took in 1.7's delivery and quality facts |
 | 1.3 | Statement (word fill) | ⛔ | Dropped at your request (too big, generic) |
 | 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
 | 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
 | 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, pinned step-through, each links to /transformer-testing#<test> (test names TODO: CONFIRM) |
-| 1.7 | **Why Electrosoft** (Quality · Delivery · Pricing · Tracking) | ⬜ | |
+| 1.7 | **Why Electrosoft** | ⛔ | Dropped at your request; delivery + quality facts moved to 1.2, tracking goes in 1.12 |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
 | 1.9 | Clients (tickers) | 🟡 | Names as text — swap for the 32 real logos |
 | 1.10 | **Certifications & downloads** | 🟡 | Only cert chips in CTA — needs download list (7 PDFs + brochure) |
-| 1.11 | **Track order** (project ID input) | ⬜ | ❓ Is tracking still used? |
-| 1.12 | Contact CTA ("Let's build yours.") | ✅ | |
+| 1.11 | **Track order** (project ID input) | ⬜ | Tracking is still used (confirmed 2026-10-21); what it shows still to define |
+| 1.12 | Contact CTA ("Let's build yours.") | ✅ | Add a "Track your order" box here (project number input) |
 
 ❓ Decide for Home:
-- [ ] Keep all 12 sections, or drop some to keep it tight? (Suggested drop/merge: 1.7 into 1.2)
+- [x] Keep all 12 sections, or drop some? 1.3 and 1.7 dropped; 1.7's facts merged into 1.2
 - [ ] Hero headline: "Power, engineered layer by layer." — keep or change?
 - [ ] Brand color: send logo / hex (currently `#0B5BD3` blue)
 
@@ -134,5 +134,5 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 3. Tests list + standards for testing systems
 4. How-we-work steps
 5. Newer projects
-6. Is order tracking still used?
+6. ~~Is order tracking still used?~~ Yes. Still needed: what a tracked order shows, and the project number format
 7. Where should quote-form submissions go?
