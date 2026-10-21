@@ -25,16 +25,14 @@ export function createTestingMotion(section: HTMLElement, count: number, reduce:
     return () => { jump = show = () => {}; };
   }
 
-  // the sheet draws itself: every line has pathLength=1, so a 1 → 0 dash offset traces it
+  // the sheet draws itself as the section scrolls in, tied to the scroll so it is always seen:
+  // every line has pathLength=1, so a 1 → 0 dash offset traces it (frame, core, coils, then bushings)
   const lines = section.querySelectorAll<SVGElement>('.bp [pathLength]');
-  gsap.fromTo(lines, { strokeDashoffset: 1 }, {
-    strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut', stagger: { amount: 1.2, from: 'start' },
-    scrollTrigger: { trigger: section, start: 'top 70%', once: true },
-  });
-  gsap.fromTo(section.querySelectorAll('.bp-spot'), { scale: 0, opacity: 0, transformOrigin: 'center', transformBox: 'fill-box' }, {
-    scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2.4)', stagger: 0.08, delay: 1.6,
-    scrollTrigger: { trigger: section, start: 'top 70%', once: true },
-  });
+  gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 95%', end: 'top 5%', scrub: 0.8 } })
+    .fromTo(section.querySelector('.bp'), { opacity: 0.4, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' }, 0)
+    .fromTo(lines, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power1.inOut', stagger: { amount: 2.2, from: 'start' } }, 0)
+    .fromTo(section.querySelectorAll('.bp-spot'), { scale: 0, opacity: 0, transformOrigin: 'center', transformBox: 'fill-box' },
+      { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(2.4)', stagger: 0.08 }, 2.5);
 
   const st = ScrollTrigger.create({
     trigger: section, start: 'top top', end: `+=${(count - 1) * 65}%`, pin: true, anticipatePin: 1,
