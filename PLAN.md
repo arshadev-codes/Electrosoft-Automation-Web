@@ -35,7 +35,7 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | 1.3 | Statement (word fill) | ⛔ | Dropped at your request (too big, generic) |
 | 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
 | 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
-| 1.6 | Testing Suite (X'mer Prime window, live waveform) | ✅ | |
+| 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, pinned step-through, each links to /transformer-testing#<test> (test names TODO: CONFIRM) |
 | 1.7 | **Why Electrosoft** (Quality · Delivery · Pricing · Tracking) | ⬜ | |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
 | 1.9 | Clients (tickers) | 🟡 | Names as text — swap for the 32 real logos |

@@ -325,3 +325,93 @@ a{color:var(--brand)}
 .hud .bar{background:rgba(14,17,22,.12)}
 .bay-chip{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.55)}
 .scrollcue .mouse{border-color:#5B616B}
+
+/* 1.6 testing suite: a blueprint cutaway of a transformer; each test is a hotspot on the part it checks */
+#testing{position:relative;height:100vh;height:100svh;overflow:hidden;color:var(--ink);border-top:1px solid var(--line);
+  background:
+    linear-gradient(rgba(11,91,211,.07) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(90deg,rgba(11,91,211,.07) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(rgba(11,91,211,.035) 1px,transparent 1px) 0 0/24px 24px,
+    linear-gradient(90deg,rgba(11,91,211,.035) 1px,transparent 1px) 0 0/24px 24px,
+    #F7F9FC}
+.tx-wrap{height:100%;max-width:1240px;margin:0 auto;padding:calc(var(--hdr) + 28px) max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));
+  display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,56px);align-items:center}
+.tx-copy{display:flex;flex-direction:column;align-items:flex-start;gap:18px}
+.tx-copy h2{font-size:clamp(32px,3.4vw,50px);line-height:1.04;font-weight:600;letter-spacing:-.035em;max-width:14ch}
+.tx-lede{font-size:16px;line-height:1.6;color:var(--muted);max-width:42ch}
+
+/* the current test */
+.tx-card{width:100%;max-width:440px;margin-top:6px;padding:20px 22px 22px;border-radius:20px;background:rgba(255,255,255,.82);
+  border:1px solid rgba(11,91,211,.14);box-shadow:0 1px 0 #fff inset,0 24px 50px -30px rgba(10,24,52,.35)}
+.tx-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--muted)}
+.tx-steps{display:flex;gap:4px;flex:none}
+.tx-steps button{appearance:none;border:0;padding:8px 0;width:24px;background:none;cursor:pointer}
+.tx-steps button::before{content:"";display:block;height:3px;border-radius:2px;background:var(--line);transition:background .3s}
+.tx-steps button.on::before{background:var(--brand)}
+.tx-steps button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.tx-card h3{margin-top:10px;font-size:clamp(22px,2vw,28px);font-weight:600;letter-spacing:-.025em;animation:txIn .45s cubic-bezier(.2,.8,.2,1) both}
+.tx-card p{margin-top:8px;font-size:15px;line-height:1.6;color:#3F454E;min-height:4.8em;animation:txIn .45s .05s cubic-bezier(.2,.8,.2,1) both}
+@keyframes txIn{from{opacity:0;translate:0 8px}}
+.tx-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:16px}
+.tx-ctas .pill{padding:11px 20px}
+.tx-all{font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;padding:10px 2px}
+.tx-all:hover{color:var(--brand)}
+
+/* the drawing */
+.tx-sheet{min-width:0}
+.bp{display:block;width:100%;height:auto;max-height:calc(100svh - var(--hdr) - 70px);overflow:visible}
+.bp [pathLength]{fill:none;stroke:rgba(11,91,211,.72);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
+.bp .bp-thin{stroke:rgba(11,91,211,.32);stroke-width:1}
+.bp .bp-oil{stroke:rgba(11,91,211,.35);stroke-dasharray:.012 .012}
+.bp-part [pathLength]{transition:stroke .35s,fill .35s,stroke-width .35s}
+/* the lit part: filled, solid and glowing */
+.bp[data-active="0"] :is(.p-lv,.p-hv) [pathLength],
+.bp[data-active="1"] .p-hvb [pathLength],
+.bp[data-active="2"] .p-core [pathLength],
+.bp[data-active="3"] .p-lvb [pathLength],
+.bp[data-active="4"] .p-hv [pathLength]{stroke:var(--brand);stroke-width:2.2;fill:rgba(11,91,211,.14)}
+.bp[data-active="0"] :is(.p-lv,.p-hv),.bp[data-active="1"] .p-hvb,.bp[data-active="2"] .p-core,.bp[data-active="3"] .p-lvb,.bp[data-active="4"] .p-hv{filter:drop-shadow(0 0 6px rgba(61,134,255,.45))}
+.bp .bp-lead{fill:none !important}
+/* current flowing in the leads while their test runs */
+.bp[data-active="0"] .bp-lead,.bp[data-active="1"] .p-hvb .bp-lead,.bp[data-active="3"] .p-lvb .bp-lead{stroke-dasharray:.03 .025;animation:bpFlow 1.2s linear infinite}
+@keyframes bpFlow{to{stroke-dashoffset:-.11}}
+/* induced over-voltage: the HV discs flicker as the turns are stressed */
+.bp[data-active="4"] .p-hv .bp-thin{stroke:var(--brand);animation:bpStress .5s steps(2) infinite}
+@keyframes bpStress{50%{stroke:rgba(61,134,255,.25)}}
+/* the shorting link only exists for the load-loss test */
+.bp .bp-short{stroke:var(--r);stroke-width:3.5;opacity:0;transition:opacity .3s}
+.bp[data-active="3"] .bp-short{opacity:1}
+
+.bp-title [pathLength]{stroke:rgba(11,91,211,.45);stroke-width:1}
+.bp-title text{font:600 9.5px var(--f-mono);fill:rgba(11,91,211,.7);letter-spacing:.04em}
+
+.bp-spot{cursor:pointer;outline:none}
+.bp-leader{stroke:rgba(11,91,211,.3);stroke-width:1;stroke-dasharray:3 4;transition:stroke .3s}
+.bp-label{font:500 13px var(--f-body);fill:var(--muted);transition:fill .3s}
+.bp-ring{fill:none;stroke:rgba(11,91,211,.35);stroke-width:1.5}
+.bp-dot{fill:#fff;stroke:var(--brand);stroke-width:2;transition:fill .3s}
+.bp-num{font:700 10px var(--f-mono);fill:var(--brand);pointer-events:none;transition:fill .3s}
+.bp-spot:hover .bp-label{fill:var(--ink)}
+.bp-spot.on .bp-dot{fill:var(--brand)}
+.bp-spot.on .bp-num{fill:#fff}
+.bp-spot.on .bp-label{fill:var(--ink);font-weight:700}
+.bp-spot.on .bp-leader{stroke:var(--brand);stroke-dasharray:none}
+.bp-spot.on .bp-ring{stroke:var(--brand);transform-box:fill-box;transform-origin:center;animation:bpPing 1.6s ease-out infinite}
+.bp-spot:focus-visible .bp-ring{stroke:var(--brand);stroke-width:3}
+@keyframes bpPing{from{scale:1;opacity:1}to{scale:2.2;opacity:0}}
+
+@media (max-width:900px){
+  .tx-wrap{grid-template-columns:minmax(0,1fr);align-content:start;gap:10px;padding-top:calc(var(--hdr) + 16px);padding-bottom:16px}
+  .tx-copy{display:contents}
+  .tx-copy h2{font-size:clamp(24px,6.4vw,34px);max-width:none}
+  .tx-lede{display:none}
+  .tx-sheet{order:2}
+  .tx-card{order:3;max-width:none;padding:14px 16px 16px;margin:0}
+  .tx-card p{font-size:14px;min-height:0}
+  .bp{max-height:42svh;margin:0 auto}
+  .bp-num{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  #testing{height:auto;min-height:100svh}
+  .tx-card h3,.tx-card p,.bp *{animation:none !important}
+}
