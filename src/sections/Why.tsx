@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+import { useCinematic } from '../hooks/useCinematic';
 
 // CONTENT.md · Home §6 Why Electrosoft, as a bento: each promise gets a real visual instead of an icon.
 // Quote scope lines come from the company business description; the photo is a real Electrosoft panel.
@@ -9,6 +10,7 @@ const v = (i: number) => ({ '--i': i }) as CSSProperties;
 
 export default function Why() {
   const ref = useRef<HTMLElement>(null);
+  useCinematic(ref, '.why-wrap');
   const [inView, setInView] = useState(false);
   const [step, setStep] = useState(0); // tracking widget: how far the sample order has got
 
@@ -16,7 +18,7 @@ export default function Why() {
     const el = ref.current;
     if (!el) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setInView(true); setStep(TRAIL.length - 1); return; }
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.25 });
+    const io = new IntersectionObserver(es => setInView(es[es.length - 1].isIntersecting), { threshold: 0.25 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -32,13 +34,13 @@ export default function Why() {
   return (
     <section id="why" ref={ref} aria-labelledby="why-h" className={inView ? 'is-in' : ''}>
       <div className="why-wrap">
-        <header className="why-head">
+        <header className="why-head sec-head">
           <h2 id="why-h">Why choose Electrosoft</h2>
           <p>Four promises behind every panel and test system we ship.</p>
         </header>
 
         <div className="bento">
-          <article className="bt bt-quality" style={v(0)}>
+          <article className="bt bt-quality">
             <img src="/img/products/mcc.webp" alt="Inside an Electrosoft MCC panel" loading="lazy" decoding="async" />
             <div className="bt-seal" aria-hidden="true"><b>100%</b><span>tested before dispatch</span></div>
             <div className="bt-txt">
@@ -47,20 +49,20 @@ export default function Why() {
             </div>
           </article>
 
-          <article className="bt bt-delivery" style={v(1)}>
+          <article className="bt bt-delivery">
             <h3>Timely delivery</h3>
             <div className="bt-big"><b>362</b><span>days a year</span></div>
             <div className="bt-days" aria-hidden="true">{Array.from({ length: 52 }, (_, i) => <i key={i} className={i < 51 ? 'on' : ''} style={v(i)} />)}</div>
             <p><b>14 hours</b> a day, so your order ships on time.</p>
           </article>
 
-          <article className="bt bt-pricing" style={v(2)}>
+          <article className="bt bt-pricing">
             <h3>Competitive pricing</h3>
             <p>Better value for the specification than anywhere else.</p>
             <ul className="bt-quote" aria-label="One quote covers">{SCOPE.map((s, i) => <li key={s} style={v(i)}>{s}</li>)}</ul>
           </article>
 
-          <article className="bt bt-tracking" style={v(3)}>
+          <article className="bt bt-tracking">
             <div className="bt-txt">
               <h3>Online order tracking</h3>
               <p>Track your order anytime with your project number.</p>

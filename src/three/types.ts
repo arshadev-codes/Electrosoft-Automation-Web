@@ -18,6 +18,7 @@ export interface SceneState {
   labelSplit: number; // 0 = show bench labels, 1 = show transformer labels
   callouts: number;  // spec callouts, faded out by scroll, 0..1
   calloutIn: number; // spec callouts, faded in after load-in, 0..1
+  haze: number;      // exit: the bay dissolving into the page, 0..1
 }
 
 export interface SceneModel {

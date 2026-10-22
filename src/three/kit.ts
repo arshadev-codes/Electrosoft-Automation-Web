@@ -88,6 +88,8 @@ export function contactShadow(parent: THREE.Object3D, w: number, d: number, opac
 }
 
 let glowMap: THREE.Texture | null = null;
+/** Fades every glow sprite together; the scene sets it from its haze before each render. */
+export const GLOW_FADE = { value: 1 };
 /** Additive light bloom for lamps, beacons and screens (a cheap stand-in for post-process bloom). */
 export function glowSprite(parent: THREE.Object3D, color: number, size: number, pos: V3, opacity = 0.8) {
   if (!glowMap) {
@@ -98,7 +100,17 @@ export function glowSprite(parent: THREE.Object3D, color: number, size: number, 
     x.fillStyle = g; x.fillRect(0, 0, 128, 128);
     glowMap = new THREE.CanvasTexture(c);
   }
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowMap, color, opacity, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  // no fog: haze would tint the additive glow toward the page colour and leave white blobs behind
+  const mat = new THREE.SpriteMaterial({ map: glowMap, color, opacity, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false });
+  mat.onBeforeCompile = s => {
+    s.uniforms.glowFade = GLOW_FADE;
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform float glowFade;`)
+      .replace('#include <tonemapping_fragment>', `gl_FragColor.rgb *= glowFade;
+        #include <tonemapping_fragment>`);
+  };
+  const sp = new THREE.Sprite(mat);
   sp.scale.setScalar(size);
   sp.position.set(pos[0], pos[1], pos[2]);
   parent.add(sp);

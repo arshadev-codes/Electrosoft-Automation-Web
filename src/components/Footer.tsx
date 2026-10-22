@@ -12,36 +12,39 @@ const DOWNLOADS = [
 ];
 const CERTS = ['CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered'];
 
+// The page ends the way an engineering drawing does: a ruled title block.
 export default function Footer() {
   return (
     <footer className="ft gut">
       <div className="wrap">
-        <div className="ft-grid">
+        <div className="ft-head">
           <div className="ft-brand">
             <Link className="logo" to="/" aria-label="Electrosoft home">
               <svg viewBox="0 0 16 22" aria-hidden="true"><path d="M10 0L0 13h6l-2 9 12-14H9z" fill="#0B5BD3" /></svg>
               ELECTROSOFT
             </Link>
             <p>Electrical control panels, plant automation, instrumentation and transformer testing systems. Designed, built and commissioned since 1989.</p>
+          </div>
+          <div className="ft-reach">
+            <a href="tel:+918692888444">+91 86928 88444</a>
+            <a href="mailto:info@electrosoftindia.com">info@electrosoftindia.com</a>
+            <Link className="pill" to="/contact">Get a Quote</Link>
+          </div>
+        </div>
+
+        <div className="ft-block">
+          <div className="ft-cell">
+            <h3>Address</h3>
+            <address>S7-1/2, Jai Mata Di Compound, Bhiwandi Road, Kalher, Dist. Thane – 421 302</address>
             <ul className="ft-certs" aria-label="Certifications">{CERTS.map(c => <li key={c}>{c}</li>)}</ul>
           </div>
 
-          <div>
-            <h3>Contact</h3>
-            <address>
-              <a href="tel:+918692888444">+91 86928 88444</a>
-              <a href="mailto:info@electrosoftindia.com">info@electrosoftindia.com</a>
-              <span>S7-1/2, Jai Mata Di Compound, Bhiwandi Road, Kalher, Dist. Thane – 421 302</span>
-            </address>
-            <Link className="pill" to="/contact">Get a Quote</Link>
-          </div>
-
-          <nav aria-label="Products">
+          <nav className="ft-cell ft-products" aria-label="Products">
             <h3>Products</h3>
             <ul>{PRODUCTS.map(([n, id]) => <li key={id}><Link to={`/products#${id}`}>{n}</Link></li>)}</ul>
           </nav>
 
-          <nav aria-label="Downloads">
+          <nav className="ft-cell" aria-label="Downloads">
             <h3>Downloads</h3>
             <ul>{DOWNLOADS.map(([n, f]) => <li key={f}><a href={`/downloads/${f}`} download>{n}<span>PDF</span></a></li>)}</ul>
           </nav>
@@ -55,7 +58,6 @@ export default function Footer() {
           </nav>
         </div>
       </div>
-      <div className="ft-mark" aria-hidden="true">ELECTROSOFT</div>
     </footer>
   );
 }

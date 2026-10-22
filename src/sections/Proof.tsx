@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useCinematic } from '../hooks/useCinematic';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +18,7 @@ const STATS = [
 
 export default function Proof() {
   const ref = useRef<HTMLElement>(null);
+  useCinematic(ref, '.wrap');
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -31,7 +33,6 @@ export default function Proof() {
           scrollTrigger: { trigger: el, start: 'top 80%', once: true },
         });
       });
-      gsap.fromTo('.stat', { y: 50, opacity: 0.2 }, { y: 0, opacity: 1, duration: 1, stagger: 0.12, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
     }, el);
     return () => ctx.revert();
   }, []);

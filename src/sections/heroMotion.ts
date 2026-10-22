@@ -27,9 +27,12 @@ const XFMR_SIDE: Cam = { r: 9.6, theta: 0.62, phi: 0.22, fx: 1.55, fy: 1.05, fz:
 export const EXPLODED: Cam = { r: 15.6, theta: 0.24, phi: 0.2, fx: -0.2, fy: 0.95, fz: 0.2, off: 1.4 }; // reduced-motion still
 const LOW: Cam = { r: 11.5, theta: -0.4, phi: 0.05, fx: 0, fy: 0.45, fz: 0, off: 1.7 };
 const FINAL: Cam = { r: 10.6, theta: 0.2, phi: 0.12, fx: 0, fy: 0.3, fz: 0, off: 1.9 };
+// exit: a crane up and back, looking down on the bay as it dissolves into the page
+const CRANE: Cam = { r: 15.5, theta: 0.42, phi: 0.5, fx: 0, fy: 0.1, fz: 0, off: 0.9 };
 
-// scroll map (fractions of the pinned distance)
+// scroll map (timeline time; the story runs 0..1, then the exit to END)
 const T = { connect: 0.06, explode: 0.32, exploded: 0.5, reassemble: 0.66, assembled: 0.84 };
+const END = 1.18;
 
 /** Live values the 3D scene reads every frame. E[k].v: 0 = assembled, 1 = exploded. */
 export const hero = {
@@ -38,7 +41,7 @@ export const hero = {
 };
 
 function reset() {
-  Object.assign(hero.S, { ...START, spin: 0, glow: 0, test: 0, labels: 0, labelSplit: 0, callouts: 1, calloutIn: 0 });
+  Object.assign(hero.S, { ...START, spin: 0, glow: 0, test: 0, labels: 0, labelSplit: 0, callouts: 1, calloutIn: 0, haze: 0 });
   PART_KEYS.forEach(k => { hero.E[k] = { v: 0 }; });
 }
 reset();
@@ -51,7 +54,7 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
   const hudBar = q('#hudBar'), hudCount = q('#hudCount'), hudState = q('#hudState');
   let hudLabel = '';
   const updateHud = (p: number) => {
-    if (hudBar) hudBar.style.transform = `scaleX(${p})`;
+    if (hudBar) hudBar.style.transform = `scaleX(${Math.min(1, p)})`;
     const ramp = (a: number, b: number) => Math.max(0, Math.min(1, (p - a) / (b - a)));
     const n = Math.round((ramp(T.explode, T.exploded) - ramp(T.reassemble, T.assembled)) * TAGS.length);
     if (hudCount) hudCount.textContent = `${n} / ${TAGS.length}`;
@@ -70,10 +73,10 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
 
   const caps = [q('#cap1'), q('#cap2'), q('#cap3')];
   const io2 = 'power2.inOut', io3 = 'power3.inOut';
-  // ~5 screens of scrolling in total: 4 pinned + the hero itself
+  // ~5.7 screens of scrolling in total: 4 for the story, 0.7 for the exit, + the hero itself
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
-    scrollTrigger: { trigger: stage, start: 'top top', end: '+=400%', scrub: 0.6, pin: true, anticipatePin: 1, onUpdate: s => updateHud(s.progress) },
+    scrollTrigger: { trigger: stage, start: 'top top', end: `+=${Math.round(400 * END)}%`, scrub: 0.6, pin: true, anticipatePin: 1, onUpdate: s => updateHud(s.progress * END) },
   });
 
   // 1 · connect: push in on the X'mer Prime screen, then sweep to the bushings as current flows
@@ -103,6 +106,12 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
     .to(S, { ...FINAL, duration: 0.12, ease: io2 }, 0.8)
     .to(S, { test: 1, duration: 0.1 }, 0.78)
     .to(caps[2], { autoAlpha: 1, duration: 0.04 }, 0.82)
-    .to(S, { glow: 0.3, duration: 0.08 }, 0.88)
-    .to({}, { duration: 0.04 }, 0.96); // short hold on the finished bench before the page moves on
+    .to(S, { glow: 0.3, duration: 0.08 }, 0.88);
+
+  // 4 · exit: the camera cranes up and back while the bay sinks into the page haze, so the
+  // numbers below arrive on clean paper instead of after a cut
+  tl.to(caps[2], { autoAlpha: 0, y: -24, duration: 0.05, ease: 'power1.in' }, 1.0)
+    .to(S, { ...CRANE, duration: END - 1, ease: 'power2.in' }, 1.0)
+    .to(S, { haze: 1, duration: END - 1.03, ease: 'power1.in' }, 1.03)
+    .to(q('.hud'), { autoAlpha: 0, duration: 0.05 }, 1.06);
 }

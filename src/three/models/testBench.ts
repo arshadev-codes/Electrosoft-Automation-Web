@@ -198,10 +198,6 @@ export function buildTestBench(M: Mats, parent: THREE.Object3D) {
   [-0.36, 0.36].forEach(cx => seams(S, M.plinth, cx, 0.44, 0.68, 0.66, 0.389));
   [-0.09, 0.09].forEach(x => swingHandle(S, M, x, 0.56, 0.39));
   louvres(S, M, [[-0.4, 0.2], [0.4, 0.2]], 6, 0.3, 0.389);
-  // insulating rubber mats where the operator stands
-  const mat = new THREE.MeshStandardMaterial({ color: 0x4A4F57, roughness: 0.9 });
-  rbox(1.3, 0.008, 0.5, 0.004, mat, S, [0, 0.004, 0.7]);
-  rbox(0.85, 0.008, 0.42, 0.004, mat, S, [-1.28, 0.004, 0.48]);
 
   /* ---------- roof: canopy, cable glands, HV beacon (lifts off when exploded) ---------- */
   const roof = makePart(root), R = roof.inner;

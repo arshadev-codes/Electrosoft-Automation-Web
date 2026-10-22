@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import Blueprint, { SPOTS } from '../components/Blueprint';
 import { createTestingMotion } from './testingMotion';
+import { useCinematic } from '../hooks/useCinematic';
 
 // TODO: CONFIRM — the tests list is [CONFIRM] in CONTENT.md (draft names, shared with the hero bench).
 // Descriptions are what each routine test checks in general terms; full detail lives on /transformer-testing#<id>.
@@ -23,6 +24,7 @@ const CYCLE_MS = 5000; // time on each test before moving to the next
 
 export default function Testing() {
   const ref = useRef<HTMLElement>(null);
+  useCinematic(ref, '.tx-wrap');
   const [active, setActive] = useState(0);
   const [narrow, setNarrow] = useState(() => matchMedia('(max-width: 900px)').matches);
   const test = TESTS[active];
@@ -42,7 +44,7 @@ export default function Testing() {
     const el = ref.current;
     if (!el) return;
     const ctx = gsap.context(() => createTestingMotion(el, reduce, () => setDrawn(true)), el);
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.35 });
+    const io = new IntersectionObserver(es => setInView(es[es.length - 1].isIntersecting), { threshold: 0.35 });
     io.observe(el);
     return () => { ctx.revert(); io.disconnect(); };
   }, [reduce]);
