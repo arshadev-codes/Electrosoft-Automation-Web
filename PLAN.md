@@ -37,9 +37,10 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
 | 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
 | 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, each links to /transformer-testing#<test>; tests change on a 5 s timer, no pin (test names TODO: CONFIRM). Drawing now completes in ~1 s as the section arrives |
+| 1.6b | **Report generation** (X'mer Prime on a laptop) | 🟢 | 2026-10-22, your request (Aceternity "MacBook scroll" idea, built natively: no Tailwind/shadcn in this project). Pinned: a CSS-3D laptop opens, tests tick to Pass, the report writes itself, then 4 parts lift out of the screen with what they do (results, auto report, ERP, buyer access). Screen values are a labelled sample, TODO: CONFIRM once the module is final |
 | 1.7 | **Why Electrosoft** | 🟢 | Rebuilt as a bento: real panel photo + 100% seal, 362 days, quote checklist, live order-tracking widget |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
-| 1.9 | Clients | 🟢 | Wall of the 32 real logos from the old site (greyscale → colour on hover). Emirates / Europoxy logo names TODO: CONFIRM |
+| 1.9 | Clients | 🟢 | Redesigned 2026-10-22: the 32 real logos in colour on small nameplates, two rows drifting in opposite directions, faster while scrolling, a hovered row stops. Emirates / Europoxy logo names TODO: CONFIRM |
 | 1.10 | **Certifications & downloads** | 🟡 | Only cert chips in CTA — needs download list (7 PDFs + brochure) |
 | 1.11 | **Track order** (project ID input) | ⬜ | Tracking is still used (confirmed 2026-10-21); what it shows still to define |
 | 1.12 | Contact CTA ("Let's build yours.") | ✅ | Add a "Track your order" box here (project number input) |

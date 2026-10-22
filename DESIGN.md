@@ -70,7 +70,8 @@ surfacing (masked, no edges) in Testing, and the footer's ruled title block. No 
 - **Numbers:** count up when entering view
 - **Lineup:** pinned section, cards move sideways with scroll
 - **Panels/windows:** scale/tilt up into place while scrolling
-- **Tickers:** two client rows moving opposite directions
+- **Tickers:** two client rows moving opposite directions; logos in colour on white nameplates (two screw heads), speed rises with scroll velocity, a hovered row stops
+- **Laptop (Report section):** CSS 3D, not three.js: the lid hinges on the deck, the screen UI is real DOM laid out at 1280×800 and scaled; lifted cards live in the lid's 3D space so they really leave the screen
 - **CTA:** magnetic button, moving light streaks
 - Easing: `expo.out` for entrances, `scrub: 1` for scroll-linked
 - Everything readable without animation; respect `prefers-reduced-motion`
