@@ -21,7 +21,7 @@ export default function Lines() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setNear(true); io.disconnect(); } }, { rootMargin: '150% 0px' });
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { setNear(true); io.disconnect(); } }, { rootMargin: '150% 0px' });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -29,8 +29,8 @@ export default function Lines() {
   return (
     <section id="lines" ref={ref} aria-labelledby="lines-h">
       <h2 id="lines-h" className="sr">Two business lines</h2>
+      <div className="lx-light" aria-hidden="true" />
       {near && <Suspense fallback={null}><LinesScene sectionRef={ref} /></Suspense>}
-      <div className="lx-vignette" aria-hidden="true" />
 
       <div className="lx-copy lx-a">
         <h3>Electrical &amp; Automation Panels</h3>
@@ -57,7 +57,7 @@ export default function Lines() {
         <div className="callout" style={{ '--l': '64px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>65 kA short circuit</b><span>CPRI approved design · IP65</span></div></div>
         <div className="callout" style={{ '--l': '120px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>PLC / SCADA</b><span>Programmed by a team with 20+ years</span></div></div>
         <div className="callout down" style={{ '--l': '50px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>100% tested</b><span>Before dispatch</span></div></div>
-        <div className="callout" style={{ '--l': '70px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest rating our systems test</span></div></div>
+        <div className="callout left" style={{ '--l': '40px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest rating our systems test</span></div></div>
         <div className="callout" style={{ '--l': '110px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Prime™</b><span>Runs every test, writes the report</span></div></div>
         <div className="callout down" style={{ '--l': '60px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Zero human error</b><span>Connections switched automatically</span></div></div>
       </div>

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type RefObject } from 'react';
 import * as THREE from 'three';
-import { createWorld, FLOOR_Y, type World } from '../three/stage';
+import { createWorld, FLOOR_Y, shadeGround, type World } from '../three/stage';
 import { createMaterials } from '../three/materials';
 import { glowSprite } from '../three/kit';
 import { mergeStatic } from '../three/optimize';
@@ -22,16 +22,17 @@ function clipTo(root: THREE.Object3D, plane: THREE.Plane) {
 
 function turntable(parent: THREE.Object3D) {
   const g = new THREE.Group();
-  const deck = new THREE.Mesh(new THREE.CylinderGeometry(1.62, 1.68, TT_H, 96), new THREE.MeshStandardMaterial({ color: 0x1D2026, roughness: 0.32, metalness: 0.6 }));
+  // a pale machined plinth: it belongs to the page rather than sitting on it like a dark slab
+  const deck = new THREE.Mesh(new THREE.CylinderGeometry(1.62, 1.68, TT_H, 96), new THREE.MeshStandardMaterial({ color: 0xE3E6EA, roughness: 0.38, metalness: 0.25 }));
   deck.position.y = TT_H / 2; deck.receiveShadow = true; deck.castShadow = true;
   g.add(deck);
-  // brand light ring set into the deck; bright enough for the bloom pass to catch
-  const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x3d86ff).multiplyScalar(2.4), toneMapped: false });
-  const ring = new THREE.Mesh(new THREE.RingGeometry(1.5, 1.53, 128), ringMat);
+  // thin brand line set into the deck
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x0b5bd3, toneMapped: false });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(1.5, 1.515, 128), ringMat);
   ring.rotation.x = -Math.PI / 2; ring.position.y = TT_H + 0.001; ring.userData.noAO = true;
   g.add(ring);
   // index ticks around the rim, so the turn reads
-  const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.012, 0.004, 0.07), new THREE.MeshBasicMaterial({ color: 0x8a94a6 }), 72);
+  const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.012, 0.004, 0.07), new THREE.MeshBasicMaterial({ color: 0xa3a9b3 }), 72);
   const o = new THREE.Object3D();
   for (let i = 0; i < 72; i++) {
     const a = (i / 72) * Math.PI * 2;
@@ -100,7 +101,8 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
       };
       resize();
       ro = new ResizeObserver(resize); ro.observe(section);
-      io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; }); io.observe(section);
+      // a batch can hold several entries for the section (fast scrolls while the GPU is busy); the last is current
+      io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; }); io.observe(section);
 
       await new Promise(r => setTimeout(r, 0));
       // two material sets: each model clips against its own side of the scan plane
@@ -120,14 +122,16 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
       const keepAbove = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), keepBelow = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
       clipTo(panel.root, keepAbove); clipTo(xf.root, keepBelow);
       const scan = scanner(stageRoot);
+      shadeGround(stageRoot);
 
       const anchors: { obj: THREE.Object3D; v: THREE.Vector3; set: 'a' | 'b' }[] = [
         { obj: panel.root, v: panel.anchors.busbars, set: 'a' },
         { obj: panel.root, v: panel.anchors.plc, set: 'a' },
         { obj: panel.root, v: panel.anchors.door, set: 'a' },
-        { obj: xf.parts.tank.inner, v: xf.anchors.tank, set: 'b' },
+        // transformer cards sit off the unit: left of the end fins, right of the fins
+        { obj: xf.parts.tank.inner, v: new THREE.Vector3(-0.88, 1.3, 0.3), set: 'b' },
         { obj: xf.parts.cover.inner, v: xf.anchors.cover, set: 'b' },
-        { obj: xf.parts.hv.inner, v: xf.anchors.hv, set: 'b' },
+        { obj: xf.parts.tank.inner, v: new THREE.Vector3(0.9, 0.8, 0.3), set: 'b' },
       ];
 
       camera.position.set(0, 2, 14); camera.lookAt(0, 0, 0);
@@ -141,7 +145,8 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
         if (!visible || !ready || !world) return;
         const t = now / 1000, w = section.clientWidth, h = section.clientHeight;
 
-        const sig = S.spin * 3 + S.open * 5 + S.scan * 7 + S.glow + S.off + S.theta + S.r;
+        const haze = Math.max(S.hazeIn, S.hazeOut);
+        const sig = S.spin * 3 + S.open * 5 + S.scan * 7 + S.glow + S.off + S.theta + S.r + haze * 11;
         if (sig !== lastSig) { lastSig = sig; lastMove = now; }
         odd = !odd;
         if (now - lastMove > 600 && Math.abs(pointer.x - pointer.ex) < 0.01 && odd) return; // at rest, 30 fps
@@ -175,6 +180,7 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
         MB.copper.emissiveIntensity = live * 0.3;
         bushGlow.forEach((sp, i) => { sp.material.opacity = S.glow * (0.7 + 0.3 * Math.sin(t * 6 + i * 2.1)); });
 
+        world.setHaze(haze, cam.r);
         if (now - lastMove < 700) world.markShadows(); // shadows only redraw while something moves
         world.render(rawDt);
 

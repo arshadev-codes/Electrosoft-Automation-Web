@@ -6,10 +6,9 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { disposeTree, makeCanvas } from './kit';
+import { disposeTree, GLOW_FADE } from './kit';
 import { STUDIO } from '../look';
 
-const BRAND = 0x0B5BD3;
 export const FLOOR_Y = -1.15;
 // Poly Haven "Studio Small 09" (CC0, polyhaven.com): real softbox reflections on paint, porcelain, copper
 const HDRI_URL = '/env/studio.hdr';
@@ -30,81 +29,60 @@ class StudioAO extends GTAOPass {
 }
 
 
-/** Faint single-line diagram of the test bay, painted large on the back wall. */
-function blueprintTex() {
-  const { c, x } = makeCanvas(2048, 900);
-  const ink = 'rgba(11,91,211,.55)';
-  x.strokeStyle = ink; x.fillStyle = ink;
-  x.lineWidth = 2;
-  for (let gx = 0; gx <= 2048; gx += 64) { x.globalAlpha = 0.25; x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, 900); x.stroke(); }
-  for (let gy = 0; gy <= 900; gy += 64) { x.beginPath(); x.moveTo(0, gy); x.lineTo(2048, gy); x.stroke(); }
-  x.globalAlpha = 1; x.lineWidth = 6; x.lineCap = 'round';
-  const bus = 300;
-  x.beginPath(); x.moveTo(140, bus); x.lineTo(1900, bus); x.stroke();
-  const node = (cx: number, label: string, draw: () => void) => {
-    x.beginPath(); x.moveTo(cx, bus); x.lineTo(cx, bus + 120); x.stroke();
-    draw();
-    x.font = '700 30px "JetBrains Mono", monospace'; x.textAlign = 'center';
-    x.fillText(label, cx, bus + 330);
-  };
-  node(330, 'INCOMER', () => { x.strokeRect(300, bus + 120, 60, 60); x.beginPath(); x.moveTo(300, bus + 180); x.lineTo(360, bus + 120); x.stroke(); });
-  node(720, 'MG SET', () => { x.beginPath(); x.arc(720, bus + 170, 50, 0, Math.PI * 2); x.stroke(); x.font = '700 40px Arial'; x.textAlign = 'center'; x.fillText('G', 720, bus + 184); });
-  node(1110, 'TEST BENCH', () => { x.strokeRect(1060, bus + 120, 100, 80); x.beginPath(); x.moveTo(1075, bus + 175); x.quadraticCurveTo(1110, bus + 120, 1145, bus + 175); x.stroke(); });
-  node(1500, 'UNIT UNDER TEST', () => { x.beginPath(); x.arc(1500, bus + 150, 40, 0, Math.PI * 2); x.stroke(); x.beginPath(); x.arc(1500, bus + 205, 40, 0, Math.PI * 2); x.stroke(); });
-  x.font = '800 44px "JetBrains Mono", monospace'; x.textAlign = 'left';
-  x.fillText('TEST BAY 01', 140, 150);
-  x.font = '600 26px "JetBrains Mono", monospace';
-  x.fillText("X'MER PRIME\u2122 \u00b7 FULLY AUTOMATIC", 140, 200);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
-  return t;
-}
-
 /**
- * Seamless photo-studio cyclorama: the floor sweeps up into a curved wall all round the bay,
- * with haze for depth, a soft brand glow and the bay blueprint on the back wall.
+ * No walls: the canvas stays transparent so the page colour is the backdrop. A shadow catcher
+ * takes the key light's shadow, and haze in the page colour fades the far parts of wide shots.
  */
 function buildStudio(scene: THREE.Scene) {
-  scene.fog = new THREE.Fog(STUDIO.haze, STUDIO.fogNear, STUDIO.fogFar);
-  // profile from wall top down the cove to the centre, so lathe normals face inward
-  const R = 26, cove = 6, H = 18, prof: THREE.Vector2[] = [new THREE.Vector2(R, H), new THREE.Vector2(R, cove)];
-  for (let i = 1; i <= 12; i++) {
-    const a = (i / 12) * (Math.PI / 2);
-    prof.push(new THREE.Vector2(R - cove + Math.cos(a) * cove, cove - Math.sin(a) * cove));
-  }
-  prof.push(new THREE.Vector2(0.01, 0));
-  // matte Lambert: the backdrop fills the screen, so it must be cheap to shade
-  const cyc = new THREE.Mesh(new THREE.LatheGeometry(prof, 96), new THREE.MeshLambertMaterial({ color: STUDIO.wall }));
-  cyc.position.y = FLOOR_Y - 0.004;
-  scene.add(cyc);
-  // shadows only where the equipment stands, not across the whole studio
-  const shadowDisc = new THREE.Mesh(new THREE.CircleGeometry(7, 48), new THREE.ShadowMaterial({ opacity: 0.24 }));
-  shadowDisc.rotation.x = -Math.PI / 2; shadowDisc.position.y = FLOOR_Y + 0.0005; shadowDisc.receiveShadow = true; shadowDisc.renderOrder = -2;
-  scene.add(shadowDisc);
+  scene.fog = new THREE.Fog(STUDIO.page, STUDIO.fogNear, STUDIO.fogFar);
+  const catcher = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.ShadowMaterial({ opacity: STUDIO.shadow }));
+  catcher.rotation.x = -Math.PI / 2; catcher.position.y = FLOOR_Y + 0.0005; catcher.receiveShadow = true; catcher.renderOrder = -2;
+  catcher.userData.noAO = true;
+  scene.add(catcher);
+}
 
-  // soft brand-blue light pooled on the back wall, behind the bench
-  const glowC = makeCanvas(256, 256);
-  const g = glowC.x.createRadialGradient(128, 128, 0, 128, 128, 128);
-  g.addColorStop(0, `rgba(61,134,255,${STUDIO.glow})`); g.addColorStop(0.5, 'rgba(61,134,255,.16)'); g.addColorStop(1, 'rgba(61,134,255,0)');
-  glowC.x.fillStyle = g; glowC.x.fillRect(0, 0, 256, 256);
-  const glow = new THREE.Mesh(new THREE.PlaneGeometry(18, 11), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(glowC.c), transparent: true, depthWrite: false, fog: false, toneMapped: false }));
-  glow.position.set(2.5, FLOOR_Y + 3.6, -20.5); glow.userData.noAO = true;
-  scene.add(glow);
+/* ---------- ground occlusion: a cheap stand-in for ambient occlusion ---------- */
 
-  const print = new THREE.Mesh(new THREE.PlaneGeometry(13, 5.7), new THREE.MeshBasicMaterial({ map: blueprintTex(), transparent: true, opacity: STUDIO.print, depthWrite: false }));
-  // sits above and behind the equipment in the hero shot, clear of the headline
-  print.position.set(4, FLOOR_Y + 4.6, -20.2); print.userData.noAO = true;
-  scene.add(print);
+const gao = { floor: { value: FLOOR_Y }, reach: { value: 1.25 }, min: { value: 0.3 } };
 
-  // spotlight look: a bright pool of light on the floor under the equipment, edges fall into haze
-  if (STUDIO.pool > 0) {
-    const poolC = makeCanvas(256, 256);
-    const pg = poolC.x.createRadialGradient(128, 128, 0, 128, 128, 128);
-    pg.addColorStop(0, `rgba(255,255,255,${STUDIO.pool})`); pg.addColorStop(0.55, `rgba(255,255,255,${STUDIO.pool * 0.45})`); pg.addColorStop(1, 'rgba(255,255,255,0)');
-    poolC.x.fillStyle = pg; poolC.x.fillRect(0, 0, 256, 256);
-    const pool = new THREE.Mesh(new THREE.PlaneGeometry(13, 8), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(poolC.c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
-    pool.rotation.x = -Math.PI / 2; pool.position.set(0, FLOOR_Y + 0.001, 0.2); pool.renderOrder = -2; pool.userData.noAO = true;
-    scene.add(pool);
-  }
+/**
+ * Ambient and reflected light fade toward the floor, the way a studio's light is blocked near the
+ * ground. Weak GPUs skip the AO pass, and without this everything is lit evenly top to bottom and
+ * reads as CG. Patches every lit material under root once; exploded parts lifted clear of the
+ * floor brighten on their own.
+ */
+export function shadeGround(root: THREE.Object3D) {
+  root.traverse(o => {
+    const m = (o as THREE.Mesh).material;
+    (Array.isArray(m) ? m : m ? [m] : []).forEach(mat => {
+      if (!(mat as THREE.MeshStandardMaterial).isMeshStandardMaterial || mat.userData.gao) return;
+      mat.userData.gao = true;
+      mat.onBeforeCompile = shader => {
+        Object.assign(shader.uniforms, { gaoFloor: gao.floor, gaoReach: gao.reach, gaoMin: gao.min });
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', `#include <common>
+            varying float vGaoY;`)
+          .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+            {
+              vec4 gaoP = vec4( transformed, 1.0 );
+              #ifdef USE_INSTANCING
+                gaoP = instanceMatrix * gaoP;
+              #endif
+              vGaoY = ( modelMatrix * gaoP ).y;
+            }`);
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', `#include <common>
+            varying float vGaoY;
+            uniform float gaoFloor, gaoReach, gaoMin;`)
+          .replace('#include <aomap_fragment>', `#include <aomap_fragment>
+            float gaoK = mix( gaoMin, 1.0, smoothstep( 0.0, gaoReach, vGaoY - gaoFloor ) );
+            reflectedLight.indirectDiffuse *= gaoK;
+            reflectedLight.indirectSpecular *= mix( 0.45, 1.0, gaoK );
+            reflectedLight.directDiffuse *= mix( 0.8, 1.0, gaoK );`);
+      };
+      mat.needsUpdate = true;
+    });
+  });
 }
 
 /** Bloom computed at half resolution: the glow is soft anyway, and it costs a quarter as much. */
@@ -154,7 +132,7 @@ export function createWorld(canvas: HTMLCanvasElement) {
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   // Neutral keeps paint and copper colours true, like a product photo
-  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMapping = STUDIO.tone === 'agx' ? THREE.AgXToneMapping : STUDIO.tone === 'aces' ? THREE.ACESFilmicToneMapping : THREE.NeutralToneMapping;
   renderer.toneMappingExposure = STUDIO.exposure;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap; // PCF + radius: soft edges without VSM's extra blur passes
@@ -181,8 +159,8 @@ export function createWorld(canvas: HTMLCanvasElement) {
     scene.environmentRotation.set(0, -0.9, 0); // big softbox high front-left, like the key light
   }).catch(() => { /* keep the generated room */ });
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xb4bac4, 0.25));
-  // big soft key from above-front, cool brand rim from behind, warm low fill
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xc4c9d0, 0.3));
+  // big soft key from above-front, neutral rim from behind to separate the edges from the page, warm low fill
   const key = new THREE.DirectionalLight(0xfff8f0, STUDIO.key);
   key.position.set(3.5, 10, 6);
   key.castShadow = true;
@@ -190,10 +168,10 @@ export function createWorld(canvas: HTMLCanvasElement) {
   Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 2, far: 24 });
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.02;
-  key.shadow.radius = 5;
+  key.shadow.radius = 6;
   scene.add(key);
-  const rim = new THREE.DirectionalLight(BRAND, STUDIO.rim); rim.position.set(-7, 5, -7); scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xffeedd, 0.3); fill.position.set(-5, 1.5, 7); scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xe8eef8, STUDIO.rim); rim.position.set(-7, 5, -7); scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xffeedd, STUDIO.fill); fill.position.set(-5, 1.5, 7); scene.add(fill);
 
   buildStudio(scene);
 
@@ -228,7 +206,9 @@ export function createWorld(canvas: HTMLCanvasElement) {
 
   /* ---------- quality levels: 2 = AO + bloom, 1 = bloom, 0 = direct render, no post (weak GPUs) ---------- */
   // measured on Intel UHD: direct ≈ 13 ms/frame, post chain ≈ 27 ms/frame at 1905×911
-  let level = weak ? 0 : 2;
+  // dev only: ?q=0|1|2 pins a quality level, to compare looks and frame costs on one machine
+  const forced = import.meta.env.DEV ? new URLSearchParams(location.search).get('q') : null;
+  let level = forced !== null ? +forced : weak ? 0 : 2;
   const apply = () => {
     ao.enabled = level >= 2;
     bloom.enabled = level >= 1;
@@ -238,11 +218,22 @@ export function createWorld(canvas: HTMLCanvasElement) {
   // watch real frame times and step down if the GPU still struggles
   let samples = 0, sum = 0;
   function sample(dt: number) {
-    if (level === 0 || dt <= 0 || dt > 0.25) return; // ignore tab switches and throttled frames
+    if (level === 0 || forced !== null || dt <= 0 || dt > 0.25) return; // ignore tab switches and throttled frames
     sum += dt; samples++;
     if (samples < 45) return;
     const avg = sum / samples; samples = 0; sum = 0;
     if (avg > 0.021) { level--; apply(); }
+  }
+
+  /**
+   * Scroll transitions: 0 = clear air, 1 = everything at `focus` (the camera's distance to its subject)
+   * has dissolved into the page colour. Nearer parts go last, so the scene recedes rather than fades.
+   */
+  function setHaze(h: number, focus: number) {
+    const fog = scene.fog as THREE.Fog;
+    fog.near = STUDIO.fogNear * (1 - h);
+    fog.far = STUDIO.fogFar + (focus * 1.02 - STUDIO.fogFar) * h;
+    GLOW_FADE.value = (1 - h) * (1 - h);
   }
 
   /** Call when anything that casts a shadow moved this frame. */
@@ -262,7 +253,7 @@ export function createWorld(canvas: HTMLCanvasElement) {
     renderer.dispose();
   }
 
-  return { renderer, scene, camera, setSize, render, markShadows, dispose };
+  return { renderer, scene, camera, setSize, render, markShadows, setHaze, dispose };
 }
 
 export type World = ReturnType<typeof createWorld>;

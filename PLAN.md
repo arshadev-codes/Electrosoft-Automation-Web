@@ -22,20 +22,21 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | Three.js + GSAP + ScrollTrigger installed | ⬜ | `npm i three gsap` |
 | Router (Home, About, Products, Testing, Projects, Gallery, Contact) | ⬜ | `react-router-dom` |
 | Images copied from old site into `public/img/` | ⬜ | Products, gallery, projects, client logos, certificates |
-| Header (sticky, blur) + scroll progress bar | 🟢 | Floating capsule: gliding hover pill, current-page dot, hides on scroll down, progress line inside, phone menu |
-| Footer (full: contact, product links, downloads, certs) | 🟢 | Full version. Download PDFs still to add to public/downloads/ (7 exist on the old site) |
+| Header (sticky, blur) + scroll progress bar | 🟢 | Floating capsule aligned to the content column, links truly centred, gliding hover pill, current-page dot, hides on scroll down, progress hairline, phone menu |
+| Footer (full: contact, product links, downloads, certs) | 🟢 | Ruled title block (2026-10-22): brand + phone/email/quote, then address + certs · products · downloads. Download PDFs still to add to public/downloads/ (7 exist on the old site) |
 
 ---
 
 ## 1. HOME (`/`)
 | # | Section | Status | What's in it / what's missing |
 |---|---|---|---|
-| 1.1 | **3D Exploded Hero** | 🟢 | Panel assembles on load, opens + explodes into 7 layers on scroll, labels, captions, HUD |
+| — | **One sheet** (whole page) | 🟢 | 2026-10-22: every section on the same page colour, no bands or borders; 3D renders straight onto the page; one heading scale and section rhythm |
+| 1.1 | **3D Exploded Hero** | 🟢 | Panel assembles on load, opens + explodes into 7 layers on scroll, labels, captions, HUD. 2026-10-22: page studio, AgX lighting, ground occlusion, sagging test leads, fewer chips; exits with a crane shot dissolving into the page |
 | 1.2 | Proof numbers (1989 · 80%+ · 65kA · 160 MVA · 362 days · 100% tested) | 🟢 | Count-up on scroll; 3 × 2 grid. Took in 1.7's delivery and quality facts |
 | 1.3 | Statement (word fill) | ⛔ | Dropped at your request (too big, generic) |
 | 1.4 | **Two business lines** (Panels / Testing Systems) | 🟢 | Pinned 3D turntable: MCC opens, scan ring rebuilds it as a transformer under test; copy + spec callouts per line (`LinesScene.tsx`, `linesMotion.ts`) |
 | 1.5 | Product lineup | 🟢 | 5 featured products as a bento with real photos; full range on /products |
-| 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, pinned step-through, each links to /transformer-testing#<test>; tests change on a 5 s timer, no pin (test names TODO: CONFIRM) |
+| 1.6 | Testing Suite | 🟢 | Light blueprint cutaway of a transformer; 5 test hotspots on the parts they check, each links to /transformer-testing#<test>; tests change on a 5 s timer, no pin (test names TODO: CONFIRM). Drawing now completes in ~1 s as the section arrives |
 | 1.7 | **Why Electrosoft** | 🟢 | Rebuilt as a bento: real panel photo + 100% seal, 362 days, quote checklist, live order-tracking widget |
 | 1.8 | **Featured projects** (MSEDCL, Tata Power, MCG, MCGM) | ⬜ | |
 | 1.9 | Clients | 🟢 | Wall of the 32 real logos from the old site (greyscale → colour on hover). Emirates / Europoxy logo names TODO: CONFIRM |

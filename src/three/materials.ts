@@ -93,11 +93,15 @@ export function createMaterials() {
   const glow = (c: number, i = 1.2) => std({ color: c, emissive: c, emissiveIntensity: i, roughness: 0.35 });
 
   return {
-    // transformer: mid-grey powder coat on tank and fins
-    tankPaint: phys({ map: grimeCanvas([176, 168, 156], 70), color: 0x8A9299, roughness: 0.42, metalness: 0.12, clearcoat: 0.45, clearcoatRoughness: 0.3, bumpMap: peel(4), bumpScale: 0.5 }),
+    // transformer: satin admiralty-grey enamel on the tank
+    tankPaint: phys({ map: grimeCanvas([186, 180, 170], 40), color: 0x8A9299, roughness: 0.42, metalness: 0.12, clearcoat: 0.3, clearcoatRoughness: 0.45, bumpMap: peel(4), bumpScale: 0.5 }),
+    // cooling fins: vertex colours shade each fin from dark at the tank wall to light at its edge,
+    // so the channels between fins read deep even without ambient occlusion (weak GPUs skip it)
+    fin: phys({ color: 0x8A9299, roughness: 0.52, metalness: 0.12, clearcoat: 0.12, clearcoatRoughness: 0.45, vertexColors: true, bumpMap: peel(4), bumpScale: 0.4 }),
+    finCavity: std({ color: 0x353A40, roughness: 0.8, metalness: 0.1 }),
     tankDark: std({ color: 0x4A5056, roughness: 0.5, metalness: 0.2, bumpMap: peel(2), bumpScale: 0.4 }),
     // bench: RAL 7035 light grey, the standard for Indian panel shops
-    benchPaint: std({ map: grimeCanvas([196, 196, 190], 14), color: 0xD4D8D3, roughness: 0.48, metalness: 0.04, bumpMap: peel(3), bumpScale: 0.45 }),
+    benchPaint: std({ map: grimeCanvas([206, 206, 200], 5), color: 0xD4D8D3, roughness: 0.36, metalness: 0.04, bumpMap: peel(3), bumpScale: 0.45 }),
     plinth: std({ color: 0x24272C, roughness: 0.7 }),
     plate: std({ color: 0xDD7A30, roughness: 0.5, metalness: 0.1, bumpMap: peel(3), bumpScale: 0.4 }),
     steel: std({ color: 0xC9CED3, roughness: 0.32, metalness: 0.92, roughnessMap: brushed, bumpMap: brushed, bumpScale: 0.25 }),

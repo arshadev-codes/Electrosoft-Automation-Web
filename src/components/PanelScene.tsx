@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, type RefObject } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { createWorld, FLOOR_Y, type World } from '../three/stage';
+import { createWorld, FLOOR_Y, shadeGround, type World } from '../three/stage';
 import { createMaterials } from '../three/materials';
 import { loadModel } from '../three/loadModel';
 import { disposeTree } from '../three/kit';
@@ -34,6 +34,7 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
     const ctx = gsap.context(() => {}, stage);
     const tags: { el: HTMLDivElement; key: PartKey; flip: boolean; bench: boolean; gi: number }[] = [];
     const callouts = [...stage.querySelectorAll<HTMLElement>('.callout')];
+    const cardW = callouts.map(() => 0); // callout card widths, measured once they're laid out
     const tmp = new THREE.Vector3(), target = new THREE.Vector3();
     let world: World | null = null, model: SceneModel | null = null;
     let raf = 0, visible = true, disposed = false, ready = false, last = performance.now();
@@ -62,7 +63,7 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
       const t = now / 1000, w = stage.clientWidth, h = stage.clientHeight;
 
       // what moved? parts (scroll explode + load-in drop) and the camera target
-      let sig = intro.r * 7 + S.r + S.theta * 3 + S.fx + S.fy;
+      let sig = intro.r * 7 + S.r + S.theta * 3 + S.fx + S.fy + S.haze * 11;
       PART_KEYS.forEach((key, i) => { const p = model!.parts[key]; sig += hero.E[key].v * (i + 1) + (p ? p.outer.position.y * (i + 2) : 0); });
       const partsMoved = sig !== lastSig;
       if (partsMoved) { lastSig = sig; lastMove = now; }
@@ -96,6 +97,7 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
         if (p) p.inner.position.set(ex * v, ey * v, ez * v);
       });
       model.update(t, dt, S);
+      world.setHaze(S.haze, cam.r);
       if (partsMoved) world.markShadows();
       world.render(rawDt);
 
@@ -122,7 +124,12 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
         const o = Math.max(0, Math.min(1, cop * 3 - i * 0.6));
         el.style.opacity = pos ? String(o) : '0';
         el.style.visibility = pos && o > 0 ? 'visible' : 'hidden';
-        if (pos) el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+        if (pos) {
+          el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+          // keep the card on screen: it hangs to the left of its pin when it would run off the right edge
+          cardW[i] ||= el.querySelector<HTMLElement>('.card')?.offsetWidth ?? 0;
+          el.classList.toggle('left', pos.x + cardW[i] > w - 24);
+        }
       });
     };
 
@@ -142,13 +149,15 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
       const copy = q('.hero-copy'), hud = q('.hud');
       const resize = () => {
         world!.setSize(stage.clientWidth, stage.clientHeight);
+        cardW.fill(0);
         // layout offsets, not rects: the scroll story moves the copy, the bay should stay put
         const top = copy ? copy.offsetTop + copy.offsetHeight : 0, bottom = hud ? hud.offsetTop : stage.clientHeight;
         gapMid = (top + bottom) / 2;
       };
       resize();
       ro = new ResizeObserver(resize); ro.observe(stage); if (copy) ro.observe(copy);
-      io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; }); io.observe(stage);
+      // a batch can hold several entries for the stage (fast scrolls while the GPU is busy); the last is current
+      io = new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; }); io.observe(stage);
 
       // each heavy step runs in its own task so the page never freezes for long
       await nextTask();
@@ -158,6 +167,7 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
       if (disposed) { disposeTree(m.root); return; }
       model = m;
       m.root.position.y = FLOOR_Y;
+      shadeGround(m.root);
       scene.add(m.root);
       camera.position.set(0, 2, 14); camera.lookAt(0, 0, 0);
       await nextTask();
@@ -173,7 +183,7 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
       TAGS.forEach((t, i) => {
         const el = document.createElement('div');
         el.className = 'tag' + (t.flip ? ' flip' : '');
-        el.innerHTML = `<i class="pin"></i><div class="lbl"><small>LAYER ${i + 1}</small><b>${t.name}</b><span>${t.sub}</span></div>`;
+        el.innerHTML = `<i class="pin"></i><div class="lbl"><small>Layer ${i + 1}</small><b>${t.name}</b><span>${t.sub}</span></div>`;
         tagsEl.appendChild(el);
         const bench = BENCH_PARTS.includes(t.part);
         tags.push({ el, key: t.part, flip: !!t.flip, bench, gi: tags.filter(x => x.bench === bench).length });

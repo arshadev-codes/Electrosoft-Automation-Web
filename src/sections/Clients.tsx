@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useRef } from 'react';
+import { useCinematic } from '../hooks/useCinematic';
 
 // CONTENT.md · Home §8 Clients (32). Logos from the old site (electrosoftindia.com/img/clients-logos), trimmed to WebP.
 const CLIENTS: [string, string][] = [
@@ -21,27 +22,18 @@ const LIGHT = ['lupin-pharmaceuticals'];
 
 export default function Clients() {
   const ref = useRef<HTMLElement>(null);
-  const [inView, setInView] = useState(false);
-
-  // the wall fills in once, tile by tile, the first time it comes on screen
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect(); } }, { threshold: 0.2 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  useCinematic(ref, '.cl-wrap', { exit: false }); // the footer follows; nothing to leave into
 
   return (
-    <section id="clients" ref={ref} aria-labelledby="clients-h" className={inView ? 'is-in' : ''}>
+    <section id="clients" ref={ref} aria-labelledby="clients-h">
       <div className="cl-wrap">
-        <div className="cl-head">
+        <div className="cl-head sec-head">
           <h2 id="clients-h">Trusted where failure isn't an option.</h2>
           <p><b>80%+</b> of our business comes from repeat customers.</p>
         </div>
         <ul className="cl-wall">
-          {CLIENTS.map(([file, name], i) => (
-            <li key={file} style={{ '--i': i } as CSSProperties} className={LIGHT.includes(file) ? 'light' : undefined}>
+          {CLIENTS.map(([file, name]) => (
+            <li key={file} className={LIGHT.includes(file) ? 'light' : undefined}>
               <img src={`/img/clients/${file}.webp`} alt={name} title={name} loading="lazy" decoding="async" />
             </li>
           ))}

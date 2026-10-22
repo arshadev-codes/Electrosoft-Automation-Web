@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, type CSSProperties, type PointerEvent } from '
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useCinematic } from '../hooks/useCinematic';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,16 +16,14 @@ const FEATURED = [
   { id: 'vfd', cat: 'Energy', name: 'VFD Panels', text: 'Match motor speed to load and cut energy cost.', points: ['Built to your application'] },
   { id: 'pcc', cat: 'Power', name: 'PCC', text: 'Heavy-duty power control centres with special bus-bar and wiring expertise.', points: ['CPRI approved 65kA · IP65'] },
 ];
-const pad = (i: number) => String(i + 1).padStart(2, '0');
 
-// the card tilts toward the mouse; the photo drifts the other way
+// the card tilts a little toward the mouse; the photo drifts the other way
 const tilt = (e: PointerEvent<HTMLElement>) => {
   if (e.pointerType !== 'mouse') return;
   const b = e.currentTarget.querySelector<HTMLElement>('.lu-body')!, r = b.getBoundingClientRect();
   const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-  b.style.setProperty('--ry', `${x * 7}deg`); b.style.setProperty('--rx', `${-y * 7}deg`);
-  b.style.setProperty('--mx', `${x * -14}px`); b.style.setProperty('--my', `${y * -10}px`);
-  b.style.setProperty('--gx', `${(x + 0.5) * 100}%`); b.style.setProperty('--gy', `${(y + 0.5) * 100}%`);
+  b.style.setProperty('--ry', `${x * 4}deg`); b.style.setProperty('--rx', `${-y * 4}deg`);
+  b.style.setProperty('--mx', `${x * -10}px`); b.style.setProperty('--my', `${y * -8}px`);
 };
 const untilt = (e: PointerEvent<HTMLElement>) => {
   const b = e.currentTarget.querySelector<HTMLElement>('.lu-body')!;
@@ -33,6 +32,7 @@ const untilt = (e: PointerEvent<HTMLElement>) => {
 
 export default function Lineup() {
   const ref = useRef<HTMLElement>(null);
+  useCinematic(ref, '.wrap', { enter: false }); // the cards deal in on their own way in
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -52,15 +52,14 @@ export default function Lineup() {
     const ctx = gsap.context(() => {
       // fromTo everywhere: StrictMode runs this twice in dev, and a plain from() would read the half-hidden state as its end
       gsap.fromTo('.lu-head .ln > span', { yPercent: 110 }, { yPercent: 0, duration: 1.2, stagger: 0.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 78%' } });
-      gsap.fromTo('.lu-head .mono, .lu-head .ghost', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 78%' } });
+      gsap.fromTo('.lu-head p', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 78%' } });
 
       const mm = gsap.matchMedia();
       // desktop: the five cards start as a tilted deck in the middle and deal out into the grid, driven by scroll
       mm.add('(min-width: 1001px)', () => {
         const tl = gsap.timeline({
           defaults: { ease: 'power3.out' },
-          scrollTrigger: { trigger: grid, start: 'top 92%', end: 'top 28%', scrub: 1, invalidateOnRefresh: true,
-            onUpdate: s => grid.classList.toggle('is-in', s.progress > 0.97) },
+          scrollTrigger: { trigger: grid, start: 'top 92%', end: 'top 28%', scrub: 1, invalidateOnRefresh: true },
         });
         cards.forEach((c, i) => {
           tl.fromTo(c,
@@ -76,7 +75,6 @@ export default function Lineup() {
           tl.fromTo(c, { y: 90, rotateX: 26, scale: 0.9, opacity: 0, transformPerspective: 1000, transformOrigin: '50% 100%' }, { y: 0, rotateX: 0, scale: 1, opacity: 1, duration: 1 }, 0);
           fillIn(tl, c, 0);
         });
-        grid.classList.add('is-in');
       });
 
       gsap.fromTo('.lu-more', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.lu-more', start: 'top 94%' } });
@@ -87,12 +85,9 @@ export default function Lineup() {
   return (
     <section id="lineup" ref={ref} className="gut" aria-labelledby="lineup-h">
       <div className="wrap">
-        <div className="lu-head">
-          <div>
-            <div className="mono">The lineup · 12 products</div>
-            <h2 id="lineup-h"><span className="ln"><span>Every panel your</span></span><span className="ln"><span>plant runs on.</span></span></h2>
-          </div>
-          <Link className="ghost" to="/products">View all products ›</Link>
+        <div className="lu-head sec-head">
+          <h2 id="lineup-h"><span className="ln"><span>Every panel your</span></span><span className="ln"><span>plant runs on.</span></span></h2>
+          <p>Five of our ten panel types, each one 100% tested before dispatch.</p>
         </div>
 
         <div className="lu-grid">
@@ -109,7 +104,6 @@ export default function Lineup() {
                 <div className="lu-shot">
                   <img src={`/img/products/${p.id}.webp`} alt={`${p.name} panel built by Electrosoft`} loading="lazy" decoding="async" draggable={false} />
                 </div>
-                <span className="lu-idx mono" aria-hidden="true">{pad(i)}</span>
               </div>
             </Link>
           ))}
@@ -117,7 +111,7 @@ export default function Lineup() {
 
         <div className="lu-more">
           <p><b>10 panel types and 2 services</b>, from PLC / SCADA to turnkey projects.</p>
-          <Link className="pill" to="/products">View all products <span aria-hidden="true">→</span></Link>
+          <Link className="pill" to="/products">View all products</Link>
         </div>
       </div>
     </section>

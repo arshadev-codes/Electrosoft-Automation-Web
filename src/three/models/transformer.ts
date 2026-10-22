@@ -43,6 +43,15 @@ function ratingPlate() {
   return canvasTexture(c);
 }
 
+/** A pressed-steel cooling fin standing on its root at -z, shaded dark at the root to light at the tip. */
+function finGeometry(depth: number) {
+  const g = new RoundedBoxGeometry(0.012, 1.02, depth, 2, 0.005);
+  const pos = g.attributes.position, col = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++) col.fill(0.36 + 0.64 * THREE.MathUtils.smoothstep(pos.getZ(i), -depth / 2, depth / 2), i * 3, i * 3 + 3);
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  return g;
+}
+
 export function buildTransformer(M: Mats, parent: THREE.Object3D) {
   const root = group(parent);
 
@@ -60,19 +69,22 @@ export function buildTransformer(M: Mats, parent: THREE.Object3D) {
   rbox(1.52, 0.045, 0.92, 0.012, M.tankPaint, T, [0, 1.5225, 0]);
   rbox(1.506, 0.012, 0.906, 0.004, M.rubber, T, [0, 1.549, 0]); // cork-rubber gasket under the cover
 
-  // corrugated cooling fins on all four walls
-  const finFB = new RoundedBoxGeometry(0.012, 1.02, 0.2, 2, 0.005);
-  const finLR = new RoundedBoxGeometry(0.18, 1.02, 0.012, 2, 0.005);
-  const fb: { p: V3 }[] = [];
-  for (let i = 0; i < 25; i++) { const x = -0.62 + i * (1.24 / 24); fb.push({ p: [x, 0.89, 0.5] }, { p: [x, 0.89, -0.5] }); }
-  instanced(finFB, M.tankPaint, T, fb);
-  const lr: { p: V3 }[] = [];
+  // corrugated cooling fins on all four walls, each turned so its root meets the tank
+  const fb: { p: V3; r?: V3 }[] = [];
+  for (let i = 0; i < 25; i++) { const x = -0.62 + i * (1.24 / 24); fb.push({ p: [x, 0.89, 0.5] }, { p: [x, 0.89, -0.5], r: [0, PI, 0] }); }
+  instanced(finGeometry(0.2), M.fin, T, fb);
+  const lr: { p: V3; r: V3 }[] = [];
   for (let i = 0; i < 13; i++) {
     const z = -0.3 + i * 0.05;
-    lr.push({ p: [-0.79, 0.89, z] });
-    if (i < 4 || i > 8) lr.push({ p: [0.79, 0.89, z] }); // gap for rating plate + valve
+    lr.push({ p: [-0.79, 0.89, z], r: [0, -PI / 2, 0] });
+    if (i < 4 || i > 8) lr.push({ p: [0.79, 0.89, z], r: [0, PI / 2, 0] }); // gap for rating plate + valve
   }
-  instanced(finLR, M.tankPaint, T, lr);
+  instanced(finGeometry(0.18), M.fin, T, lr);
+  // the tank wall at the bottom of each fin channel sits in shadow
+  plane(1.27, 1.02, M.finCavity, T, [0, 0.89, 0.4015]);
+  plane(1.27, 1.02, M.finCavity, T, [0, 0.89, -0.4015], [0, PI, 0]);
+  plane(0.64, 1.02, M.finCavity, T, [-0.7015, 0.89, 0], [0, -PI / 2, 0]);
+  [-0.225, 0.225].forEach(z => plane(0.2, 1.02, M.finCavity, T, [0.7015, 0.89, z], [0, PI / 2, 0]));
   // fin header strips (top and bottom welds)
   [0.37, 1.41].forEach(y => {
     box(1.28, 0.025, 0.22, M.tankPaint, T, [0, y, 0.5]);

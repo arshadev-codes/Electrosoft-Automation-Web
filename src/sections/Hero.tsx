@@ -30,41 +30,38 @@ export default function Hero() {
 
   return (
     <section id="stage" ref={stageRef} aria-label="An Electrosoft transformer test bench, assembled and exploded">
-      <div className="stage-light" />
-      <div className="grid-bg" />
+      <div className="stage-light" aria-hidden="true" />
       <Suspense fallback={null}>
         <PanelScene stageRef={stageRef} />
       </Suspense>
 
-      <div className="vignette" aria-hidden="true" />
-
       <div className="hero-copy" id="heroCopy">
-        <div className="eyebrow mono fade" style={{ '--i': 0 } as CSSProperties}><span className="dot" />Since 1989 · Thane, India</div>
+        <div className="eyebrow fade" style={{ '--i': 0 } as CSSProperties}><span className="dot" />Since 1989 · Thane, India</div>
         <h1 className="h1">
           {LINES.map((l, i) => <span className="ln" key={l}><span style={{ '--i': i } as CSSProperties}>{l}</span></span>)}
-          <span className="ln"><span style={{ '--i': LINES.length } as CSSProperties}><em>run for decades.</em></span></span>
+          <span className="ln"><span style={{ '--i': LINES.length } as CSSProperties}>run for decades.</span></span>
         </h1>
         <p className="lede fade" style={{ '--i': 1 } as CSSProperties}>We design, build and commission control panels, plant automation and fully automatic transformer testing systems for industry and government.</p>
         <div className="ctas fade" style={{ '--i': 2 } as CSSProperties}>
           <Link className="pill" to="/contact">Get a Quote</Link>
-          <Link className="ghost" to="/transformer-testing">Explore Testing Solutions ›</Link>
+          <Link className="line-btn" to="/transformer-testing">Explore Testing Solutions</Link>
         </div>
-        <div className="scrollcue mono fade" style={{ '--i': 3 } as CSSProperties}><span className="mouse"><i /></span>Scroll to run the test</div>
+        <div className="scrollcue fade" style={{ '--i': 3 } as CSSProperties}><span className="mouse"><i /></span>Scroll to run the test</div>
       </div>
 
       <div className="caps" aria-live="polite">
         <div className="cap" id="cap1">
-          <span className="mono">Step 1 · Connect</span>
+          <span className="cap-step">Step 1 of 3 · Connect</span>
           <h2>Test it without touching a cable.</h2>
           <p>Electrosoft X'mer Prime™ switches the physical connections automatically.</p>
         </div>
         <div className="cap" id="cap2">
-          <span className="mono">Step 2 · Test</span>
+          <span className="cap-step">Step 2 of 3 · Test</span>
           <h2>Every test. Every calculation.</h2>
           <p>The software runs every test and does all the calculations. Zero human error.</p>
         </div>
         <div className="cap" id="cap3">
-          <span className="mono">Step 3 · Report</span>
+          <span className="cap-step">Step 3 of 3 · Report</span>
           <h2>Reports, auto-generated.</h2>
           <p>ERP connectivity and real-time online access to test data for your buyers.</p>
         </div>
@@ -72,12 +69,10 @@ export default function Hero() {
 
       {/* spec callouts pinned to the 3D model; positioned every frame by PanelScene */}
       <div className="callouts" aria-hidden="true">
-        <div className="callout" data-id="mva" style={{ '--l': '46px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest transformer our test systems handle</span></div></div>
+        <div className="callout down" data-id="mva" style={{ '--l': '34px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest transformer our test systems handle</span></div></div>
         <div className="callout" data-id="xmer" style={{ '--l': '150px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Prime™</b><span>Fully automatic · ERP connected</span></div></div>
         <div className="callout down" data-id="cpri" style={{ '--l': '58px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>CPRI approved</b><span>65kA · IP65 panel design</span></div></div>
       </div>
-
-      <div className="bay-chip mono"><em className="live" />Test Bay 01 · Live</div>
 
       <div className="hud mono">
         <span id="hudState"><b>Ready</b></span>
