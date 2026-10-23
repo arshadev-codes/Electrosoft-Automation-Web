@@ -20,7 +20,7 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 | Vite + React + TypeScript project | ⬜ | |
 | Fonts, theme tokens (`src/styles/theme.css`) | ⬜ | From DESIGN.md |
 | Three.js + GSAP + ScrollTrigger installed | ⬜ | `npm i three gsap` |
-| Router (Home, About, Products, Testing, Projects, Gallery, Contact) | ⬜ | `react-router-dom` |
+| Router (Home, About, Products, Testing, Projects, Gallery, Contact) | 🟡 | Home and Products live; page changes run the scan-sweep transition (PageTransition.tsx). Other routes still empty |
 | Images copied from old site into `public/img/` | ⬜ | Products, gallery, projects, client logos, certificates |
 | Header (sticky, blur) + scroll progress bar | 🟢 | Floating capsule aligned to the content column, links truly centred, gliding hover pill, current-page dot, hides on scroll down, progress hairline, phone menu |
 | Footer (full: contact, product links, downloads, certs) | 🟢 | Ruled title block (2026-10-22): brand + phone/email/quote, then address + certs · products · downloads. Download PDFs still to add to public/downloads/ (7 exist on the old site) |
@@ -55,13 +55,13 @@ Content for every section: `CONTENT.md`. Look and motion rules: `DESIGN.md`.
 ## 2. PRODUCTS (`/products`)
 | # | Section | Status | Note |
 |---|---|---|---|
-| 2.1 | Page hero | ⬜ | |
-| 2.2 | Category filter (Automation · Power · Motors · Energy · Control · Service) | ⬜ | |
-| 2.3 | Product detail blocks ×10 (photo, description, 3 key points) | ⬜ | Text ready in CONTENT.md |
-| 2.4 | Services ×2 (Assembly & Wiring, Turnkey) | ⬜ | |
-| 2.5 | "Request a quote for this product" CTA | ⬜ | |
+| 2.1 | Page hero | 🟢 | 2026-10-22: the range as a single-line diagram (incomer, busbar, a feeder per product) that draws itself and energises breaker by breaker |
+| 2.2 | Category filter (Automation · Power · Motors · Energy · Control · Service) | 🟢 | Built as navigation, not a filter: the hero diagram's bus sections are the categories and every feeder jumps to its product |
+| 2.3 | Product detail blocks ×10 (photo, description, 3 key points) | 🟢 | Feeders off a vertical busbar that fills as you scroll; each breaker closes, the photo scans from blueprint to colour, the text rises |
+| 2.4 | Services ×2 (Assembly & Wiring, Turnkey) | 🟢 | Same feeder rows, in a Services bus section |
+| 2.5 | "Request a quote for this product" CTA | 🟡 | Per product + a closing "Have a project in mind?" card. Links go to /contact?product=<id>; the contact page still needs building |
 
-❓ Decide: one long page with anchors, or a separate page per product?
+Decided 2026-10-22: one long page with anchors (/products#<id>), shared data in src/data/products.ts.
 
 ---
 

@@ -2,6 +2,7 @@ import { lazy, Suspense, useLayoutEffect, useRef, type CSSProperties } from 'rea
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { createHeroMotion } from './heroMotion';
+import { holdReveal } from '../components/PageTransition';
 
 const PanelScene = lazy(() => import('../components/PanelScene'));
 
@@ -23,6 +24,8 @@ export default function Hero() {
     const check = () => { if (fonts && scene) requestAnimationFrame(reveal); };
     const onScene = () => { scene = true; check(); };
     stage.addEventListener('scene:ready', onScene);
+    // arriving from another page: the page transition holds until the bay is built
+    holdReveal(new Promise(res => stage.addEventListener('scene:ready', res, { once: true })));
     document.fonts?.ready.then(() => { fonts = true; check(); });
     const fallback = window.setTimeout(reveal, 3000);
     return () => { done = true; window.clearTimeout(fallback); stage.removeEventListener('scene:ready', onScene); ctx.revert(); };
