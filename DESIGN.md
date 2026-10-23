@@ -64,6 +64,8 @@ surfacing (masked, no edges) in Testing, and the footer's ruled title block. No 
 - App window (X'mer Prime): dark frame, traffic-light dots, live canvas
 
 ## Motion (Three.js + GSAP ScrollTrigger)
+- **Page change: scan sweep** (PageTransition.tsx). A sheet of drafting paper rises behind a glowing brand line, names the destination, the route swaps underneath, then the sheet sweeps away. A page that needs a moment (the 3D hero) calls `holdReveal(promise)` and the sheet waits for it (1.8 s max). Same-page hash links just scroll.
+- **Products page: the switchboard.** The hero is a single-line diagram whose feeders are the index; below, a busbar fills with current as you scroll and every product is a feeder whose breaker closes as it arrives, while its photo scans from a blueprint ghost into colour.
 - **Cinematic grammar: the paper haze.** Everything arrives out of the page colour and leaves back into it, scrubbed to scroll like a camera move. 3D scenes: the camera cranes back while fog in the page colour dissolves the equipment (`world.setHaze`); the turntable also rises out of it on the way in. DOM sections: `useCinematic` lifts content out of a soft blur as it arrives and sinks it as it leaves, only in the outer part of the screen so readable content is always sharp. Lineup skips the entry (its cards deal in); Clients skips the exit (the footer follows).
 - **Hero:** 3D panel assembles on load → pinned scroll: camera orbits, door opens, 7 layers explode, labels appear
 - **Text:** headline lines rise from a mask on load; big statements fill word by word on scroll

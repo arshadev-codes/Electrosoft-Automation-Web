@@ -14,6 +14,19 @@ export function scrollToY(y: number) {
   else window.scrollTo({ top: y });
 }
 
+/** Jump to `y` with no easing (behind the page transition's veil). */
+export function jumpToY(y: number) {
+  if (active) active.scrollTo(y, { immediate: true, force: true });
+  window.scrollTo({ top: y });
+}
+
+/** Freeze or release wheel and touch scrolling (while a page transition runs). */
+export function holdScroll(on: boolean) {
+  if (!active) return;
+  if (on) active.stop();
+  else active.start();
+}
+
 /** Inertial page scroll, driven by the GSAP ticker so ScrollTrigger scrubs stay in sync. */
 export function useSmoothScroll() {
   useEffect(() => {
