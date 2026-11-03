@@ -22,7 +22,11 @@ export function holdReveal(ready: Promise<unknown>) { pending = ready; }
 /** Where a hash link should land: its target just under the header, or the top of the page. */
 function targetY(hash: string) {
   const el = hash ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
-  return el ? Math.max(0, el.getBoundingClientRect().top + window.scrollY - 96) : 0;
+  if (!el) return 0;
+  // layout position, not the rect: an arriving section is still shifted by its scroll haze transform
+  let y = 0;
+  for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
+  return Math.max(0, y - 96);
 }
 
 /*

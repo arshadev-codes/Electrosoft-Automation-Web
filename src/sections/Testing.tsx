@@ -4,21 +4,9 @@ import { gsap } from 'gsap';
 import Blueprint, { SPOTS } from '../components/Blueprint';
 import { createTestingMotion } from './testingMotion';
 import { useCinematic } from '../hooks/useCinematic';
+import { TESTS } from '../data/testing';
 
-// TODO: CONFIRM — the tests list is [CONFIRM] in CONTENT.md (draft names, shared with the hero bench).
-// Descriptions are what each routine test checks in general terms; full detail lives on /transformer-testing#<id>.
-const TESTS = [
-  { id: 'winding-resistance', name: 'Winding resistance',
-    text: 'Passes a steady DC current through each winding and waits for the reading to settle, to catch loose joints, broken strands and tap-changer contact faults.' },
-  { id: 'ratio-vector-group', name: 'Ratio & vector group',
-    text: 'Compares HV and LV on every tap to confirm the turns ratio, and checks the phase shift between them matches the nameplate vector group.' },
-  { id: 'no-load-loss', name: 'No-load loss',
-    text: 'Energises the transformer at rated voltage with the other side open, measuring core loss and the magnetising current it draws.' },
-  { id: 'load-loss-impedance', name: 'Load loss & impedance',
-    text: 'Circulates rated current with the LV terminals shorted, measuring copper loss and the percentage impedance.' },
-  { id: 'induced-over-voltage', name: 'Induced over-voltage',
-    text: 'Applies above-rated voltage at a raised frequency and holds it, to prove the insulation between turns.' },
-];
+// TODO: CONFIRM — draft tests list, shared with /transformer-testing (src/data/testing.ts).
 const NAMES = TESTS.map(t => t.name);
 const CYCLE_MS = 5000; // time on each test before moving to the next
 

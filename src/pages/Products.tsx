@@ -1,12 +1,14 @@
-import { useEffect, useLayoutEffect, useRef, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, type CSSProperties, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { RANGE, type Product } from '../data/products';
 import { createProductsMotion } from './productsMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
+import { Arrow, FeederCta, tilt, untilt } from '../components/ui';
 
 const COUNT = RANGE.flatMap(g => g.items).length;
 const SHORT: Record<string, string> = { assembly: 'Assembly & Wiring', turnkey: 'Turnkey Projects' };
+const img = (id: string) => `/img/products/${id}.webp`;
 
 /** Feeders in the hero diagram scroll to their product instead of jumping. */
 function jump(e: MouseEvent<HTMLAnchorElement>) {
@@ -23,19 +25,24 @@ const Feeder = () => (
     <circle className="fd-tap" cx="3" cy="12" r="3.5" />
     <path className="fd-line" d="M3 12H34M58 12H90" />
     <path className="fd-blade" d="M34 12H58" />
+    <path className="fd-flow" d="M6 12H90" />
     <circle className="fd-pin" cx="34" cy="12" r="2.6" /><circle className="fd-pin" cx="58" cy="12" r="2.6" />
   </svg>
 );
 
 function Item({ p, flip }: { p: Product; flip: boolean }) {
-  const src = `/img/products/${p.id}.webp`;
+  const src = img(p.id);
   return (
     <article className={`pr-item${flip ? ' flip' : ''}`} id={p.id} aria-labelledby={`${p.id}-h`}>
       <Feeder />
-      <figure className={`pr-shot ${p.cut ? 'cut' : 'frame'}`}>
-        <img className="pr-ghost" src={src} alt="" loading="lazy" decoding="async" draggable={false} />
-        <div className="pr-live"><img src={src} alt={`${p.name} by Electrosoft`} loading="lazy" decoding="async" draggable={false} /></div>
-        <i className="pr-scan" aria-hidden="true" />
+      <figure className={`pr-shot ${p.cut ? 'cut' : 'frame'}`} onPointerMove={tilt} onPointerLeave={untilt}>
+        <div className="pr-stage">
+          <i className="pr-grid" aria-hidden="true" />
+          <img className="pr-ghost" src={src} alt="" loading="lazy" decoding="async" draggable={false} />
+          <div className="pr-live"><img src={src} alt={`${p.name} by Electrosoft`} loading="lazy" decoding="async" draggable={false} /></div>
+          <i className="pr-scan" aria-hidden="true" />
+        </div>
+        <i className="pr-crop" aria-hidden="true" />
       </figure>
       <div className="pr-txt">
         <h3 id={`${p.id}-h`}><span className="ln"><span>{p.name}</span></span></h3>
@@ -43,7 +50,7 @@ function Item({ p, flip }: { p: Product; flip: boolean }) {
         <p className="pr-text">{p.text}</p>
         {p.points.length > 0 && <ul className="pr-pts">{p.points.map(pt => <li key={pt}>{pt}</li>)}</ul>}
         {/* TODO: CONFIRM — /contact (quote form) isn't built yet; it should read ?product= to prefill the requirement */}
-        <Link className="line-btn" to={`/contact?product=${p.id}`}>Request a quote<span className="sr"> for {p.name}</span></Link>
+        <Link className="line-btn" to={`/contact?product=${p.id}`}>Request a quote<span className="sr"> for {p.name}</span><Arrow /></Link>
       </div>
     </article>
   );
@@ -71,7 +78,7 @@ export default function Products() {
     return () => { document.title = before; };
   }, []);
 
-  let n = 0;
+  let n = 0, f = 0;
   return (
     <main className="pr" ref={ref}>
       <section className="pr-hero gut" aria-labelledby="pr-h">
@@ -83,7 +90,9 @@ export default function Products() {
             <svg className="sld-in" viewBox="0 0 96 132" aria-hidden="true">
               <path pathLength={1} d="M24 0V30" /><circle pathLength={1} cx="24" cy="44" r="14" /><circle pathLength={1} cx="24" cy="66" r="14" />
               <path pathLength={1} d="M24 80V96" /><rect pathLength={1} x="16" y="96" width="16" height="16" rx="2" /><path pathLength={1} d="M24 112V130.5H96" />
+              <path className="in-flow" d="M24 0V30M24 80V96M24 112V130.5H96" />
             </svg>
+            <p className="sld-hud mono" aria-hidden="true"><i /> Feeders live <b>0</b> / {COUNT}</p>
             <div className="sld-row">
               <i className="sld-bus" aria-hidden="true" />
               <ol className="sld-groups">
@@ -92,13 +101,15 @@ export default function Products() {
                     <span className="sld-cat">{g.cat}</span>
                     <ol>
                       {g.items.map(p => (
-                        <li key={p.id}>
+                        <li key={p.id} style={{ '--i': f++ } as CSSProperties}>
                           <a href={`#${p.id}`} onClick={jump}>
                             <svg className="sld-drop" viewBox="0 0 20 64" aria-hidden="true">
                               <path className="dr-line" d="M10 0V20M10 44V64" /><path className="dr-blade" d="M10 44V20" />
+                              <path className="dr-flow" d="M10 0V64" />
                               <circle className="dr-pin" cx="10" cy="20" r="2.4" /><circle className="dr-pin" cx="10" cy="44" r="2.4" />
                             </svg>
                             <span>{SHORT[p.id] ?? p.name}</span>
+                            <span className={`sld-peek ${p.cut ? 'cut' : 'frame'}`} aria-hidden="true"><img src={img(p.id)} alt="" loading="lazy" decoding="async" /></span>
                           </a>
                         </li>
                       ))}
@@ -113,7 +124,7 @@ export default function Products() {
 
       <section className="pr-board gut" aria-label={`All ${COUNT} products and services`}>
         <div className="wrap pr-wrap">
-          <div className="pr-bus" aria-hidden="true"><i /></div>
+          <div className="pr-bus" aria-hidden="true"><i /><b className="pr-spark" /></div>
           {RANGE.map(g => (
             <div className="pr-sec" key={g.cat}>
               <div className="pr-sec-head"><i aria-hidden="true" /><h2>{g.cat}</h2><span>{g.items.length} {g.cat === 'Services' ? 'services' : g.items.length > 1 ? 'products' : 'product'}</span></div>
@@ -124,15 +135,10 @@ export default function Products() {
       </section>
 
       {/* CONTENT.md · Home §10 contact CTA */}
-      <section className="pr-cta gut" aria-labelledby="pr-cta-h">
-        <div className="wrap">
-          <h2 id="pr-cta-h">Have a project in mind?</h2>
-          <div className="pr-cta-btns">
-            <Link className="pill" to="/contact">Get a Quote</Link>
-            <a className="line-btn" href="tel:+918692888444">Call +91 86928 88444</a>
-          </div>
-        </div>
-      </section>
+      <FeederCta id="pr-cta-h" tag="Your project">
+        <Link className="pill" to="/contact">Get a Quote<Arrow /></Link>
+        <a className="line-btn" href="tel:+918692888444">Call +91 86928 88444</a>
+      </FeederCta>
     </main>
   );
 }

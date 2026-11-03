@@ -67,7 +67,8 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useLayoutEffect(() => {
-    const section = sectionRef.current, canvas = canvasRef.current;
+    // same commit as Lines (chunk cached)? its ref may not be attached yet: find the section from our canvas
+    const canvas = canvasRef.current, section = sectionRef.current ?? canvas?.closest<HTMLElement>('section') ?? null;
     if (!section || !canvas) return;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const { S } = lines;

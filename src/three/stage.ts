@@ -251,6 +251,8 @@ export function createWorld(canvas: HTMLCanvasElement) {
     envRT.dispose(); pmrem.dispose();
     ao.dispose(); bloom.dispose(); composer.dispose(); target.dispose();
     renderer.dispose();
+    // dispose() keeps the GL context alive until GC; release it now so page changes don't pile them up
+    renderer.forceContextLoss();
   }
 
   return { renderer, scene, camera, setSize, render, markShadows, setHaze, dispose };

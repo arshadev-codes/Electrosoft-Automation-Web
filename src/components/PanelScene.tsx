@@ -22,7 +22,10 @@ export default function PanelScene({ stageRef }: { stageRef: RefObject<HTMLEleme
   const tagsRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const stage = stageRef.current, canvas = canvasRef.current, tagsEl = tagsRef.current;
+    // when the chunk is already cached (returning to Home) this mounts in the same commit as Hero, and
+    // React runs this effect before Hero's section ref is attached: find the stage from our own canvas
+    const canvas = canvasRef.current, tagsEl = tagsRef.current;
+    const stage = stageRef.current ?? canvas?.closest<HTMLElement>('section') ?? null;
     if (!stage || !canvas || !tagsEl) return;
     const q = (s: string) => stage.querySelector<HTMLElement>(s);
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;

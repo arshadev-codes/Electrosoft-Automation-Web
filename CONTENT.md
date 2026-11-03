@@ -110,7 +110,7 @@ Logo + one-line description · Contact details · Products list · Downloads · 
 ## ABOUT
 
 - Intro: Since 1989, Electrosoft has grown from panel manufacturing into a complete electrical, automation, instrumentation and transformer testing company, serving small businesses, corporates and government bodies. All products are built to international quality standards.
-- **How we work** — **[CONFIRM] steps from the current diagram image (how-we-work-diag.png)**. Draft: Requirement & site study → Design & engineering → Manufacturing & wiring → 3-step QA & testing → Installation & commissioning → Support
+- **How we work** — from the old site's diagram (how-we-work-diag.png), 11 steps: 01 Enquiry → 02 Quotation & PO → 03 Design (SLD, GA, wiring diagrams, sent for approval) → 04 Material (purchase per approved BOM) and Fabrication (sheet metal, CNC, 7-tank powder coating), side by side → 05 Quality check → 06 Assembly, wiring & programming (PLC and SCADA programs) → 07 Quality check → 08 Testing & simulation (routine tests: HV, Megger etc., test reports) → 09 Quality check → 10 Acceptance (customer inspects at our works) → 11 Packing, dispatch & installation. Full copy: src/data/about.ts
 - Infrastructure: office + workshop photos (from gallery)
 - Certifications block (same as home)
 - **[CONFIRM]** founder / leadership, workshop area, team size, delivered-unit count
