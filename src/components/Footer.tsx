@@ -1,4 +1,16 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { EMAIL, MAP, PHONE, TEL } from '../data/site';
+
+const time = () => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+
+/** The time where the work is done, as a small live reading; its colon blinks like a panel clock. */
+function Clock() {
+  const [t, setT] = useState(time);
+  useEffect(() => { const id = setInterval(() => setT(time()), 15000); return () => clearInterval(id); }, []);
+  const [h, m] = t.split(':');
+  return <span className="ft-clock"><i aria-hidden="true" />Kalher, Thane <b className="mono">{h}<em>:</em>{m} IST</b></span>;
+}
 
 // CONTENT.md · Company facts, Products, Home §9 Certifications & downloads, Footer.
 const PRODUCTS = [
@@ -26,8 +38,8 @@ export default function Footer() {
             <p>Electrical control panels, plant automation, instrumentation and transformer testing systems. Designed, built and commissioned since 1989.</p>
           </div>
           <div className="ft-reach">
-            <a href="tel:+918692888444">+91 86928 88444</a>
-            <a href="mailto:info@electrosoftindia.com">info@electrosoftindia.com</a>
+            <a href={`tel:${TEL}`}>{PHONE}</a>
+            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
             <Link className="pill" to="/contact">Get a Quote</Link>
           </div>
         </div>
@@ -36,6 +48,8 @@ export default function Footer() {
           <div className="ft-cell">
             <h3>Address</h3>
             <address>S7-1/2, Jai Mata Di Compound, Bhiwandi Road, Kalher, Dist. Thane – 421 302</address>
+            <a className="ft-map" href={MAP} target="_blank" rel="noopener noreferrer">Open in Google Maps<span aria-hidden="true">↗</span></a>
+            <p className="ft-hours">At work 362 days a year, 14 hours a day.</p>
             <ul className="ft-certs" aria-label="Certifications">{CERTS.map(c => <li key={c}>{c}</li>)}</ul>
           </div>
 
@@ -52,6 +66,7 @@ export default function Footer() {
 
         <div className="ft-bar">
           <span>© {new Date().getFullYear()} Electrosoft Automation Pvt. Ltd.</span>
+          <Clock />
           <nav aria-label="Legal">
             <Link to="/track">Track your order</Link>
             <Link to="/privacy-policy">Privacy Policy</Link>

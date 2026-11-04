@@ -5,11 +5,10 @@ import { RANGE } from '../data/products';
 import { BENCHES } from '../data/testing';
 import { createContactMotion } from './contactMotion';
 import { Arrow } from '../components/ui';
+import { EMAIL, MAP, PHONE, TEL } from '../data/site';
 
 // CONTENT.md · Company facts and Contact
-const PHONE = '+91 86928 88444', TEL = '+918692888444', EMAIL = 'info@electrosoftindia.com';
 const ADDRESS = ['S7-1/2, Jai Mata Di Compound,', 'Bhiwandi Road, Kalher,', 'Dist. Thane – 421 302'];
-const MAP = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Jai Mata Di Compound, Bhiwandi Road, Kalher, Thane 421302');
 const NEEDS = ['Panels', 'Automation', 'Transformer Testing', 'Other'] as const;
 type Need = typeof NEEDS[number];
 

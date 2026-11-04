@@ -63,7 +63,7 @@ a{color:var(--brand)}
 .sec-head p b{color:var(--ink);font-weight:600}
 
 /* ---------- glass: every card that floats over a 3D scene ---------- */
-.cap,.tag .lbl,.callout .card{
+.cap,.tag .lbl,.callout .card,.ts-turn{
   background:rgba(255,255,255,.8);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px rgba(14,17,22,.07),0 18px 40px -24px rgba(14,17,22,.35);
   -webkit-backdrop-filter:blur(12px) saturate(150%);backdrop-filter:blur(12px) saturate(150%);
@@ -97,8 +97,6 @@ a{color:var(--brand)}
 .hdr .ghost{padding:9px 14px;border-radius:999px;font-weight:600;transition:background .25s,color .25s}
 .hdr .ghost:hover{color:var(--ink);background:rgba(14,17,22,.055)}
 .hdr .pill{padding:10px 18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
-/* reading progress: a hairline under the capsule */
-.hdr .progress{position:absolute;left:28px;right:28px;bottom:-1px;height:2px;border-radius:2px;z-index:1;transform-origin:left;transform:scaleX(0);background:var(--brand);opacity:.85}
 
 .menu-btn{display:none;position:relative;width:40px;height:40px;margin-left:2px;border:0;border-radius:50%;background:rgba(14,17,22,.055);cursor:pointer}
 .menu-btn i{position:absolute;left:12px;right:12px;height:2px;border-radius:2px;background:var(--ink);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
@@ -539,77 +537,104 @@ a{color:var(--brand)}
 
 
 /* =====================================================================
-   1.7 Why choose us: four promises, each with a real visual
+   1.7 Why choose us: a lamp test on one panel door (Why.tsx)
    ===================================================================== */
 #why{padding:var(--sy) max(16px,env(safe-area-inset-right,0px)) var(--sy) max(16px,env(safe-area-inset-left,0px))}
 .why-wrap{max-width:1240px;margin:0 auto}
 
-.bento{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr) minmax(0,.9fr);grid-template-areas:"q d p" "q t t";gap:16px}
-.bt{position:relative;overflow:hidden;border-radius:24px;background:var(--paper);padding:28px;box-shadow:var(--hair),var(--lift)}
-.bt h3{font-size:clamp(20px,1.6vw,23px);font-weight:600;letter-spacing:-.025em}
-.bt p{margin-top:8px;font-size:15px;line-height:1.55;color:var(--muted)}
+/* one grid: row 1 is the door (lamps + legend plates + the test button), row 2 the promises on the page,
+   each in its lamp's column (subgrid) */
+.why-panel{--pad:clamp(20px,2.6vw,40px);--lamp:clamp(60px,5.8vw,84px);--btn:54px;position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) 124px;
+  grid-template-rows:auto auto;column-gap:clamp(14px,2.2vw,32px);padding:0 var(--pad)}
 
-/* quality: the real panel photo, a tested seal, copy at the foot */
-.bt-quality{grid-area:q;min-height:540px;padding:0;display:flex;flex-direction:column;justify-content:flex-end;
-  background:radial-gradient(70% 55% at 50% 42%,#FFFFFF 0%,#F1F3F6 70%,#EBEEF2 100%)}
-.bt-quality img{position:absolute;left:50%;top:7%;height:68%;max-width:84%;object-fit:contain;translate:-50% 0;filter:drop-shadow(0 30px 30px rgba(14,17,22,.2));transition:scale .8s cubic-bezier(.2,.8,.2,1)}
-.bt-quality:hover img{scale:1.03}
-.bt-seal{position:absolute;right:24px;top:24px;width:104px;height:104px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  background:var(--brand);color:#fff;box-shadow:0 0 0 6px rgba(11,91,211,.1),0 18px 36px -16px rgba(11,91,211,.7);rotate:-10deg;scale:.6;opacity:0;
-  transition:scale .6s .6s cubic-bezier(.3,1.6,.5,1),opacity .3s .6s}
-#why.is-in .bt-seal{scale:1;opacity:1}
-.bt-seal b{font:600 27px/1 var(--f-display);letter-spacing:-.03em}
-.bt-seal span{margin-top:4px;font-size:11px;line-height:1.2;max-width:10ch;opacity:.92}
-.bt-quality .bt-txt{position:relative;padding:22px 28px 26px;background:linear-gradient(to top,rgba(255,255,255,.97) 62%,rgba(255,255,255,0))}
+/* the door: RAL 7035-ish powder coat with its orange-peel grain, the folded return round the edge */
+.why-door{grid-column:1/-1;grid-row:1;position:relative;z-index:0;margin:0 calc(var(--pad) * -1);border-radius:12px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(104deg,rgba(255,255,255,0) 28%,rgba(255,255,255,.34) 44%,rgba(255,255,255,0) 62%),
+    linear-gradient(180deg,#E6E8E5 0%,#DBDEDA 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(14,17,22,.08),0 0 0 1px rgba(14,17,22,.1),
+    0 2px 4px rgba(14,17,22,.05),0 34px 56px -40px rgba(14,17,22,.55)}
+.why-door::before{content:"";position:absolute;inset:8px;border-radius:7px;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(14,17,22,.07),inset 0 1px 0 rgba(14,17,22,.05),0 1px 0 rgba(255,255,255,.7)}
 
-/* delivery: the big number and a year of weeks, all but one lit */
-.bt-delivery{grid-area:d;display:flex;flex-direction:column}
-.bt-big{display:flex;align-items:baseline;gap:8px;margin-top:auto;padding-top:18px}
-.bt-big b{font:600 clamp(52px,5vw,76px)/.9 var(--f-display);letter-spacing:-.05em;color:var(--ink)}
-.bt-big span{font-weight:600;color:var(--brand)}
-.bt-days{display:grid;grid-template-columns:repeat(26,1fr);gap:3px;margin:14px 0 4px}
-.bt-days i{height:8px;border-radius:2px;background:#E6E9EE;transition:background .25s;transition-delay:calc(.4s + var(--i) * 18ms)}
-#why.is-in .bt-days i.on{background:var(--brand)}
-.bt-delivery p b{color:var(--ink);font-weight:600}
+.why-item{grid-column:var(--c);grid-row:1/span 2;display:grid;grid-template-rows:subgrid;position:relative;z-index:1}
+.why-fit{grid-row:1;display:flex;flex-direction:column;align-items:center;gap:22px;padding:clamp(36px,4.6vw,66px) 0 clamp(30px,3.6vw,48px)}
 
-/* pricing: one quote covering the whole job */
-.bt-pricing{grid-area:p}
-.bt-quote{list-style:none;margin:18px 0 0;padding:0;border-top:1.5px solid var(--ink)}
-.bt-quote li{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;font-weight:500}
-.bt-quote li::after{content:"";width:16px;height:16px;border-radius:50%;background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;
-  scale:0;transition:scale .35s cubic-bezier(.3,1.6,.5,1);transition-delay:calc(.5s + var(--i) * 140ms)}
-#why.is-in .bt-quote li::after{scale:1}
+/* 22 mm pilot lamp: chrome bezel, a dark step, the domed lens over an LED cluster */
+.why-lamp{position:relative;width:var(--lamp);aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from 210deg,#F5F7F9,#A7AEB6 16%,#EEF1F4 33%,#8C939C 52%,#E8EBEE 70%,#B2B8BF 86%,#F5F7F9);
+  box-shadow:0 0 0 1px rgba(14,17,22,.2),0 5px 8px -3px rgba(14,17,22,.35),0 16px 22px -14px rgba(14,17,22,.45)}
+.why-lamp::before{content:"";position:absolute;inset:8%;border-radius:50%;background:linear-gradient(160deg,#5F666F,#23272D)}
+/* the light it throws on the door */
+.why-lamp::after{content:"";position:absolute;inset:-70%;z-index:-1;border-radius:50%;pointer-events:none;opacity:0;transition:opacity .45s;
+  background:radial-gradient(circle,rgba(48,209,88,.34) 0,rgba(48,209,88,.13) 30%,rgba(48,209,88,0) 62%)}
+.why-lamp i{position:absolute;inset:15%;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle,rgba(150,185,160,.22) 0 1.1px,transparent 1.7px) center/6px 6px,
+    radial-gradient(circle at 50% 60%,#4B6555 0%,#2E4236 58%,#1C2820 100%);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6),inset 0 -2px 3px rgba(255,255,255,.08);transition:box-shadow .45s}
+.why-lamp i::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .3s;
+  background:radial-gradient(circle,rgba(255,255,255,.75) 0 1.1px,transparent 1.8px) center/6px 6px,
+    radial-gradient(circle at 50% 50%,#F0FFF2 0,#8AF5A7 24%,#30D158 58%,#1B9741 100%)}
+.why-lamp i::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(ellipse 58% 40% at 36% 26%,rgba(255,255,255,.72),rgba(255,255,255,0) 72%)}
+.why-item.on .why-lamp::after{opacity:1}
+.why-item.on .why-lamp i{box-shadow:inset 0 2px 5px rgba(0,60,20,.35),0 0 14px 3px rgba(48,209,88,.55)}
+.why-item.on .why-lamp i::before{opacity:1;animation:whyStrike .45s linear}
+@keyframes whyStrike{0%{opacity:0}16%{opacity:1}28%{opacity:.3}44%{opacity:1}56%{opacity:.72}100%{opacity:1}}
 
-/* tracking: copy beside a live sample order */
-.bt-tracking{grid-area:t;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:28px;align-items:center}
-.bt-tracking .pill{margin-top:16px}
-.bt-order{padding:18px 20px 20px;border-radius:16px;background:var(--bg)}
-.bt-order-top{display:flex;align-items:baseline;gap:10px;font-size:13px;color:var(--muted)}
-.bt-order-top b{font:600 17px var(--f-mono);color:var(--ink)}
-.bt-order-top em{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-style:normal;font-weight:600;color:#1E8E3E}
-.bt-order ol{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);position:relative}
-.bt-order ol::before{content:"";position:absolute;left:7px;right:calc(25% - 7px);top:6px;height:2px;background:var(--line)}
-.bt-order li{position:relative;padding-top:24px;font-size:12.5px;color:var(--muted);transition:color .3s}
-.bt-order li i{position:absolute;left:0;top:0;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px var(--line);z-index:1;transition:background .3s,box-shadow .3s}
-.bt-order li.done i{background:var(--brand);box-shadow:inset 0 0 0 2px var(--brand)}
-.bt-order li.now{color:var(--ink);font-weight:600}
-.bt-order li.now i{background:#fff;box-shadow:inset 0 0 0 4px var(--brand),0 0 0 5px rgba(11,91,211,.15)}
-.bt-order li:last-child.now i{box-shadow:inset 0 0 0 4px var(--ok),0 0 0 5px rgba(48,209,88,.2)}
-.bt-order li.done::after{content:"";position:absolute;left:7px;right:-7px;top:6px;height:2px;background:var(--brand)}
+/* traffolyte legend plate, engraved, two screws: also the promise's heading */
+.why-plate{position:relative;display:flex;align-items:center;justify-content:center;width:min(100%,236px);padding:9px 24px;border-radius:3px;
+  background:linear-gradient(180deg,#FDFDFC,#F1F2F0);color:#1A1D21;font:700 14.5px/1.25 var(--f-body);letter-spacing:.01em;text-align:center;
+  text-shadow:0 1px 0 rgba(255,255,255,.95);box-shadow:0 0 0 1px rgba(14,17,22,.16),0 1px 0 rgba(255,255,255,.6),0 3px 5px -3px rgba(14,17,22,.35);
+  transition:box-shadow .45s}
+.why-plate::before,.why-plate::after{content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#EEF0F2,#A9AEB5);box-shadow:0 0 0 .5px rgba(14,17,22,.25)}
+.why-plate::before{left:8px}.why-plate::after{right:8px}
+.why-item.on .why-plate{box-shadow:0 0 0 1px rgba(14,17,22,.16),0 1px 0 rgba(255,255,255,.6),0 3px 5px -3px rgba(14,17,22,.35),0 -12px 22px -16px rgba(48,209,88,.7)}
+
+/* the promise, on the page under its lamp: faint until the lamp strikes */
+.why-say{grid-row:2;padding-top:24px;opacity:.38;transition:opacity .5s .1s}
+.why-item.on .why-say{opacity:1}
+.why-say p{max-width:30ch;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
+.why-say .line-btn{margin-top:16px}
+
+/* Lamp test: a flush black push-button in a chrome ring */
+.why-test{grid-column:5;grid-row:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:22px;
+  margin:0;padding:clamp(36px,4.6vw,66px) 0 clamp(30px,3.6vw,48px);border:0;background:none;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.why-test:focus-visible{outline:none}
+.why-test:focus-visible .why-btn{outline:2px solid var(--brand);outline-offset:5px}
+.why-btn{position:relative;width:var(--btn);height:var(--btn);margin:calc((var(--lamp) - var(--btn)) / 2) 0;border-radius:50%;
+  background:conic-gradient(from 210deg,#F5F7F9,#A7AEB6 16%,#EEF1F4 33%,#8C939C 52%,#E8EBEE 70%,#B2B8BF 86%,#F5F7F9);
+  box-shadow:0 0 0 1px rgba(14,17,22,.2),0 5px 8px -3px rgba(14,17,22,.35)}
+.why-btn::before{content:"";position:absolute;inset:13%;border-radius:50%;background:#15181C;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.why-btn::after{content:"";position:absolute;inset:17%;border-radius:50%;translate:0 -2px;
+  background:radial-gradient(circle at 40% 30%,#4A5059,#1C1F24 58%,#101215);
+  box-shadow:0 2px 0 #08090B,inset 0 1px 1px rgba(255,255,255,.22);transition:translate .1s,box-shadow .1s}
+.why-test:active .why-btn::after,.why-panel.pressed .why-btn::after{translate:0 0;box-shadow:0 0 0 #08090B,inset 0 1px 2px rgba(0,0,0,.4)}
+.why-plate.sm{width:auto;padding:9px 18px;font-size:12.5px;line-height:1.45}
 
 @media (max-width:1000px){
-  .bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"q q" "d p" "t t"}
-  .bt-quality{min-height:440px}
+  .why-panel{grid-template-columns:repeat(4,minmax(0,1fr)) 104px}
+  .why-plate{min-height:52px;padding:7px 18px;font-size:13px}
+  .why-plate.sm{min-height:0}
+  .why-say p{font-size:15px}
 }
-@media (max-width:640px){
-  .bento{grid-template-columns:minmax(0,1fr);grid-template-areas:"q" "d" "p" "t";gap:12px}
-  .bt{padding:22px}
-  .bt-quality{min-height:400px;padding:0}
-  .bt-seal{width:86px;height:86px;right:16px;top:16px}.bt-seal b{font-size:22px}
-  .bt-quality .bt-txt{padding:18px 22px 22px}
-  .bt-tracking{grid-template-columns:minmax(0,1fr);gap:18px}
+/* phones: the door stands up, lamps stacked, each promise beside its lamp */
+@media (max-width:760px){
+  .why-panel{grid-template-columns:136px minmax(0,1fr);grid-template-rows:repeat(5,auto);column-gap:18px;padding:0}
+  .why-door{grid-column:1;grid-row:1/-1;margin:0}
+  .why-item{grid-column:1/-1;grid-row:var(--c);grid-template-rows:none;grid-template-columns:subgrid}
+  .why-fit{grid-column:1;padding:22px 8px 14px;gap:12px}
+  .why-panel{--lamp:50px;--btn:42px}
+  .why-plate{min-height:44px;padding:6px 15px;font-size:12px}
+  .why-plate::before{left:5px}.why-plate::after{right:5px}
+  .why-say{grid-column:2;grid-row:1;align-self:center;padding:8px 0}
+  .why-test{grid-column:1;grid-row:5;padding:14px 0 26px;gap:12px}
 }
-@media (prefers-reduced-motion:reduce){.bt-seal,.bt-days i,.bt-quote li::after{transition:none}}
+@media (prefers-reduced-motion:reduce){
+  .why-lamp::after,.why-lamp i,.why-lamp i::before,.why-plate,.why-say{transition:none}
+  .why-item.on .why-lamp i::before{animation:none}
+}
 
 
 /* =====================================================================
@@ -909,7 +934,23 @@ a:hover > .arw{translate:3px 0}
 /* hero: the unit under test on the page, copy left, the test run ticking bottom right */
 .ts-hero{position:relative;height:100vh;height:100svh;min-height:600px;overflow:hidden}
 .ts-gl{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1s cubic-bezier(.16,1,.3,1)}
-.ts-gl.ready{opacity:1}
+.ts-gl.ready{opacity:1;cursor:grab;touch-action:pan-y}
+.ts-gl.grabbing{cursor:grabbing}
+/* turntable readout: on the floor in front of the unit (XfmrScene places it); ← → turn it from the keyboard */
+.ts-turn{position:absolute;z-index:3;left:0;top:0;display:inline-flex;align-items:center;gap:9px;padding:6px 12px 6px 7px;border-radius:999px;
+  font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;cursor:grab;touch-action:pan-y;user-select:none;
+  opacity:0;visibility:hidden;transition:opacity .8s 1.4s,visibility 0s 2.2s,color .25s,background .25s}
+.ts-turn.ready{opacity:1;visibility:visible;transition:opacity .8s 1.4s,visibility 0s 0s,color .25s,background .25s}
+.ts-turn:hover,.ts-turn:focus-visible{color:var(--ink)}
+.ts-turn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ts-turn-ring{position:relative;width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line)}
+.ts-turn-ring b{position:absolute;inset:0;rotate:var(--a,0deg)}
+.ts-turn-ring b::before{content:"";position:absolute;left:50%;top:-1.5px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--brand)}
+.ts-turn em{font-style:normal;font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums}
+/* until it has been turned once, the dot swings to say it can be */
+.ts-turn:not(.used) .ts-turn-ring b{animation:tsNudge 2.6s cubic-bezier(.45,0,.2,1) 2.4s infinite}
+@keyframes tsNudge{0%,55%,100%{rotate:var(--a,0deg)}20%{rotate:calc(var(--a,0deg) + 50deg)}38%{rotate:calc(var(--a,0deg) - 20deg)}}
+@media (prefers-reduced-motion:reduce){.ts-turn:not(.used) .ts-turn-ring b{animation:none}}
 .ts-copy{position:absolute;z-index:3;left:var(--edge);top:calc(var(--hdr) + env(safe-area-inset-top,0px) + clamp(48px,13vh,150px));max-width:min(520px,calc(100% - 32px));display:flex;flex-direction:column;align-items:flex-start;gap:22px}
 .ts-h1{font-size:clamp(38px,4.4vw,62px);line-height:1.02;font-weight:600;letter-spacing:-.04em}
 .ts-h1 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
@@ -1857,3 +1898,72 @@ a:hover > .arw{translate:3px 0}
   .ct-circuit .blade,.ct-circuit .w,.ct-circuit .lamp{transition:none}
   .ct-circuit.is-live .flow,.ct-go.ready,.ct-map .pulse{animation:none}
 }
+
+/* ================= signature layer (2026-11-03): one set of details shared by every page ================= */
+/* the sheet is see-through: html carries the paper colour so the blueprint lens can sit beneath the content */
+body{background:transparent}
+::selection{background:rgba(61,134,255,.2);color:var(--ink)}
+html{scrollbar-width:thin;scrollbar-color:#C3C8D0 transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#C9CED6;border-radius:10px;border:3px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#A9AFB9}
+::-webkit-scrollbar-track{background:transparent}
+
+/* reading progress as a live conductor: one blue line at rest, three phases under scroll (LiveWire.tsx) */
+.livewire{position:fixed;z-index:70;left:0;top:env(safe-area-inset-top,0px);pointer-events:none}
+
+/* the blueprint under the sheet, seen around the pointer (Lens.tsx) */
+.lens{position:fixed;z-index:-1;left:0;top:0;width:420px;height:420px;pointer-events:none;opacity:0;transition:opacity .5s;will-change:transform;
+  background:
+    linear-gradient(rgba(11,91,211,.2) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(90deg,rgba(11,91,211,.2) 1px,transparent 1px) 0 0/120px 120px,
+    linear-gradient(rgba(11,91,211,.1) 1px,transparent 1px) 0 0/24px 24px,
+    linear-gradient(90deg,rgba(11,91,211,.1) 1px,transparent 1px) 0 0/24px 24px;
+  -webkit-mask-image:radial-gradient(closest-side,#000 0,rgba(0,0,0,.55) 45%,transparent 100%);mask-image:radial-gradient(closest-side,#000 0,rgba(0,0,0,.55) 45%,transparent 100%)}
+.lens.on{opacity:1}
+.lens.on.is-tight{opacity:.35}
+.lens-xy{position:absolute;left:calc(50% + 22px);top:calc(50% + 20px);font-size:10px;white-space:pre;color:rgba(11,91,211,.75);transition:opacity .3s}
+.lens.is-tight .lens-xy{opacity:0}
+.lens-ring{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:1.5px solid rgba(61,134,255,.9);opacity:0}
+.lens-ring.go{animation:lens-ring .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes lens-ring{0%{opacity:1;scale:.3}100%{opacity:0;scale:16}}
+
+/* every brand button: a light runs round its rim while it is pointed at, a sheen crosses it */
+@property --arc{syntax:'<angle>';inherits:false;initial-value:0deg}
+.pill{position:relative;isolation:isolate;overflow:hidden}
+.pill::before{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.28) 48%,transparent 66%) no-repeat;background-size:250% 100%;background-position:150% 0;transition:background-position 0s}
+.pill:hover::before{background-position:-50% 0;transition:background-position .8s cubic-bezier(.3,.7,.2,1)}
+.pill::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:conic-gradient(from var(--arc),transparent 0 62%,rgba(160,200,255,.0) 62%,rgba(190,220,255,.9) 84%,#fff 90%,transparent 97%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.pill:hover::after,.pill:focus-visible::after{opacity:1;animation:pill-arc 1.8s linear infinite}
+@keyframes pill-arc{to{--arc:360deg}}
+.pill:active{transform:translateY(0) scale(.98)}
+.line-btn{transition:box-shadow .25s,color .25s,transform .25s}
+.line-btn:hover{box-shadow:inset 0 0 0 1.5px var(--brand);color:var(--brand)}
+.line-btn:active{transform:scale(.98)}
+
+/* text links in the footer: the underline is drawn from the left, a current reaching the far end */
+.ft-cell a,.ft-bar a,.ft-map{background:linear-gradient(currentColor,currentColor) no-repeat 0 100%/0 1px;padding-bottom:2px;transition:color .2s,background-size .45s cubic-bezier(.2,.8,.2,1)}
+.ft-cell a:hover,.ft-bar a:hover,.ft-map:hover{background-size:100% 1px}
+
+/* home stats on meter drums */
+.stat .n{display:inline-flex;align-items:flex-start}
+.pd{display:inline-block;height:1em;overflow:hidden;line-height:1}
+.pd-s{display:block;transform:translateY(calc(var(--d,0) * -1em))}
+.pd-s b{display:block;height:1em;font-weight:inherit}
+
+/* footer: the way to the works, the hours, the time there now */
+.ft-cell .ft-map{align-self:flex-start;margin-top:14px;font-size:14px;font-weight:600;color:var(--brand);text-decoration:none}
+.ft-cell .ft-map span{margin-left:4px;font-family:var(--f-body);font-size:12px;color:inherit}
+.ft-hours{margin-top:10px;font-size:13.5px;color:var(--muted)}
+.ft-clock{display:inline-flex;align-items:center;gap:8px}
+.ft-clock i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(48,209,88,.18)}
+.ft-clock b{color:var(--ink);font-weight:600;font-size:12.5px}
+.ft-clock em{font-style:normal;animation:ft-colon 2s steps(1) infinite}
+@keyframes ft-colon{50%{opacity:.15}}
+
+@media (prefers-reduced-motion:reduce){
+  .pill::before,.pill::after,.ft-clock em{animation:none !important;transition:none !important}
+}
+.pill{translate:var(--px,0) var(--py,0);transition:background .25s,transform .25s,box-shadow .25s,translate .35s cubic-bezier(.2,.8,.2,1)}

@@ -15,14 +15,13 @@ const NAV = [
 ] as const;
 
 export default function Header() {
-  const barRef = useRef<HTMLDivElement>(null), hdrRef = useRef<HTMLElement>(null), navRef = useRef<HTMLElement>(null), hiRef = useRef<HTMLSpanElement>(null);
+  const hdrRef = useRef<HTMLElement>(null), navRef = useRef<HTMLElement>(null), hiRef = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
 
   useLayoutEffect(() => {
     const hdr = hdrRef.current!;
     const ctx = gsap.context(() => {
-      gsap.to(barRef.current, { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
       // firm up once the page moves; slip away while reading down, come back on the way up
       ScrollTrigger.create({
         start: 0, end: 'max',
@@ -73,7 +72,6 @@ export default function Header() {
             <i /><i />
           </button>
         </div>
-        <div className="progress" ref={barRef} aria-hidden="true" />
       </div>
 
       <div className="menu" id="menu" hidden={!open}>

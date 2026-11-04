@@ -23,16 +23,18 @@ const CLOSE_HMI: Cam = { r: 3.1, theta: 0.32, phi: 0.07, fx: -1.59, fy: 0.34, fz
 const CLOSE_LEADS: Cam = { r: 4.6, theta: -0.42, phi: 0.3, fx: 0.9, fy: 0.75, fz: -0.15, off: 0.6 };
 // exploded: first from the bench's side so its layers fan out across the screen, then round to the transformer
 const BENCH_SIDE: Cam = { r: 10.6, theta: -0.9, phi: 0.2, fx: -1.4, fy: 0.85, fz: 0.2, off: 1.35 };
-const XFMR_SIDE: Cam = { r: 9.6, theta: 0.62, phi: 0.22, fx: 1.55, fy: 1.05, fz: 0.55, off: 1.1 };
+// then the full walk-round: one 360° orbit of the exploded bay, a little above it so nothing hides the transformer
+const ORBIT: Cam = { r: 13.6, theta: -0.9, phi: 0.27, fx: 0.15, fy: 1.0, fz: 0.2, off: 0.9 };
 export const EXPLODED: Cam = { r: 15.6, theta: 0.24, phi: 0.2, fx: -0.2, fy: 0.95, fz: 0.2, off: 1.4 }; // reduced-motion still
 const LOW: Cam = { r: 11.5, theta: -0.4, phi: 0.05, fx: 0, fy: 0.45, fz: 0, off: 1.7 };
 const FINAL: Cam = { r: 10.6, theta: 0.2, phi: 0.12, fx: 0, fy: 0.3, fz: 0, off: 1.9 };
 // exit: a crane up and back, looking down on the bay as it dissolves into the page
 const CRANE: Cam = { r: 15.5, theta: 0.42, phi: 0.5, fx: 0, fy: 0.1, fz: 0, off: 0.9 };
 
-// scroll map (timeline time; the story runs 0..1, then the exit to END)
-const T = { connect: 0.06, explode: 0.32, exploded: 0.5, reassemble: 0.66, assembled: 0.84 };
-const END = 1.18;
+// scroll map (timeline time; the story runs 0..STORY, then the exit to END). D: what the 360° adds after the explode
+const D = 0.22;
+const T = { connect: 0.06, explode: 0.32, exploded: 0.5, orbit: 0.5, orbitEnd: 0.84, reassemble: 0.66 + D, assembled: 0.84 + D };
+const STORY = 1 + D, END = 1.18 + D;
 
 /** Live values the 3D scene reads every frame. E[k].v: 0 = assembled, 1 = exploded. */
 export const hero = {
@@ -58,7 +60,9 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
     const ramp = (a: number, b: number) => Math.max(0, Math.min(1, (p - a) / (b - a)));
     const n = Math.round((ramp(T.explode, T.exploded) - ramp(T.reassemble, T.assembled)) * TAGS.length);
     if (hudCount) hudCount.textContent = `${n} / ${TAGS.length}`;
+    const deg = Math.round(ramp(T.orbit, T.orbitEnd) * 360);
     const label = p < T.connect ? 'Ready' : p < T.explode ? 'Testing' : p < T.exploded ? 'Exploding'
+      : p < T.orbitEnd && deg > 0 ? `360° view · ${String(deg).padStart(3, '0')}°`
       : p < T.reassemble ? 'Exploded view' : p < T.assembled ? 'Reassembling' : 'Test complete';
     if (hudState && label !== hudLabel) { hudLabel = label; hudState.innerHTML = `<b>${label}</b>`; }
   };
@@ -73,7 +77,7 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
 
   const caps = [q('#cap1'), q('#cap2'), q('#cap3')];
   const io2 = 'power2.inOut', io3 = 'power3.inOut';
-  // ~5.7 screens of scrolling in total: 4 for the story, 0.7 for the exit, + the hero itself
+  // ~6.5 screens of scrolling in total: 4.9 for the story (the 360° is 1.4 of them), 0.7 for the exit, + the hero
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: { trigger: stage, start: 'top top', end: `+=${Math.round(400 * END)}%`, scrub: 0.6, pin: true, anticipatePin: 1, onUpdate: s => updateHud(s.progress * END) },
@@ -90,28 +94,30 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
     .to(caps[0], { autoAlpha: 0, duration: 0.03 }, 0.3)
     .to(caps[1], { autoAlpha: 1, duration: 0.03 }, 0.33);
 
-  // 2 · explode top-down while pulling back wide, hold with a slow orbit
+  // 2 · explode top-down while pulling back wide; then one full turn around the exploded bay, the bench's
+  //     layers labelled on the way out, the transformer's on the way back
   [...ASSEMBLY].reverse().forEach((k, i) => tl.to(E[k], { v: 1, duration: 0.18, ease: io3 }, T.explode + i * 0.005));
   tl.to(S, { ...BENCH_SIDE, duration: 0.18, ease: io2 }, 0.3)
     .to(S, { test: 0.8, duration: 0.28 }, 0.34)
     .to(S, { labels: 1, duration: 0.06 }, 0.44)
-    .to(S, { ...XFMR_SIDE, duration: 0.15, ease: 'sine.inOut' }, T.exploded)
-    .to(S, { labelSplit: 1, duration: 0.06 }, 0.52)
-    .to(S, { labels: 0, duration: 0.04 }, 0.63)
-    .to(caps[1], { autoAlpha: 0, duration: 0.03 }, 0.66);
+    .to(S, { ...ORBIT, duration: 0.08, ease: io2 }, T.orbit - 0.02)
+    .to(S, { spin: Math.PI * 2, duration: T.orbitEnd - T.orbit, ease: 'sine.inOut' }, T.orbit)
+    .to(S, { labelSplit: 1, duration: 0.06 }, (T.orbit + T.orbitEnd) / 2 - 0.03)
+    .to(S, { labels: 0, duration: 0.04 }, T.orbitEnd - 0.03)
+    .to(caps[1], { autoAlpha: 0, duration: 0.03 }, T.reassemble);
 
   // 3 · reassemble bottom-up on a low sweep, land on the hero shot with the report done
   ASSEMBLY.forEach((k, i) => tl.to(E[k], { v: 0, duration: 0.15, ease: io3 }, T.reassemble + i * 0.005));
   tl.to(S, { ...LOW, duration: 0.14, ease: io2 }, T.reassemble)
-    .to(S, { ...FINAL, duration: 0.12, ease: io2 }, 0.8)
-    .to(S, { test: 1, duration: 0.1 }, 0.78)
-    .to(caps[2], { autoAlpha: 1, duration: 0.04 }, 0.82)
-    .to(S, { glow: 0.3, duration: 0.08 }, 0.88);
+    .to(S, { ...FINAL, duration: 0.12, ease: io2 }, 0.8 + D)
+    .to(S, { test: 1, duration: 0.1 }, 0.78 + D)
+    .to(caps[2], { autoAlpha: 1, duration: 0.04 }, 0.82 + D)
+    .to(S, { glow: 0.3, duration: 0.08 }, 0.88 + D);
 
   // 4 · exit: the camera cranes up and back while the bay sinks into the page haze, so the
   // numbers below arrive on clean paper instead of after a cut
-  tl.to(caps[2], { autoAlpha: 0, y: -24, duration: 0.05, ease: 'power1.in' }, 1.0)
-    .to(S, { ...CRANE, duration: END - 1, ease: 'power2.in' }, 1.0)
-    .to(S, { haze: 1, duration: END - 1.03, ease: 'power1.in' }, 1.03)
-    .to(q('.hud'), { autoAlpha: 0, duration: 0.05 }, 1.06);
+  tl.to(caps[2], { autoAlpha: 0, y: -24, duration: 0.05, ease: 'power1.in' }, STORY)
+    .to(S, { ...CRANE, duration: END - STORY, ease: 'power2.in' }, STORY)
+    .to(S, { haze: 1, duration: END - STORY - 0.03, ease: 'power1.in' }, STORY + 0.03)
+    .to(q('.hud'), { autoAlpha: 0, duration: 0.05 }, STORY + 0.06);
 }

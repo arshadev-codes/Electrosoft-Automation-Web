@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PageTransition from './components/PageTransition';
+import LiveWire from './components/LiveWire';
+import Lens from './components/Lens';
 import Home from './pages/Home';
 import About from './pages/About';
 import Products from './pages/Products';
@@ -19,6 +21,8 @@ export default function App() {
   useSmoothScroll();
   return (
     <>
+      <Lens />
+      <LiveWire />
       <Header />
       <PageTransition>
         {location => (

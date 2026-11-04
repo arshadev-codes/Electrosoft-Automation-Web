@@ -48,10 +48,13 @@ export function createLinesMotion(section: HTMLElement, reduce: boolean) {
     return;
   }
 
+  // touch screens scroll in long flicks (one can cover the whole story): give the story 1.6× the room
+  // there, a softer catch-up, and let the MCC come out of the haze over the whole screen
+  const touch = matchMedia('(pointer: coarse)').matches;
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
-      trigger: section, start: 'top top', end: `+=${Math.round(320 * END / STORY)}%`, pin: true, scrub: 1, anticipatePin: 1,
+      trigger: section, start: 'top top', end: `+=${Math.round((touch ? 1.6 : 1) * 320 * END / STORY)}%`, pin: true, scrub: touch ? 1.6 : 1, anticipatePin: 1,
       onUpdate: st => {
         if (hudBar) hudBar.style.transform = `scaleX(${st.progress})`;
         const b = S.scan > 0.5;
@@ -83,7 +86,7 @@ export function createLinesMotion(section: HTMLElement, reduce: boolean) {
     .to([q('.lx-b'), q('.lx-hud')], { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power1.in' }, STORY + 0.2);
 
   // entry: the MCC comes up out of the haze as the section scrolls into place, before the pin
-  gsap.fromTo(S, { hazeIn: 1 }, { hazeIn: 0, ease: 'none', immediateRender: false, scrollTrigger: { trigger: section, start: 'top 95%', end: 'top 15%', scrub: true } });
+  gsap.fromTo(S, { hazeIn: 1 }, { hazeIn: 0, ease: 'none', immediateRender: false, scrollTrigger: { trigger: section, start: touch ? 'top bottom' : 'top 95%', end: touch ? 'top top' : 'top 15%', scrub: touch ? 0.8 : true } });
 
   // copy: the panels block wipes up and out, the testing block rises in from a mask
   tl.fromTo(q('.lx-a'), { yPercent: 0, opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }, { yPercent: -18, opacity: 0, clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'power2.in' }, 3.0)
