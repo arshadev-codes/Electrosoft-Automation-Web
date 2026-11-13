@@ -83,7 +83,7 @@ export function createHeroMotion(stage: HTMLElement, reduce: boolean) {
     scrollTrigger: { trigger: stage, start: 'top top', end: `+=${Math.round(400 * END)}%`, scrub: 0.6, pin: true, anticipatePin: 1, onUpdate: s => updateHud(s.progress * END) },
   });
 
-  // 1 · connect: push in on the X'mer Prime screen, then sweep to the bushings as current flows
+  // 1 · connect: push in on the X'mer Edge screen, then sweep to the bushings as current flows
   tl.to('#heroCopy', { opacity: 0, y: -60, duration: 0.08, ease: 'power1.in' }, 0)
     .to(S, { callouts: 0, duration: 0.06 }, 0)
     .to(S, { ...CLOSE_HMI, duration: 0.15, ease: io2 }, 0)

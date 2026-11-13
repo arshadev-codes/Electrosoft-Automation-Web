@@ -419,7 +419,7 @@ a{color:var(--brand)}
 
 
 /* =====================================================================
-   1.6b Report generation: X'mer Prime on a laptop. The lid really hinges on the deck (CSS 3D),
+   1.6b Report generation: X'mer Edge on a laptop. The lid really hinges on the deck (CSS 3D),
    and the report's parts lift out of the screen into the space beside it.
    ===================================================================== */
 .rp-stage{position:relative;height:100vh;height:100svh;min-height:640px;overflow:hidden;display:flex;flex-direction:column;align-items:center}
@@ -454,7 +454,7 @@ a{color:var(--brand)}
 .mb-display{position:absolute;left:2.4%;right:2.4%;top:4.2%;bottom:3.6%;overflow:hidden;border-radius:3px;background:#F3F5F8}
 .mb-glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 38%)}
 
-/* ---------- the screen: X'mer Prime report module at 1280×800 design pixels ---------- */
+/* ---------- the screen: X'mer Edge report module at 1280×800 design pixels ---------- */
 .mb-ui{position:absolute;left:0;top:0;width:1280px;height:800px;transform-origin:0 0;transform:scale(var(--s,.5));display:flex;flex-direction:column;background:#F3F5F8;color:var(--ink);font:500 16px/1.4 var(--f-body)}
 .mb-ui svg{display:block;flex:none}
 .ui-top{height:56px;flex:none;display:flex;align-items:center;gap:22px;padding:0 24px;background:#fff;border-bottom:1px solid #E3E6EA}

@@ -5,7 +5,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 /*
  * 1.6b Report generation, pinned and scrubbed:
- *   open  — the closed laptop tilts up toward the viewer and its lid opens; X'mer Prime™ boots
+ *   open  — the closed laptop tilts up toward the viewer and its lid opens; X'mer Edge™ boots
  *   run   — the tests tick to Pass one by one while the report page writes itself
  *   lift  — four parts of the screen lift out toward the viewer, turn to face them and settle beside
  *           the laptop with what they do (phones: one at a time above it)

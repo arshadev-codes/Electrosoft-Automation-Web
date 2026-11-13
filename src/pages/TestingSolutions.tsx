@@ -14,7 +14,7 @@ const XfmrScene = lazy(() => import('../components/XfmrScene'));
 // TODO: CONFIRM — brochure PDF not supplied yet (same file the footer links to)
 const BROCHURE = '/downloads/testing-brochure.pdf';
 
-// X'mer Prime™ features (CONTENT.md), in the order a reading travels
+// X'mer Edge™ features (CONTENT.md), in the order a reading travels
 const STOPS = [
   { id: 'xmer', name: 'User friendly', text: 'Set up, run and follow every test on one X\'mer Prime™ screen.' },
   { id: 'report', name: 'Auto report generation', text: 'The test report is written as the results come in.' },
@@ -38,7 +38,7 @@ const PHASES = [['r', 0], ['y', 40], ['b', 80]] as const;
 function Artifact({ id }: { id: string }) {
   if (id === 'xmer') return (
     <div className="art art-win">
-      <div className="art-bar"><i /><i /><i /><span>X'mer Prime™</span></div>
+      <div className="art-bar"><i /><i /><i /><span>X'mer Edge™</span></div>
       <ul>{TESTS.slice(0, 4).map(t => <li key={t.id}><span>{t.name}</span><b /></li>)}</ul>
     </div>
   );
@@ -166,17 +166,17 @@ export default function TestingSolutions() {
               </ul>
               <p className="ts-ref">In service at {sys.ref}</p>
             </div>
-            <p className="duty-key" aria-hidden="true"><span className="auto"><i />X'mer Prime™ does it</span><span className="hand"><i />Operator at the desk</span></p>
+            <p className="duty-key" aria-hidden="true"><span className="auto"><i />X'mer Edge™ does it</span><span className="hand"><i />Operator at the desk</span></p>
           </div>
         </div>
       </section>
 
-      {/* 3.3 X'mer Prime™: the path a reading takes */}
+      {/* 3.3 X'mer Edge™: the path a reading takes */}
       <section className="ts-xmer gut" aria-labelledby="ts-xmer-h">
         <div className="wrap">
           <div className="sec-head">
             <h2 id="ts-xmer-h">From the test bench to your buyer.</h2>
-            <p>Electrosoft X'mer Prime™ carries every reading the whole way, with nobody copying numbers.</p>
+            <p>Electrosoft X'mer Edge™ carries every reading the whole way, with nobody copying numbers.</p>
           </div>
           <ol className="ts-sig" style={{ '--p': reduce ? 1 : 0 } as CSSProperties}>
             <li className="ts-wire" aria-hidden="true"><i /><b /></li>

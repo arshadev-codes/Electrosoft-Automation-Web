@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { createReportMotion } from './reportMotion';
 import { useCinematic } from '../hooks/useCinematic';
 
-// CONTENT.md · Testing Solutions: X'mer Prime™ runs every test, does the calculations, auto-generates
+// CONTENT.md · Testing Solutions: X'mer Edge™ runs every test, does the calculations, auto-generates
 // reports, connects to ERP and gives buyers real-time online access to test data.
 // TODO: CONFIRM — the report module is still being built: the screen is a concept, the unit and values
 // are a labelled sample, and the test names are still [CONFIRM] in CONTENT.md.
@@ -38,7 +38,7 @@ export default function Report() {
       <div className="rp-stage">
         <header className="rp-head">
           <h2 id="report-h">Every test run ends in a finished report.</h2>
-          <p>Electrosoft X'mer Prime™ does the calculations and generates the report automatically, with ERP connectivity and real-time online access for your buyers.</p>
+          <p>Electrosoft X'mer Edge™ does the calculations and generates the report automatically, with ERP connectivity and real-time online access for your buyers.</p>
         </header>
 
         <div className="rp-scene">
@@ -55,11 +55,11 @@ export default function Report() {
               <div className="mb-bezel">
                 <i className="mb-cam" aria-hidden="true" />
                 <div className="mb-display">
-                  {/* X'mer Prime report module, laid out at 1280×800 and scaled to the display */}
+                  {/* X'mer Edge report module, laid out at 1280×800 and scaled to the display */}
                   <div className="mb-ui" aria-hidden="true">
                     <div className="ui-top">
                       <span className="ui-dots"><i /><i /><i /></span>
-                      <b className="ui-brand"><Bolt />X'mer Prime™</b>
+                      <b className="ui-brand"><Bolt />X'mer Edge™</b>
                       <span className="ui-tabs"><span>Live test</span><span className="on">Reports</span><span>Units</span><span>ERP</span></span>
                       <span className="ui-unit">Sample unit · 1500 kVA · 33 / 0.433 kV</span>
                     </div>
@@ -109,7 +109,7 @@ export default function Report() {
                 <div className="rp-card">
                   <ol className="rp-mini rp-tests">{TESTS.map(([n]) => <li key={n}><span>{n}</span><b>Pass</b></li>)}</ol>
                   <h3>Every calculation, done for you</h3>
-                  <p>X'mer Prime™ runs each test and does all the calculations. Zero human error.</p>
+                  <p>X'mer Edge™ runs each test and does all the calculations. Zero human error.</p>
                 </div>
               </div>
               <div className="rp-pop" style={{ '--py': '64%' } as CSSProperties}>

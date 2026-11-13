@@ -49,7 +49,7 @@ export default function Testing() {
       <div className="tx-wrap">
         <div className="tx-copy">
           <h2 id="testing-h">Transformer testing, automated end to end.</h2>
-          <p className="tx-lede">Electrosoft X'mer Prime™ switches the connections, runs each test and writes the report. Here is what it checks, part by part.</p>
+          <p className="tx-lede">Electrosoft X'mer Edge™ switches the connections, runs each test and writes the report. Here is what it checks, part by part.</p>
 
           <div className="tx-card" aria-live="polite">
             <div className="tx-meta">
