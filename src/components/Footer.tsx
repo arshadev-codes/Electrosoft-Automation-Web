@@ -17,10 +17,10 @@ const PRODUCTS = [
   ['PLC / SCADA', 'plc-scada'], ['PCC', 'pcc'], ['MCC', 'mcc'], ['Draw-Out MCC / PCC', 'draw-out'], ['APFC', 'apfc'],
   ['VFD Panels', 'vfd'], ['DC Panels', 'dc'], ['Distribution Boards', 'distribution'], ['Control Desk', 'control-desk'], ['Console / Workstation', 'console'],
 ];
-// TODO: CONFIRM — PDFs not supplied yet; drop them in public/downloads/ under these names.
+// TODO: CONFIRM — PDFs supplied; droped them in public/downloads/ under these names.
 const DOWNLOADS = [
-  ['Company Profile', 'company-profile.pdf'], ['CPRI IP65 Certificate', 'cpri-ip65.pdf'], ['CPRI 65kA Certificate', 'cpri-65ka.pdf'], ['ISO Certificate', 'iso.pdf'],
-  ['MSME Certificate', 'msme.pdf'], ['QAP for Electrical Panels', 'qap-electrical.pdf'], ['QAP for Automation Panels', 'qap-automation.pdf'], ['Transformer Testing Suite Brochure', 'testing-brochure.pdf'],
+  ['Company Profile', 'COMPANY_PROFILE.pdf'], ['CPRI IP65 Certificate', 'CPRI_IP65_CERTIFICATE.pdf'], ['CPRI 65kA Certificate', 'CPRI_65KA_CERTIFICATE.pdf'], ['ISO Certificate', 'ISO_CERTIFICATE.pdf'],
+  ['MSME Certificate', 'MSME_CERTIFICATE.pdf'], ['QAP for Electrical Panels', 'QAP_FOR_ELECTRICAL_PANELS.pdf'], ['QAP for Automation Panels', 'QAP_FOR_AUTOMATION_PANELS.pdf'], ['Transformer Testing Suite Brochure', 'COMPANY_PROFILE1.pdf'],
 ];
 const CERTS = ['CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered'];
 
