@@ -5,6 +5,7 @@ import Lineup from '../sections/Lineup';
 import Testing from '../sections/Testing';
 import Report from '../sections/Report';
 import Why from '../sections/Why';
+import Dossier from '../sections/Dossier';
 import Clients from '../sections/Clients';
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <Testing />
       <Report />
       <Why />
+      <Dossier />
       <Clients />
     </main>
   );

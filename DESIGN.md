@@ -1,8 +1,5 @@
 # DESIGN.md — Electrosoft Website
 
-Reference: `reference/prototype.html` (approved look). Open it in a browser before building anything.
-When in doubt, match the prototype.
-
 ## Direction
 Light, Apple-style product site with a futuristic 3D/scroll layer.
 Confident but moderate type, lots of space, one strong brand color, real 3D and scroll-driven motion.

@@ -1641,10 +1641,10 @@ a:hover > .arw{translate:3px 0}
 .pj-sheet.on .pj-elev .ln{stroke-dashoffset:0}
 .pj-elev .note{font:600 17px var(--f-mono);fill:var(--brand);opacity:0;transition:opacity .6s 1.4s}
 .pj-sheet.on .pj-elev .note{opacity:1}
-.pj-elev .cap{fill:var(--line);transition:fill .5s 1.5s,filter .5s 1.5s}
-.pj-sheet.on .pj-elev .cap.r{fill:var(--r);filter:drop-shadow(0 0 6px rgba(255,69,58,.8))}
-.pj-sheet.on .pj-elev .cap.y{fill:var(--y);filter:drop-shadow(0 0 6px rgba(255,214,10,.9))}
-.pj-sheet.on .pj-elev .cap.b{fill:var(--b);filter:drop-shadow(0 0 6px rgba(10,132,255,.8))}
+.pj-elev .bush{fill:var(--line);transition:fill .5s 1.5s,filter .5s 1.5s}
+.pj-sheet.on .pj-elev .bush.r{fill:var(--r);filter:drop-shadow(0 0 6px rgba(255,69,58,.8))}
+.pj-sheet.on .pj-elev .bush.y{fill:var(--y);filter:drop-shadow(0 0 6px rgba(255,214,10,.9))}
+.pj-sheet.on .pj-elev .bush.b{fill:var(--b);filter:drop-shadow(0 0 6px rgba(10,132,255,.8))}
 
 /* the title block */
 .pj-tb{display:flex;flex-direction:column;gap:14px;min-height:0;overflow:auto;padding:clamp(22px,2.6vw,36px);border-left:1px solid var(--line)}
@@ -1696,7 +1696,7 @@ a:hover > .arw{translate:3px 0}
   .pj-thumb{width:96px}
 }
 @media (prefers-reduced-motion:reduce){
-  .pj-sheet.panel img,.pj-elev .ln,.pj-elev .note,.pj-elev .cap,.pj-glide{transition:none}
+  .pj-sheet.panel img,.pj-elev .ln,.pj-elev .note,.pj-elev .bush,.pj-glide{transition:none}
 }
 
 /* =====================================================================
@@ -1967,3 +1967,180 @@ html{scrollbar-width:thin;scrollbar-color:#C3C8D0 transparent}
   .pill::before,.pill::after,.ft-clock em{animation:none !important;transition:none !important}
 }
 .pill{translate:var(--px,0) var(--py,0);transition:background .25s,transform .25s,box-shadow .25s,translate .35s cubic-bezier(.2,.8,.2,1)}
+
+
+/* =====================================================================
+   1.8 Featured projects: a project dossier, the ring binder a job is handed over in, turned sheet
+   by sheet (Dossier.tsx). Each leaf turns on --t (0 on the right, 1 laid over to the left); the
+   cover's turn is --open on the book.
+   ===================================================================== */
+.dz{padding-block:var(--sy)}
+.dz-desk{padding:12px 46px 0}
+.dz-book{--g:30px;--e:10px;--ph:clamp(450px,62vh,540px);--board:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(160deg,#33415A 0%,#1F2A3C 100%);
+  position:relative;max-width:1080px;height:var(--ph);margin:0 auto;perspective:2600px;perspective-origin:50% 30%;
+  touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;
+  /* closed, the binder is only its right half: slide it to the middle until the cover opens */
+  transform:translateX(calc((25% + var(--g) / 4) * -1 * (1 - var(--open,0))))}
+.dz-book.is-turning{cursor:grabbing}
+.dz-book.closed{cursor:pointer}
+
+/* the back board under the sheets, the spine between the boards (seen once open), the edges of the paper */
+.dz-board{position:absolute;top:calc(var(--e) * -1);bottom:calc(var(--e) * -1);left:calc(50% + var(--g) / 2 - 3px);right:calc(var(--e) * -1);border-radius:4px 11px 11px 4px;background:var(--board);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(14,17,22,.22),0 2px 4px rgba(14,17,22,.08),0 40px 60px -40px rgba(14,17,22,.7)}
+.dz-spine{position:absolute;top:calc(var(--e) * -1);bottom:calc(var(--e) * -1);left:calc(50% - var(--g) / 2 - 3px);width:calc(var(--g) + 6px);opacity:var(--open,0);
+  background:linear-gradient(90deg,#192231,#2C394F 50%,#192231)}
+.dz-edges{position:absolute;top:0;bottom:0;width:calc(50% - var(--g) / 2);pointer-events:none;border-radius:2px 7px 7px 2px;
+  box-shadow:1px 2px 0 -.5px #FFFFFF,2px 3.5px 0 -.5px #D5D8DD,3px 5px 0 -.5px #FFFFFF,4px 6.5px 0 -.5px #CDD1D7}
+.dz-edges.r{left:calc(50% + var(--g) / 2)}
+.dz-edges.l{right:calc(50% + var(--g) / 2);border-radius:7px 2px 2px 7px;opacity:var(--open,0);
+  box-shadow:-1px 2px 0 -.5px #FFFFFF,-2px 3.5px 0 -.5px #D5D8DD,-3px 5px 0 -.5px #FFFFFF,-4px 6.5px 0 -.5px #CDD1D7}
+
+/* a leaf turns about the middle of the spine */
+.dz-leaf{position:absolute;top:0;left:calc(50% + var(--g) / 2);width:calc(50% - var(--g) / 2);height:100%;
+  transform-origin:calc(var(--g) / -2) 50%;transform:rotateY(calc(var(--t,0) * -180deg));transform-style:preserve-3d;will-change:transform}
+.dz-leaf.cover{top:calc(var(--e) * -1);width:calc(50% - var(--g) / 2 + var(--e));height:calc(100% + var(--e) * 2)}
+.dz-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:2px 7px 7px 2px;background:var(--paper);
+  box-shadow:0 0 0 1px rgba(14,17,22,.07),0 1px 2px rgba(14,17,22,.05)}
+.dz-face.back{transform:rotateY(180deg);border-radius:7px 2px 2px 7px}
+/* the paper bending down into the rings, and the shade a sheet picks up as it turns */
+.dz-face::before,.dz-face::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit}
+.dz-face::before{background:linear-gradient(90deg,rgba(14,17,22,.08),rgba(14,17,22,0) 6%)}
+.dz-face.back::before{background:linear-gradient(270deg,rgba(14,17,22,.08),rgba(14,17,22,0) 6%)}
+.dz-face::after{background:linear-gradient(90deg,rgba(14,17,22,.26),rgba(14,17,22,.05));opacity:calc(var(--t,0) * 1.5)}
+.dz-face.back::after{background:linear-gradient(270deg,rgba(14,17,22,.26),rgba(14,17,22,.05));opacity:calc((1 - var(--t,0)) * 1.5)}
+
+/* the cover: a cloth-grain board with a label in a chrome holder; inside, project 1's picture is mounted */
+.dz-leaf.cover .dz-face{background:var(--board);border-radius:4px 11px 11px 4px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(255,255,255,.04),0 0 0 1px rgba(14,17,22,.25)}
+.dz-leaf.cover .dz-face.back{border-radius:11px 4px 4px 11px}
+.dz-leaf.cover .dz-face::before{display:none}
+.dz-mount{position:absolute;inset:0}
+.dz-leaf.cover .dz-mount{inset:var(--e) 0 var(--e) var(--e);border-radius:7px 2px 2px 7px;background:var(--paper);box-shadow:0 0 0 1px rgba(14,17,22,.2)}
+.dz-cover{position:absolute;inset:0;display:grid;place-items:center;padding:24px}
+.dz-label{display:grid;justify-items:center;gap:9px;width:min(320px,82%);padding:26px 24px 22px;border-radius:5px;text-align:center;color:var(--ink);background:#F6F7F9;
+  box-shadow:0 0 0 5px #C5CAD2,0 0 0 6px rgba(14,17,22,.45),inset 0 0 0 1px rgba(14,17,22,.06),0 14px 24px -12px rgba(0,0,0,.7)}
+.dz-logo{display:inline-flex;align-items:center;gap:7px;font:800 12px var(--f-display);letter-spacing:.1em}
+.dz-logo svg{width:10px;height:14px;fill:var(--brand)}
+.dz-label b{font:600 clamp(24px,2.3vw,30px)/1.1 var(--f-display);letter-spacing:-.03em}
+.dz-label .mono{color:var(--muted)}
+.dz-open{position:absolute;bottom:30px;left:50%;translate:-50% 0;display:inline-flex;align-items:center;gap:6px;border:0;cursor:pointer;padding:9px 16px;border-radius:999px;
+  font:600 13px var(--f-body);color:#fff;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);transition:background .25s}
+.dz-open:hover{background:rgba(255,255,255,.18)}
+.dz-open .arw{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+
+/* punched holes, under the rings */
+.dz-holes{--h:radial-gradient(circle,#1D2738 0 3.6px,rgba(29,39,56,.35) 4.4px,rgba(29,39,56,0) 5.4px);position:absolute;z-index:2;top:4%;bottom:4%;left:10px;width:12px;pointer-events:none;
+  background:var(--h) 0 17%/12px 12px no-repeat,var(--h) 0 50%/12px 12px no-repeat,var(--h) 0 83%/12px 12px no-repeat}
+.dz-face.back .dz-holes{left:auto;right:10px}
+
+/* the ring mechanism down the spine; the rings cross it onto both pages */
+.dz-mech{position:absolute;z-index:90;top:4%;bottom:4%;left:50%;width:14px;margin-left:-7px;border-radius:7px;pointer-events:none;opacity:var(--open,0);
+  background:linear-gradient(90deg,#868C95,#F3F4F6 42%,#B4B9C1 62%,#787E87);box-shadow:0 3px 8px rgba(14,17,22,.4)}
+.dz-mech i{position:absolute;left:50%;top:calc(var(--r) * 100%);width:calc(var(--g) + 42px);height:15px;translate:-50% -50%;border-radius:999px;
+  border:3.5px solid;border-color:#F4F6F8 #9AA0A9 #7C828B #D5D9DE;box-shadow:0 4px 6px -2px rgba(14,17,22,.45),inset 0 1px 1px rgba(255,255,255,.5)}
+
+/* index tabs: on the outer edge, a little lower on every sheet; the one on show is brand */
+.dz-tab{position:absolute;z-index:1;top:calc(24px + var(--k) * 100px);left:100%;width:34px;height:92px;display:flex;align-items:center;justify-content:center;gap:7px;padding:0;border:0;cursor:pointer;
+  writing-mode:vertical-rl;font:600 12px var(--f-body);color:var(--ink-2);background:#E9EDF2;border-radius:0 8px 8px 0;
+  box-shadow:inset 1px 0 0 rgba(14,17,22,.06),0 0 0 1px rgba(14,17,22,.07),0 6px 12px -8px rgba(14,17,22,.4);transition:background .25s,color .25s}
+.dz-tab .mono{font-size:10.5px;color:var(--muted);transition:color .25s}
+.dz-tab:hover{color:var(--brand)}
+.dz-tab[aria-current="true"]{background:var(--brand);color:#fff}
+.dz-tab[aria-current="true"] .mono{color:rgba(255,255,255,.72)}
+.dz-tab.l{left:auto;right:100%;rotate:180deg}
+
+/* left page: the picture with a caption under it */
+.dz-vis{position:absolute;inset:0;padding:18px 40px 40px 18px}
+.dz-pic{position:relative;height:100%;overflow:hidden;border-radius:3px;background:#F8F9FB;box-shadow:0 0 0 1px rgba(14,17,22,.06)}
+.dz-pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.dz-pic .pj-marks{inset:12px;--l:16px}
+.dz-vis.test .pj-marks{--c:rgba(11,91,211,.45)}
+.dz-fig{position:absolute;left:18px;bottom:13px;color:var(--muted)}
+.dz-vis.panel img{filter:brightness(1.9) saturate(.15) blur(8px);transition:filter 1.8s cubic-bezier(.2,.8,.2,1)}
+.dz-vis.panel.on img{filter:none}
+.dz-vis.on .pj-elev .ln{stroke-dashoffset:0}
+.dz-vis.on .pj-elev .note{opacity:1}
+.dz-vis.on .pj-elev .bush.r{fill:var(--r);filter:drop-shadow(0 0 6px rgba(255,69,58,.8))}
+.dz-vis.on .pj-elev .bush.y{fill:var(--y);filter:drop-shadow(0 0 6px rgba(255,214,10,.9))}
+.dz-vis.on .pj-elev .bush.b{fill:var(--b);filter:drop-shadow(0 0 6px rgba(10,132,255,.8))}
+
+/* right page: the title block */
+.dz-facts{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;padding:clamp(22px,2.4vw,30px) clamp(22px,2.6vw,34px) clamp(22px,2.4vw,30px) 46px}
+.dz-facts-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:11px;border-bottom:1.5px solid var(--ink-2)}
+.dz-facts-top .mono{color:var(--muted)}
+.dz-kind{font-size:12.5px;font-weight:600;color:var(--brand)}
+.dz-facts h3{margin-top:4px;font-size:clamp(21px,1.9vw,27px);line-height:1.12;font-weight:600;letter-spacing:-.03em}
+.dz-sub{margin-top:-5px;font-size:15px;font-weight:600;color:var(--muted)}
+.dz-facts dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin:4px 0 0;border:1px solid var(--line);border-radius:6px}
+.dz-facts dl > div{grid-column:1 / -1;padding:9px 14px;border-top:1px solid var(--line)}
+.dz-facts dl > div:first-child{border-top:0}
+.dz-facts dl > div.half{grid-column:auto}
+.dz-facts dl > div.half + div.half{border-left:1px solid var(--line)}
+.dz-facts dt{font-size:11.5px;font-weight:600;color:var(--muted)}
+.dz-facts dd{margin:2px 0 0;font-size:14.5px;font-weight:500;line-height:1.45;color:var(--ink)}
+.dz-facts dd.mono{font-size:12.5px}
+.dz-facts .line-btn{margin-top:auto;align-self:flex-start;box-shadow:inset 0 0 0 1px var(--line)}
+
+/* under the binder: step through, a hint, the way to the full register */
+.dz-ctl{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 24px;margin-top:clamp(30px,4.5vh,48px)}
+.dz-step{display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:var(--paper);box-shadow:var(--hair),0 8px 20px -16px rgba(14,17,22,.4)}
+.dz-step button{width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--ink);cursor:pointer;transition:background .2s,color .2s}
+.dz-step button:hover:not(:disabled){background:#EDF2FA;color:var(--brand)}
+.dz-step button:disabled{color:var(--faint);cursor:default}
+.dz-step svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dz-step .mono{min-width:112px;text-align:center;color:var(--ink-2)}
+.dz-hint{font-size:14px;color:var(--muted)}
+.dz-hint .touch{display:none}
+@media (hover:none){.dz-hint .fine{display:none}.dz-hint .touch{display:inline}}
+
+@media (max-width:1000px){
+  .dz-book{--ph:clamp(450px,56vh,520px)}
+  .dz-facts dl > div{padding:8px 12px}
+  .dz-facts dd{font-size:14px}
+}
+/* phones: the binder stands up, bound along the middle; sheets turn upward, tabs hang off the foot */
+@media (max-width:760px){
+  .dz-desk{padding:44px 0 40px}
+  .dz-book{--g:26px;--e:8px;--ph:450px;height:calc(var(--ph) * 2 + var(--g));max-width:none;perspective:1900px;perspective-origin:50% 50%;
+    transform:translateY(calc((25% + var(--g) / 4) * -1 * (1 - var(--open,0))))}
+  .dz-board{top:calc(50% + var(--g) / 2 - 3px);left:calc(var(--e) * -1);border-radius:4px 4px 11px 11px}
+  .dz-spine{top:calc(50% - var(--g) / 2 - 3px);bottom:auto;height:calc(var(--g) + 6px);left:calc(var(--e) * -1);right:calc(var(--e) * -1);width:auto;
+    background:linear-gradient(180deg,#192231,#2C394F 50%,#192231)}
+  .dz-edges{left:0;right:0;width:auto;height:calc(50% - var(--g) / 2);border-radius:2px 2px 7px 7px;
+    box-shadow:0 2px 0 -.5px #FFFFFF,0 3.5px 0 -.5px #D5D8DD,0 5px 0 -.5px #FFFFFF,0 6.5px 0 -.5px #CDD1D7}
+  .dz-edges.r{top:calc(50% + var(--g) / 2);bottom:auto}
+  .dz-edges.l{top:0;bottom:auto;right:0;border-radius:7px 7px 2px 2px;
+    box-shadow:0 -2px 0 -.5px #FFFFFF,0 -3.5px 0 -.5px #D5D8DD,0 -5px 0 -.5px #FFFFFF,0 -6.5px 0 -.5px #CDD1D7}
+  .dz-leaf{top:calc(50% + var(--g) / 2);left:0;width:100%;height:calc(50% - var(--g) / 2);
+    transform-origin:50% calc(var(--g) / -2);transform:rotateX(calc(var(--t,0) * 180deg))}
+  .dz-leaf.cover{top:calc(50% + var(--g) / 2);left:calc(var(--e) * -1);width:calc(100% + var(--e) * 2);height:calc(50% - var(--g) / 2 + var(--e))}
+  .dz-face{border-radius:2px 2px 7px 7px}
+  .dz-face.back{transform:rotateX(180deg);border-radius:7px 7px 2px 2px}
+  .dz-face::before{background:linear-gradient(180deg,rgba(14,17,22,.08),rgba(14,17,22,0) 6%)}
+  .dz-face.back::before{background:linear-gradient(0deg,rgba(14,17,22,.08),rgba(14,17,22,0) 6%)}
+  .dz-face::after{background:linear-gradient(180deg,rgba(14,17,22,.26),rgba(14,17,22,.05))}
+  .dz-face.back::after{background:linear-gradient(0deg,rgba(14,17,22,.26),rgba(14,17,22,.05))}
+  .dz-leaf.cover .dz-face{border-radius:4px 4px 11px 11px}
+  .dz-leaf.cover .dz-face.back{border-radius:11px 11px 4px 4px}
+  .dz-leaf.cover .dz-mount{inset:var(--e) var(--e) 0 var(--e);border-radius:7px 7px 2px 2px}
+  .dz-holes{top:10px;bottom:auto;left:4%;right:4%;width:auto;height:12px;
+    background:var(--h) 17% 0/12px 12px no-repeat,var(--h) 50% 0/12px 12px no-repeat,var(--h) 83% 0/12px 12px no-repeat}
+  .dz-face.back .dz-holes{top:auto;bottom:10px;left:4%;right:4%}
+  .dz-mech{top:50%;bottom:auto;left:4%;right:4%;width:auto;height:14px;margin:-7px 0 0;background:linear-gradient(180deg,#868C95,#F3F4F6 42%,#B4B9C1 62%,#787E87)}
+  .dz-mech i{left:calc(var(--r) * 100%);top:50%;width:15px;height:calc(var(--g) + 40px);border-color:#F4F6F8 #7C828B #9AA0A9 #D5D9DE}
+  .dz-tab{top:100%;left:calc(8px + var(--k) * (100% - 16px) / 4);width:calc((100% - 16px) / 4 - 6px);height:32px;writing-mode:horizontal-tb;border-radius:0 0 8px 8px;font-size:12px}
+  .dz-tab .mono{display:none}
+  .dz-tab.l{top:auto;bottom:100%;right:auto;rotate:none;border-radius:8px 8px 0 0}
+  .dz-vis{padding:16px 16px 40px}
+  .dz-fig{left:16px;bottom:14px}
+  .dz-facts{padding:34px 18px 18px;gap:10px}
+  .dz-facts h3{font-size:20px}
+  .dz-sub{font-size:14px}
+  .dz-facts dd{font-size:13.5px}
+  .dz-facts dd.mono{font-size:12px}
+  .dz-facts .line-btn{padding:10px 16px;font-size:13.5px}
+  .dz-label{padding:22px 18px 18px}
+}
+@media (prefers-reduced-motion:reduce){
+  .dz-vis.panel img,.dz-pic .pj-elev .ln,.dz-pic .pj-elev .note,.dz-pic .pj-elev .bush{transition:none}
+}

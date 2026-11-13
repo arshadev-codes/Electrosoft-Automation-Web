@@ -12,16 +12,21 @@ const ADDRESS = ['S7-1/2, Jai Mata Di Compound,', 'Bhiwandi Road, Kalher,', 'Dis
 const NEEDS = ['Panels', 'Automation', 'Transformer Testing', 'Other'] as const;
 type Need = typeof NEEDS[number];
 
-// ?product=<id> (every "Request a quote" link on the site) → what they asked about, and which requirement
+// ?product=<id>[,<id>…] (every "Request a quote" link on the site; the home line-up sends several)
+// → what they asked about, and which requirement (the first item's)
 const AUTOMATION = ['plc-scada', 'vfd', 'control-desk', 'console'];
-function fromProduct(id: string | null): { need: Need | null; about: string } {
-  if (!id) return { need: null, about: '' };
+function lookup(id: string): { need: Need | null; about: string } {
   if (id === 'transformer-testing') return { need: 'Transformer Testing', about: 'Transformer Testing Suite' };
   const bench = BENCHES.find(b => b.id === id);
   if (bench) return { need: 'Transformer Testing', about: bench.name };
   const p = RANGE.flatMap(g => g.items).find(x => x.id === id);
   if (!p) return { need: null, about: '' };
   return { need: AUTOMATION.includes(id) ? 'Automation' : id === 'turnkey' || id === 'assembly' ? 'Other' : 'Panels', about: p.name };
+}
+function fromProduct(param: string | null): { need: Need | null; about: string } {
+  const found = (param ?? '').split(',').map(id => lookup(id.trim())).filter(x => x.about);
+  if (!found.length) return { need: null, about: '' };
+  return { need: found[0].need, about: found.map(x => x.about).join(', ') };
 }
 
 const okEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
@@ -32,7 +37,7 @@ const okPhone = (v: string) => v.replace(/\D/g, '').length >= 8;
  * you, the requirement, the message) close as each is filled; when all four are shut, current reaches
  * the lamp and the send button lights. Beside it: how to reach us, and a drawn location card.
  *
- * TODO: CONFIRM — no form service yet (your call, 2026-11-02): sending opens the visitor's email app
+ * TODO: CONFIRM — no form service yet (decided 2026-11-02): sending opens the visitor's email app
  * with the enquiry written out, or WhatsApp. Swap send() for a real service (Formspree, a Vercel
  * function…) when one is chosen.
  */
