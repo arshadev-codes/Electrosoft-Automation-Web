@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type CSSProperties, type PointerEvent } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -16,19 +16,6 @@ const FEATURED = [
   { id: 'vfd', cat: 'Energy', name: 'VFD Panels', text: 'Match motor speed to load and cut energy cost.', points: ['Built to your application'] },
   { id: 'pcc', cat: 'Power', name: 'PCC', text: 'Heavy-duty power control centres with special bus-bar and wiring expertise.', points: ['CPRI approved 65kA · IP65'] },
 ];
-
-// the card tilts a little toward the mouse; the photo drifts the other way
-const tilt = (e: PointerEvent<HTMLElement>) => {
-  if (e.pointerType !== 'mouse') return;
-  const b = e.currentTarget.querySelector<HTMLElement>('.lu-body')!, r = b.getBoundingClientRect();
-  const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-  b.style.setProperty('--ry', `${x * 4}deg`); b.style.setProperty('--rx', `${-y * 4}deg`);
-  b.style.setProperty('--mx', `${x * -10}px`); b.style.setProperty('--my', `${y * -8}px`);
-};
-const untilt = (e: PointerEvent<HTMLElement>) => {
-  const b = e.currentTarget.querySelector<HTMLElement>('.lu-body')!;
-  ['--ry', '--rx', '--mx', '--my'].forEach(v => b.style.removeProperty(v));
-};
 
 export default function Lineup() {
   const ref = useRef<HTMLElement>(null);
@@ -92,7 +79,7 @@ export default function Lineup() {
 
         <div className="lu-grid">
           {FEATURED.map((p, i) => (
-            <Link key={p.id} className={`lu-card${i === 0 ? ' big' : ''}`} to={`/products#${p.id}`} onPointerMove={tilt} onPointerLeave={untilt} style={{ '--i': i } as CSSProperties}>
+            <Link key={p.id} className={`lu-card${i === 0 ? ' big' : ''}`} to={`/products#${p.id}`} style={{ '--i': i } as CSSProperties}>
               <div className="lu-body">
                 <div className="lu-txt">
                   <span className="lu-chip"><i />{p.cat}</span>

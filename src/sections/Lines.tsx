@@ -33,8 +33,8 @@ export default function Lines() {
       {near && <Suspense fallback={null}><LinesScene sectionRef={ref} /></Suspense>}
 
       <div className="lx-copy lx-a">
-        <h3>Electrical &amp; Automation Panels</h3>
-        <p>PLC/SCADA, PCC, MCC, draw-out, APFC, VFD, DC and distribution panels, built to CPRI-approved design and 100% tested before dispatch.</p>
+        <h3>Electrosoft X’mer Edge™</h3>
+        <p>Experience next-generation transformer testing with fully automated connections, precise test execution, and instant report generation for unmatched accuracy and efficiency.</p>
         <dl className="lx-plate">
           <div><dt>Short circuit</dt><dd>65 kA</dd></div>
           <div><dt>Enclosure</dt><dd>IP65</dd></div>
@@ -54,9 +54,9 @@ export default function Lines() {
 
       {/* pinned to the 3D model; positioned every frame by LinesScene, in this order */}
       <div className="callouts lx-callouts" aria-hidden="true">
-        <div className="callout" style={{ '--l': '64px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>65 kA short circuit</b><span>CPRI approved design · IP65</span></div></div>
-        <div className="callout" style={{ '--l': '120px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>PLC / SCADA</b><span>Programmed by a team with 20+ years</span></div></div>
-        <div className="callout down" style={{ '--l': '50px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>100% tested</b><span>Before dispatch</span></div></div>
+        <div className="callout" style={{ '--l': '110px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
+        <div className="callout right" style={{ '--l': '84px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Ratio &amp; vector group</b><span>Measured and verified</span></div></div>
+        <div className="callout down" style={{ '--l': '190px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Report generated</b><span>Test results ready to share</span></div></div>
         <div className="callout left" style={{ '--l': '40px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest rating our systems test</span></div></div>
         <div className="callout" style={{ '--l': '110px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
         <div className="callout down" style={{ '--l': '60px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Zero human error</b><span>Connections switched automatically</span></div></div>

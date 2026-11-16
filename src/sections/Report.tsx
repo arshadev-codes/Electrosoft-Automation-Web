@@ -105,32 +105,32 @@ export default function Report() {
               </div>
 
               {/* the parts that lift out of the screen, with what they do */}
-              <div className="rp-pop" style={{ '--py': '-14%' } as CSSProperties}>
+              <div className="rp-pop" style={{ '--py': '-50%' } as CSSProperties}>
                 <div className="rp-card">
                   <ol className="rp-mini rp-tests">{TESTS.map(([n]) => <li key={n}><span>{n}</span><b>Pass</b></li>)}</ol>
                   <h3>Every calculation, done for you</h3>
                   <p>X'mer Edge™ runs each test and does all the calculations. Zero human error.</p>
                 </div>
               </div>
-              <div className="rp-pop" style={{ '--py': '64%' } as CSSProperties}>
+              <div className="rp-pop" style={{ '--py': '-50%' } as CSSProperties}>
                 <div className="rp-card">
                   <div className="rp-mini rp-doc">
                     <div><Bolt /><b>Routine test report</b><span>PDF</span></div>
-                    <i /><i /><i /><i />
+                    <i /><i /><i /><i /> <i /><i /><i /><i />
                     <p>All tests passed <b>PASSED</b></p>
                   </div>
                   <h3>The report writes itself</h3>
                   <p>Test reports are generated automatically at the end of the run.</p>
                 </div>
               </div>
-              <div className="rp-pop" style={{ '--py': '-14%' } as CSSProperties}>
+              <div className="rp-pop" style={{ '--py': '50%' } as CSSProperties}>
                 <div className="rp-card">
                   <ul className="rp-mini rp-erp">{ERP.map(n => <li key={n}>{n}<Tick /></li>)}</ul>
                   <h3>Straight into your ERP</h3>
                   <p>Results and reports flow into your ERP system.</p>
                 </div>
               </div>
-              <div className="rp-pop" style={{ '--py': '64%' } as CSSProperties}>
+              <div className="rp-pop" style={{ '--py': '50%' } as CSSProperties}>
                 <div className="rp-card">
                   <div className="rp-mini rp-buyer"><span className="ui-live"><i />Live</span><b>portal / sample-unit</b><span className="rp-five">{TESTS.map(([n]) => <i key={n} />)}</span></div>
                   <h3>Live for your buyers</h3>

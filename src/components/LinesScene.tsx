@@ -4,7 +4,7 @@ import { createWorld, FLOOR_Y, shadeGround, type World } from '../three/stage';
 import { createMaterials } from '../three/materials';
 import { glowSprite } from '../three/kit';
 import { mergeStatic } from '../three/optimize';
-import { buildControlPanel } from '../three/models/controlPanel';
+import { buildTestBench } from '../three/models/testBench';
 import { buildTransformer } from '../three/models/transformer';
 import { lines } from '../sections/linesMotion';
 
@@ -60,8 +60,8 @@ function scanner(parent: THREE.Object3D) {
 }
 
 /**
- * 1.4 Two business lines: an Electrosoft MCC on a turntable that a scan ring rebuilds into a
- * transformer under test. Lazy-loaded by Lines; the scroll story is in linesMotion.ts.
+ * 1.4 Two business lines: an Electrosoft test bench on a turntable that a scan ring rebuilds
+ * into a transformer under test. Lazy-loaded by Lines; the scroll story is in linesMotion.ts.
  */
 export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLElement> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -110,7 +110,10 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
       const MA = createMaterials(), MB = createMaterials();
       const stageRoot = new THREE.Group(); stageRoot.position.y = FLOOR_Y; scene.add(stageRoot);
       const table = turntable(stageRoot);
-      const panel = buildControlPanel(MA, table); panel.root.position.y = TT_H;
+      const bench = buildTestBench(MA, table);
+      bench.root.scale.setScalar(1);
+      // The side power cabinet makes the test-bench footprint left-heavy.
+      bench.root.position.set(0.51, TT_H, 0);
       const xf = buildTransformer(MB, table); xf.root.position.y = TT_H;
       // bushing lights, R Y B, on while the transformer is under test
       const phase = [0xff453a, 0xffd60a, 0x0a84ff];
@@ -121,18 +124,23 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
       });
       Object.values(xf.parts).forEach(p => mergeStatic(p.inner));
       const keepAbove = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), keepBelow = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
-      clipTo(panel.root, keepAbove); clipTo(xf.root, keepBelow);
+      clipTo(bench.root, keepAbove); clipTo(xf.root, keepBelow);
       const scan = scanner(stageRoot);
       shadeGround(stageRoot);
 
       const anchors: { obj: THREE.Object3D; v: THREE.Vector3; set: 'a' | 'b' }[] = [
-        { obj: panel.root, v: panel.anchors.busbars, set: 'a' },
-        { obj: panel.root, v: panel.anchors.plc, set: 'a' },
-        { obj: panel.root, v: panel.anchors.door, set: 'a' },
+        { obj: bench.root, v: bench.anchors.hmi, set: 'a' },
+        { obj: bench.root, v: bench.anchors.meters, set: 'a' },
+        { obj: bench.root, v: bench.anchors.report, set: 'a' },
         // transformer cards sit off the unit: left of the end fins, right of the fins
         { obj: xf.parts.tank.inner, v: new THREE.Vector3(-0.88, 1.3, 0.3), set: 'b' },
         { obj: xf.parts.cover.inner, v: xf.anchors.cover, set: 'b' },
         { obj: xf.parts.tank.inner, v: new THREE.Vector3(0.9, 0.8, 0.3), set: 'b' },
+      ];
+      const panelCalloutWindows = [
+        { start: -0.1, end: 2.05 },
+        { start: 0.22, end: 2.82 },
+        { start: 0.84, end: 2.84 },
       ];
 
       camera.position.set(0, 2, 14); camera.lookAt(0, 0, 0);
@@ -167,12 +175,12 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
         camera.lookAt(target);
 
         table.rotation.y = S.spin;
-        panel.update(t, S.open);
+        bench.update(t, S.open, S.glow);
         const y = SCAN_LO + (SCAN_HI - SCAN_LO) * S.scan, morphing = S.scan > 0.001 && S.scan < 0.999;
         keepAbove.constant = -y; keepBelow.constant = y;
-        panel.root.visible = S.scan < 0.999; xf.root.visible = S.scan > 0.001;
+        bench.root.visible = S.scan < 0.999; xf.root.visible = S.scan > 0.001;
         // AO ignores clipping, so the half-hidden models skip it while the scan runs
-        panel.root.userData.noAO = xf.root.userData.noAO = morphing;
+        bench.root.userData.noAO = xf.root.userData.noAO = morphing;
         scan.visible = morphing; scan.position.y = y - FLOOR_Y;
         const edge = Math.min(1, S.scan * 12, (1 - S.scan) * 12);
         scan.children.forEach(c => { ((c as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = c === scan.children[0] ? edge : edge * 0.1; });
@@ -189,8 +197,9 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
         centre.set(0, FOCUS_Y, 0);
         callouts.forEach((el, i) => {
           const a = anchors[i];
-          const amt = a.set === 'a' ? S.callA : S.callB, idx = a.set === 'a' ? i : i - 3;
-          const o = Math.max(0, Math.min(1, amt * 3 - idx * 0.6));
+          const o = a.set === 'a'
+            ? Math.max(0, Math.min(1, (S.callA - panelCalloutWindows[i].start) / 0.28, (panelCalloutWindows[i].end - S.callA) / 0.28))
+            : Math.max(0, Math.min(1, S.callB * 3 - (i - 3) * 0.6));
           let pos: { x: number; y: number } | null = null;
           if (o > 0.001 && a.obj.visible !== false) {
             a.obj.localToWorld(tmp.copy(a.v));

@@ -8,11 +8,11 @@ gsap.registerPlugin(ScrollTrigger);
  * Like the hero, the pin and timeline exist from first paint and only move numbers;
  * the 3D chunk loads later and reads them every frame.
  *
- *   panels  — the MCC turns on the turntable, its doors swing open, spec callouts arrive
- *   morph   — doors close; a scan ring rises through it, rebuilding it as a transformer
+ *   panels  — the test bench turns on the turntable and its test callouts arrive
+ *   morph   — a scan ring rises through it, rebuilding it as a transformer
  *   testing — the transformer goes under test: windings glow, bushings light R Y B
  *   exit    — the camera pulls back and the turntable sinks into the page haze
- * On the way in, the MCC comes up out of that same haze while the section scrolls into place.
+ * On the way in, the test bench comes up out of that same haze while the section scrolls into place.
  */
 export interface LinesState {
   spin: number;   // turntable angle (rad)
@@ -23,7 +23,7 @@ export interface LinesState {
   theta: number;  // camera orbit
   phi: number;
   r: number;
-  callA: number;  // panel callouts, 0..1
+  callA: number;  // test-bench callouts, 0..1
   callB: number;  // transformer callouts, 0..1
   hazeIn: number; // arriving out of the page haze, 1..0
   hazeOut: number; // leaving into it, 0..1
@@ -42,8 +42,8 @@ export function createLinesMotion(section: HTMLElement, reduce: boolean) {
   const hudA = section.querySelector<HTMLElement>('.lx-hud [data-k="a"]'), hudB = section.querySelector<HTMLElement>('.lx-hud [data-k="b"]');
 
   if (reduce) {
-    // one still: the panel open on its turntable, both lines' copy readable
-    Object.assign(S, { spin: 0.3, open: 1, callA: 1, off: 0, hazeIn: 0 });
+    // one still: the test bench on its turntable, both lines' copy readable
+    Object.assign(S, { spin: 0.3, open: 1, callA: 1.5, off: 0, hazeIn: 0 });
     section.classList.add('is-still');
     return;
   }
@@ -67,9 +67,8 @@ export function createLinesMotion(section: HTMLElement, reduce: boolean) {
   tl.to(S, { spin: 0.55, duration: 3.2 }, 0)
     .to(S, { open: 1, duration: 1.8, ease: 'power2.inOut' }, 0.5)
     .to(S, { theta: -0.12, phi: 0.12, r: 8.6, duration: 2.6, ease: 'power1.inOut' }, 0.3)
-    .to(S, { callA: 1, duration: 0.8 }, 1.8)
+    .to(S, { callA: 2.9, duration: 2.9 }, 0.4)
   // morph
-    .to(S, { callA: 0, duration: 0.4 }, 3.0)
     .to(S, { open: 0, duration: 0.9, ease: 'power2.inOut' }, 3.0)
     .to(S, { scan: 1, duration: 2.6, ease: 'power1.inOut' }, 3.6)
     .to(S, { spin: 5.75, duration: 3.4, ease: 'power1.inOut' }, 3.4) // one full turn through the scan, ending front-on
@@ -85,7 +84,7 @@ export function createLinesMotion(section: HTMLElement, reduce: boolean) {
     .to(S, { hazeOut: 1, duration: END - STORY - 0.1, ease: 'power1.in' }, STORY + 0.1)
     .to([q('.lx-b'), q('.lx-hud')], { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power1.in' }, STORY + 0.2);
 
-  // entry: the MCC comes up out of the haze as the section scrolls into place, before the pin
+  // entry: the test bench comes up out of the haze as the section scrolls into place, before the pin
   gsap.fromTo(S, { hazeIn: 1 }, { hazeIn: 0, ease: 'none', immediateRender: false, scrollTrigger: { trigger: section, start: touch ? 'top bottom' : 'top 95%', end: touch ? 'top top' : 'top 15%', scrub: touch ? 0.8 : true } });
 
   // copy: the panels block wipes up and out, the testing block rises in from a mask

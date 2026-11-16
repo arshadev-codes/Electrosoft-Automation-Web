@@ -181,6 +181,8 @@ a{color:var(--brand)}
 .callout .card{position:absolute;left:-14px;bottom:var(--l,46px);white-space:nowrap;padding:11px 15px 12px 14px;border-radius:14px}
 .callout.down .card{bottom:auto;top:var(--l,46px)}
 .callout.left .card{left:auto;right:-14px}
+.callout.right .stem{bottom:auto;top:0;width:var(--l,34px);height:1px;background:linear-gradient(to right,var(--brand),rgba(11,91,211,.12))}
+.callout.right .card{left:calc(var(--l,34px) + 10px);top:-20px;bottom:auto}
 .callout b{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:15px;font-weight:600;letter-spacing:-.015em}
 .callout span{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
 .live{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(48,209,88,.2);animation:pulse-ok 1.8s ease-in-out infinite;flex:none;display:inline-block}
@@ -264,11 +266,9 @@ a{color:var(--brand)}
 .lu-card{position:relative;display:block;perspective:1100px;color:var(--ink);text-decoration:none;border-radius:24px}
 .lu-card.big{grid-row:span 2}
 .lu-card:focus-visible{outline:2px solid var(--brand);outline-offset:4px}
-/* the card face tilts a little toward the mouse (--rx/--ry) */
 .lu-body{position:relative;height:100%;display:flex;border-radius:inherit;overflow:hidden;background:var(--paper);box-shadow:var(--hair),var(--lift);
-  transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
-  transition:transform .6s cubic-bezier(.2,.8,.2,1),box-shadow .5s cubic-bezier(.2,.8,.2,1)}
-.lu-card:hover .lu-body{transition-duration:.25s,.5s;box-shadow:0 0 0 1px rgba(11,91,211,.16),var(--lift-hi)}
+  transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .45s cubic-bezier(.22,1,.36,1)}
+.lu-card:hover .lu-body,.lu-card:focus-visible .lu-body{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(11,91,211,.16),var(--lift-hi)}
 
 .lu-txt{position:relative;z-index:2;flex:1.05;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:26px 0 26px 26px}
 .lu-chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--brand)}
@@ -279,17 +279,17 @@ a{color:var(--brand)}
 .lu-pts li{position:relative;padding-left:16px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
 .lu-pts li::before{content:"";position:absolute;left:1px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--brand)}
 .lu-go{margin-top:auto;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--brand);font-weight:600;box-shadow:inset 0 0 0 1px var(--line);
-  transition:background .35s,color .35s,box-shadow .35s,rotate .5s cubic-bezier(.2,.8,.2,1)}
-.lu-card:hover .lu-go{background:var(--brand);color:#fff;box-shadow:inset 0 0 0 1px var(--brand);rotate:-45deg}
+  transition:background .35s,color .35s,box-shadow .35s,rotate .45s cubic-bezier(.22,1,.36,1)}
+.lu-card:hover .lu-go,.lu-card:focus-visible .lu-go{background:var(--brand);color:#fff;box-shadow:inset 0 0 0 1px var(--brand);rotate:-35deg}
 
-/* product photo on a soft studio sweep; drifts against the tilt and lifts on hover */
+/* product photo on a soft studio sweep */
 .lu-shot{position:relative;flex:1;min-width:0;background:radial-gradient(60% 55% at 50% 72%,#F2F4F7 0%,rgba(242,244,247,0) 100%)}
 .lu-card:not(.big) .lu-shot{margin-right:16px}
 .lu-shot::before{content:"";position:absolute;left:10%;right:10%;bottom:8%;height:18%;border-radius:50%;background:radial-gradient(closest-side,rgba(14,17,22,.2),rgba(14,17,22,0))}
 .lu-shot img{position:absolute;left:50%;bottom:9%;height:80%;max-width:92%;object-fit:contain;object-position:50% 100%;user-select:none;
-  transform:translateX(-50%) translate(var(--mx,0px),var(--my,0px));filter:drop-shadow(0 20px 20px rgba(14,17,22,.18));
-  transition:transform .7s cubic-bezier(.2,.8,.2,1),scale .7s cubic-bezier(.2,.8,.2,1)}
-.lu-card:hover .lu-shot img{scale:1.04;transition-duration:.3s,.7s}
+  transform:translateX(-50%);scale:1;filter:drop-shadow(0 20px 20px rgba(14,17,22,.18));
+  transition:scale .55s cubic-bezier(.22,1,.36,1)}
+.lu-card:hover .lu-shot img,.lu-card:focus-visible .lu-shot img{scale:1.025}
 
 /* the featured card: text on top, a big photo below */
 .lu-card.big .lu-body{flex-direction:column}
@@ -429,8 +429,8 @@ a{color:var(--brand)}
 .rp-scene{position:relative;flex:1;width:100%;display:flex;align-items:center;justify-content:center;perspective:2000px;perspective-origin:50% 25%}
 
 /* --w drives every size; the lid is 62% as tall as the laptop is wide */
-/* raised by about half the deck's depth in view, so lid and deck together sit centred */
-.mb{--w:min(600px,42vw);--t:calc(var(--w) * .014);--d:calc(var(--w) * .64);position:relative;width:var(--w);height:calc(var(--w) * .62);margin-top:calc(var(--w) * -.24);transform-style:preserve-3d}
+/* offset upward slightly to balance the lid and deck in the scene */
+.mb{--w:min(600px,42vw);--t:calc(var(--w) * .014);--d:calc(var(--w) * .64);position:relative;width:var(--w);height:calc(var(--w) * .62);margin-top:calc(var(--w) * -.06);transform-style:preserve-3d}
 /* deck: a slab lying flat in front of the hinge, a little lower than it so the closed lid rests on top */
 .mb-base{position:absolute;left:0;right:0;top:calc(100% + var(--t));height:var(--d);transform-origin:50% 0;transform:rotateX(90deg);
   border-radius:4px 4px calc(var(--w) * .035) calc(var(--w) * .035);background:linear-gradient(180deg,#C5C9D0 0%,#D9DCE1 22%,#D2D5DB 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}

@@ -368,9 +368,9 @@ export function buildTestBench(M: Mats, parent: THREE.Object3D) {
     parts: { bench, benchRoof: roof, benchInternals: internals, benchFascia: fascia, benchDesk: desk, panelInternals: pInt, panelDoor: pDoor },
     glands,
     anchors: {
-      benchFascia: new THREE.Vector3(0.6, 1.86, 0.03),
-      benchInternals: new THREE.Vector3(-0.3, 1.8, -0.22),
-      panelInternals: new THREE.Vector3(PX + 0.1, 0.9, PZ - 0.13),
+      hmi: new THREE.Vector3(-0.3, 1.49, 0.04),
+      meters: new THREE.Vector3(0.34, 1.74, 0.03),
+      report: new THREE.Vector3(-0.3, 1.3, 0.04),
     },
     callouts: {
       xmer: { part: 'benchFascia' as const, v: new THREE.Vector3(-0.3, 1.72, 0.03) },

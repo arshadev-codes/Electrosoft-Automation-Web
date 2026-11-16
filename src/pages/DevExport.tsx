@@ -6,6 +6,7 @@ import { disposeTree } from '../three/kit';
 import { buildControlPanel } from '../three/models/controlPanel';
 import { buildTransformer } from '../three/models/transformer';
 import { buildTestBay } from '../three/models/testBay';
+import {buildTestBench} from '../three/models/testBench';
 
 /*
  * Dev only (/dev/export): builds each code-made model and saves it as a .glb in exports/,
@@ -13,8 +14,10 @@ import { buildTestBay } from '../three/models/testBay';
  */
 const MODELS: [string, () => THREE.Object3D][] = [
   ['electrosoft-mcc.glb', () => { const g = new THREE.Group(); const p = buildControlPanel(createMaterials(), g); p.update(0, 0.6); return g; }],
+  ['test-bench.glb', () => { const g = new THREE.Group(); buildTestBench(createMaterials(), g); return g; }],
   ['transformer.glb', () => { const g = new THREE.Group(); buildTransformer(createMaterials(), g); return g; }],
   ['test-bay.glb', () => buildTestBay(createMaterials()).root],
+  
 ];
 
 export default function DevExport() {

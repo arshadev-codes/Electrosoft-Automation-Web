@@ -55,17 +55,17 @@ export default function Hero() {
       <div className="caps" aria-live="polite">
         <div className="cap" id="cap1">
           <span className="cap-step">Step 1 of 3 · Connect</span>
-          <h2>Test it without touching a cable.</h2>
+          <h2>Less wiring. More confidence.</h2>
           <p>Electrosoft X'mer Edge™ switches the physical connections automatically.</p>
         </div>
         <div className="cap" id="cap2">
           <span className="cap-step">Step 2 of 3 · Test</span>
-          <h2>Every test. Every calculation.</h2>
+          <h2>One start. Accurate results.</h2>
           <p>The software runs every test and does all the calculations. Zero human error.</p>
         </div>
         <div className="cap" id="cap3">
           <span className="cap-step">Step 3 of 3 · Report</span>
-          <h2>Reports, auto-generated.</h2>
+          <h2>Clear Results. Visual Reports. Better Insights.</h2>
           <p>ERP connectivity and real-time online access to test data for your buyers.</p>
         </div>
       </div>

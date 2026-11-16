@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 // The camera looks down on the laptop: a negative tilt brings the deck's front edge down and the lid's
 // top toward the viewer. The lid opens past upright (positive) so the screen ends up nearly square on.
 const TILT = -17, LID = 13, LEAN = TILT + LID; // LEAN: the screen's final lean in view (negative = top toward us)
-const SIDE = [-1, -1, 1, 1], GAP = 40;
+const SIDE = [-1, 1, -1, 1], GAP = 56;
 // each lifted part's place on the 1280×800 screen: centre (fx, fy) and width (fw), as fractions
 const SRC = [
   { fx: 0.175, fy: 0.395, fw: 0.3125 }, // routine tests
@@ -77,16 +77,16 @@ export function createReportMotion(section: HTMLElement, reduce: boolean) {
     const R = { step: 0 };
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
-      scrollTrigger: { trigger: section, start: 'top top', end: '+=260%', pin: true, scrub: 0.8, anticipatePin: 1, invalidateOnRefresh: true },
+      scrollTrigger: { trigger: section, start: 'top top', end: '+=260%', pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true },
     });
 
     // open
-    tl.fromTo(mb, { rotationX: -58, y: '4vh', scale: 0.86 }, { rotationX: TILT, y: 0, scale: 1, duration: 0.24, ease: 'power2.inOut' }, 0)
-      .fromTo(lid, { rotationX: -88 }, { rotationX: LID, duration: 0.22, ease: 'power2.inOut' }, 0.02)
-      .fromTo(display, { opacity: 0 }, { opacity: 1, duration: 0.06 }, 0.12)
+    tl.fromTo(mb, { rotationX: -58, y: '4vh', scale: 0.86 }, { rotationX: TILT, y: 0, scale: 1, duration: 0.2, ease: 'power2.inOut' }, 0)
+      .fromTo(lid, { rotationX: -88 }, { rotationX: LID, duration: 0.18, ease: 'power2.inOut' }, 0)
+      .fromTo(display, { opacity: 0 }, { opacity: 1, duration: 0.06 }, 0.1)
     // run
-      .to(R, { step: rows.length, duration: 0.18, onUpdate: () => setStep(Math.floor(R.step + 0.001)) }, 0.24)
-      .fromTo(q('.ui-progress i'), { scaleX: 0 }, { scaleX: 1, duration: 0.18 }, 0.24)
+      .to(R, { step: rows.length, duration: 0.18, onUpdate: () => setStep(Math.floor(R.step + 0.001)) }, 0.2)
+      .fromTo(q('.ui-progress i'), { scaleX: 0 }, { scaleX: 1, duration: 0.18 }, 0.2)
       .fromTo(q('.ui-page-body'), { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.18 }, 0.25);
 
     // lift
