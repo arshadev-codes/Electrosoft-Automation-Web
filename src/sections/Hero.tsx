@@ -72,7 +72,7 @@ export default function Hero() {
 
       {/* spec callouts pinned to the 3D model; positioned every frame by PanelScene */}
       <div className="callouts" aria-hidden="true">
-        <div className="callout down" data-id="mva" style={{ '--l': '34px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 160 MVA</b><span>Largest transformer our test systems handle</span></div></div>
+        <div className="callout down" data-id="mva" style={{ '--l': '34px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 750 MVA</b><span>Largest transformer our test systems handle</span></div></div>
         <div className="callout" data-id="xmer" style={{ '--l': '150px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Fully automatic · ERP connected</span></div></div>
         <div className="callout down" data-id="cpri" style={{ '--l': '58px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>CPRI approved</b><span>65kA · IP65 panel design</span></div></div>
       </div>

@@ -22,7 +22,7 @@ const DOWNLOADS = [
   ['Company Profile', 'COMPANY_PROFILE.pdf'], ['CPRI IP65 Certificate', 'CPRI_IP65_CERTIFICATE.pdf'], ['CPRI 65kA Certificate', 'CPRI_65KA_CERTIFICATE.pdf'], ['ISO Certificate', 'ISO_CERTIFICATE.pdf'],
   ['MSME Certificate', 'MSME_CERTIFICATE.pdf'], ['QAP for Electrical Panels', 'QAP_FOR_ELECTRICAL_PANELS.pdf'], ['QAP for Automation Panels', 'QAP_FOR_AUTOMATION_PANELS.pdf'], ['Transformer Testing Suite Brochure', 'COMPANY_PROFILE1.pdf'],
 ];
-const CERTS = ['CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered'];
+const CERTS = ['IEC 61439 certified','CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered',];
 
 // The page ends the way an engineering drawing does: a ruled title block.
 export default function Footer() {

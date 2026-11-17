@@ -52,11 +52,13 @@ Nav: About · Products · Testing Solutions · Projects · Gallery · Contact �
 - Buttons: `Get a Quote` (primary) · `Explore Testing Solutions` (ghost)
 - Visual: real photo or short looping video of a panel / test bench (no long scroll animation)
 
-### 2. Proof strip (4 numbers)
+### 2. Proof strip (6 facts)
+- **IEC 61439** — Certified switchgear assemblies
+- **IEEE** — Designed to IEEE standards
+- **ANSI** — Designed to ANSI standards
 - **1989** — Established
-- **80%+** — Business from repeat customers
-- **65kA / IP65** — CPRI approved panel design
-- **160 MVA** — Largest transformer rating our test systems handle
+- **750 MVA** — Largest transformer rating our test systems handle
+- **65 kA / IP65** — CPRI-approved panel design
 
 ### 3. Two business lines (2 large cards)
 **Electrical & Automation Panels**
