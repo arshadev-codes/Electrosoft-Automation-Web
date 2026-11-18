@@ -5,7 +5,7 @@ import { makePart } from './transformer';
 
 /*
  * Electrosoft transformer test bench: sloped control desk + upper meter panel
- * with the X'mer Edge™ HMI, PLC/RIO plate inside, and a power panel beside it.
+ * with the X'mer Prime™ HMI, PLC/RIO plate inside, and a power panel beside it.
  * Local space: origin at floor centre, +Z = operator side, units ≈ metres.
  */
 
@@ -115,7 +115,7 @@ export function meterTex(value: string, unit: string, col: string) {
   return canvasTexture(c);
 }
 
-/** X'mer Edge™ HMI, redrawn each frame from the test progress. */
+/** X'mer Prime™ HMI, redrawn each frame from the test progress. */
 function createHMI() {
   const W = 960, H = 600, SCALE = 0.75; // drawn in 960×600 units onto a 720×450 canvas
   const { c, x } = makeCanvas(W * SCALE, H * SCALE);
@@ -128,7 +128,7 @@ function createHMI() {
     x.fillStyle = '#0A0D13'; x.fillRect(0, 0, W, H);
     x.fillStyle = BRAND; x.fillRect(0, 0, W, 64);
     x.fillStyle = '#fff'; x.font = '800 30px Arial'; x.textBaseline = 'middle';
-    x.fillText("X'mer Edge™", 24, 33);
+    x.fillText("X'mer Prime™", 24, 33);
     x.font = '600 18px Arial'; x.fillStyle = 'rgba(255,255,255,.75)'; x.fillText('BAY 01 · FULLY AUTOMATIC', 236, 34);
     const state = test >= 1 ? 'PASS' : test > 0.02 ? 'RUNNING' : 'READY';
     const sc = state === 'PASS' ? '#30D158' : state === 'RUNNING' ? '#FFD60A' : '#9AA3B2';
@@ -368,9 +368,9 @@ export function buildTestBench(M: Mats, parent: THREE.Object3D) {
     parts: { bench, benchRoof: roof, benchInternals: internals, benchFascia: fascia, benchDesk: desk, panelInternals: pInt, panelDoor: pDoor },
     glands,
     anchors: {
-      hmi: new THREE.Vector3(-0.3, 1.49, 0.04),
-      meters: new THREE.Vector3(0.34, 1.74, 0.03),
-      report: new THREE.Vector3(-0.3, 1.3, 0.04),
+      benchFascia: new THREE.Vector3(0.6, 1.86, 0.03),
+      benchInternals: new THREE.Vector3(-0.3, 1.8, -0.22),
+      panelInternals: new THREE.Vector3(PX + 0.1, 0.9, PZ - 0.13),
     },
     callouts: {
       xmer: { part: 'benchFascia' as const, v: new THREE.Vector3(-0.3, 1.72, 0.03) },

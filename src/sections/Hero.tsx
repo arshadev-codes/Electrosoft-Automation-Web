@@ -78,7 +78,7 @@ export default function Hero() {
       </div>
 
       <div className="hud mono">
-        <span id="hudState"><b>Ready</b></span>
+        <span id="hudState" hidden ><b>Ready</b></span>
         <span className="bar"><i id="hudBar" /></span>
         <span id="hudCount">0 / 9</span>
       </div>

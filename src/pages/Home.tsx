@@ -14,11 +14,10 @@ export default function Home() {
       <Hero />
       <Proof />
       <Lines />
-      <Lineup />
+      <Dossier />
       <Testing />
       <Report />
       <Why />
-      <Dossier />
       <Clients />
     </main>
   );

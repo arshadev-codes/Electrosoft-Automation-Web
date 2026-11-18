@@ -35,10 +35,7 @@ export default function Lines() {
       <div className="lx-copy lx-a">
         <h3>Electrosoft X’mer Edge™</h3>
         <p>Experience next-generation transformer testing with fully automated connections, precise test execution, and instant report generation for unmatched accuracy and efficiency.</p>
-        <dl className="lx-plate">
-          <div><dt>Certified</dt><dd>IEC 61439</dd></div>
-          <div><dt>Enclosure</dt><dd>IP65</dd></div>
-        </dl>
+        
         <Link className="pill" to="/products">View products</Link>
       </div>
 
@@ -58,12 +55,12 @@ export default function Lines() {
         <div className="callout right" style={{ '--l': '84px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Ratio &amp; vector group</b><span>Measured and verified</span></div></div>
         <div className="callout down" style={{ '--l': '190px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Report generated</b><span>Test results ready to share</span></div></div>
         <div className="callout left" style={{ '--l': '40px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 750 MVA</b><span>Largest rating our systems test</span></div></div>
-        <div className="callout" style={{ '--l': '110px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
+        <div className="callout" style={{ '--l': '50px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
         <div className="callout down" style={{ '--l': '60px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Zero human error</b><span>Connections switched automatically</span></div></div>
       </div>
 
       <div className="hud lx-hud mono" aria-hidden="true">
-        <span data-k="a" className="on">Panels</span>
+        <span data-k="a" className="on">X'mer Edge™</span>
         <span className="bar"><i /></span>
         <span data-k="b">Testing</span>
       </div>
