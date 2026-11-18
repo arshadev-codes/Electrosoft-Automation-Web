@@ -22,11 +22,11 @@ export const ts = { hazeIn: 1, hazeOut: 0, glow: 0 };
 export function createTestingSolutionsMotion(root: HTMLElement, reduce: boolean, onMode: (i: number) => void) {
   const $ = (s: string) => gsap.utils.toArray<HTMLElement>(s, root);
   const one = (s: string) => root.querySelector<HTMLElement>(s);
-  const stops = $('.ts-stop'), rows = $('.ts-row:not(.ts-th)'), marks = $('.ts-mark'), plates = $('.plate');
+  const stops = $('.ts-stop'), marks = $('.ts-mark'), plates = $('.plate');
 
   if (reduce) {
     Object.assign(ts, { hazeIn: 0, hazeOut: 0, glow: 1 });
-    [...stops, ...rows, ...marks, ...plates].forEach(el => el.classList.add('on'));
+    [...stops, ...marks, ...plates].forEach(el => el.classList.add('on'));
     return;
   }
   Object.assign(ts, { hazeIn: 1, hazeOut: 0, glow: 0 });
@@ -70,22 +70,6 @@ export function createTestingSolutionsMotion(root: HTMLElement, reduce: boolean,
       onUpdate: s => stops.forEach((el, i) => el.classList.toggle('on', s.progress >= at[i] - 0.06)),
     },
   });
-
-  // test sheet: rows tick as they reach the reading line
-  // and the sheet's header counts them
-  const passed = one('.ts-doc-bar em'), bar = one('.ts-doc-bar i');
-  let n = 0;
-  rows.forEach(r => ScrollTrigger.create({
-    trigger: r, start: 'top 78%', once: true,
-    onEnter: () => {
-      r.classList.add('on');
-      n++;
-      gsap.delayedCall(0.45, () => {
-        if (passed) passed.textContent = String(n);
-        bar?.style.setProperty('--q', String(n / rows.length));
-      });
-    },
-  }));
 
   // ratings: the needle sweeps the log scale; projects light as it passes them
   const scale = one('.ts-scale');

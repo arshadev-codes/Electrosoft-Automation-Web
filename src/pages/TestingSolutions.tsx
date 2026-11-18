@@ -1,13 +1,13 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { SPOTS } from '../components/Blueprint';
 import { holdReveal } from '../components/PageTransition';
 import { BENCHES, PROJECTS, SYSTEMS, TESTS } from '../data/testing';
 import { createTestingSolutionsMotion, heroIn, modeScrollY } from './testingSolutionsMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
 import { useCinematic } from '../hooks/useCinematic';
 import { Arrow, FeederCta, tilt, untilt } from '../components/ui';
+import RoutineTests from '../sections/RoutineTests';
 
 const XfmrScene = lazy(() => import('../components/XfmrScene'));
 
@@ -60,7 +60,7 @@ function Artifact({ id }: { id: string }) {
  */
 export default function TestingSolutions() {
   const ref = useRef<HTMLElement>(null), heroRef = useRef<HTMLElement>(null);
-  const testsRef = useRef<HTMLElement>(null), benchRef = useRef<HTMLElement>(null);
+  const benchRef = useRef<HTMLElement>(null);
   const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [mode, setMode] = useState(0), [hot, setHot] = useState<string | null>(null);
   const [step, setStep] = useState(0); // hero HUD: which test is running
@@ -74,7 +74,6 @@ export default function TestingSolutions() {
     return () => ctx.revert();
   }, [reduce]);
   // after the page motion: ScrollTriggers must be created in page order, below the selector's pin
-  useCinematic(testsRef, '.ts-sheet');
   useCinematic(benchRef, '.wrap');
 
   useEffect(() => {
@@ -193,33 +192,7 @@ export default function TestingSolutions() {
       </section>
 
       {/* 3.4 the tests, as a routine test sheet; Home links here by #<test id> */}
-      <section className="ts-tests gut" ref={testsRef} aria-labelledby="ts-tests-h">
-        <div className="wrap ts-sheet">
-          <div className="sec-head">
-            <h2 id="ts-tests-h">The routine tests it runs.</h2>
-            <p>What each test checks, and the part of the transformer it proves.</p>
-          </div>
-          <div className="ts-doc" role="table" aria-label="Routine tests">
-            <div className="ts-doc-bar" aria-hidden="true">
-              <b>Routine test sheet</b>
-              <span className="mono">Passed <em>{reduce ? TESTS.length : 0}</em> / {TESTS.length}</span>
-              <i style={{ '--q': reduce ? 1 : 0 } as CSSProperties} />
-            </div>
-            <div className="ts-row ts-th" role="row">
-              <span role="columnheader">No.</span><span role="columnheader">Test</span><span role="columnheader">What it checks</span><span role="columnheader">Part</span><span role="columnheader"><span className="sr">Done</span></span>
-            </div>
-            {TESTS.map((t, i) => (
-              <div className="ts-row" role="row" id={t.id} key={t.id}>
-                <span role="cell" className="mono">{String(i + 1).padStart(2, '0')}</span>
-                <h3 role="cell">{t.name}</h3>
-                <p role="cell">{t.text}</p>
-                <span role="cell" className="ts-part">{SPOTS[i].part}</span>
-                <span role="cell" className="ts-tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.6" pathLength={1} /></svg></span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <RoutineTests />
 
       {/* 3.6 other benches (draft, TODO: CONFIRM in data/testing.ts) */}
       <section className="ts-bench gut" ref={benchRef} aria-labelledby="ts-bench-h">

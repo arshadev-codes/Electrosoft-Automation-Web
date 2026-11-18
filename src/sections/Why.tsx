@@ -280,15 +280,15 @@ function WhySVG({ svgRef }: { svgRef: React.RefObject<SVGSVGElement> }) {
         {/* lamp test box */}
         <rect x="44" y="418" width="380" height="108" rx="10" fill="none" stroke="#DCDFE4"/>
         <text className="why-m" x="60" y="442">Lamp test</text>
-        <text className="why-m" id="why-readout" x="408" y="442" textAnchor="end">1 of 4 lit</text>
+        <text className="why-m" id="why-readout" x="408" y="442" textAnchor="end">1 of 4 stage</text>
         <g textAnchor="middle">
           <circle className="why-lamp" cx="82"  cy="472" r="11"/>
           <circle className="why-lamp" cx="164" cy="472" r="11"/>
           <circle className="why-lamp" cx="246" cy="472" r="11"/>
           <circle className="why-lamp" cx="328" cy="472" r="11"/>
-          <text className="why-m" x="82"  y="504">Quality</text>
-          <text className="why-m" x="164" y="504">Delivery</text>
-          <text className="why-m" x="246" y="504">Pricing</text>
+          <text className="why-m" x="82"  y="504">1st step</text>
+          <text className="why-m" x="164" y="504">2nd step</text>
+          <text className="why-m" x="246" y="504">3rd step</text>
           <text className="why-m" x="328" y="504">Tracking</text>
         </g>
 

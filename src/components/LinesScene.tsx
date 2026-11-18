@@ -129,9 +129,9 @@ export default function LinesScene({ sectionRef }: { sectionRef: RefObject<HTMLE
       shadeGround(stageRoot);
 
       const anchors: { obj: THREE.Object3D; v: THREE.Vector3; set: 'a' | 'b' }[] = [
-        { obj: bench.root, v: bench.anchors.hmi, set: 'a' },
-        { obj: bench.root, v: bench.anchors.meters, set: 'a' },
-        { obj: bench.root, v: bench.anchors.report, set: 'a' },
+        { obj: bench.root, v: bench.anchors.benchFascia, set: 'a' },
+        { obj: bench.root, v: bench.anchors.benchInternals, set: 'a' },
+        { obj: bench.root, v: bench.anchors.panelInternals, set: 'a' },
         // transformer cards sit off the unit: left of the end fins, right of the fins
         { obj: xf.parts.tank.inner, v: new THREE.Vector3(-0.88, 1.3, 0.3), set: 'b' },
         { obj: xf.parts.cover.inner, v: xf.anchors.cover, set: 'b' },

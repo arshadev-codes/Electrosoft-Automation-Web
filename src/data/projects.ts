@@ -6,7 +6,7 @@ import { PROJECTS as TESTING } from './testing';
 export type Kind = 'panel' | 'test';
 export type Project = {
   id: string; kind: Kind; name: string; client: string; full?: string;
-  place?: string; tag?: string; sector?: string; img?: string; system?: string; mva?: number; rating?: string; kv?: string; scope?: string[];
+  place?: string; tag?: string; sector?: string; img?: string; system?: string; mva?: number; rating?: string; kv?: string; scope?: string[]; status?: string;
 };
 
 const PANEL: Project[] = [
@@ -14,6 +14,7 @@ const PANEL: Project[] = [
   { id: 'swtp-powai', kind: 'panel', name: 'Sewage Water Treatment Plant', client: 'Municipal Corporation of Greater Mumbai (MCGM)', sector: 'Municipal corporation', place: 'Mithi River, Powai', tag: 'Powai', img: '/img/projects/swtp-powai.jpg' },
   { id: 'swtp-badlapur', kind: 'panel', name: 'Sewage Water Treatment Plant', client: 'Kulgaon-Badlapur Municipal Corporation', sector: 'Municipal corporation', place: 'Badlapur', tag: 'Badlapur', img: '/img/projects/swtp-badlapur.jpg' },
   { id: 'pmp-asangaon', kind: 'panel', name: 'Plastic Moulding Machine Manufacturing Plant', client: 'Jagmohan Plamach Pvt. Ltd.', sector: 'Private company', place: 'Asangaon, Dist. Thane', tag: 'Asangaon', img: '/img/projects/pmp.jpg' },
+  
 ];
 
 const NAME: Record<string, string> = {
@@ -22,11 +23,14 @@ const NAME: Record<string, string> = {
 };
 const TEST: Project[] = TESTING.map(p => ({
   id: p.id, kind: 'test', name: NAME[p.id] ?? 'Transformer testing system', client: p.client, tag: p.client, full: p.full,
-  system: p.system, mva: p.mva, rating: p.rating, kv: p.kv, scope: p.scope,
+  system: p.system, mva: p.mva, rating: p.rating, kv: p.kv, scope: p.scope, status: p.status,
 }));
 
 // the two lines alternate, so the register reads as one company
 export const ALL: Project[] = PANEL.flatMap((p, i) => [p, TEST[i]]).filter(Boolean);
+
+// All testing projects for the dossier (complete + under execution)
+export const ALL_TEST: Project[] = TEST;
 
 export const FILTERS: { id: 'all' | Kind; name: string; short: string }[] = [
   { id: 'all', name: 'All', short: 'All' }, { id: 'panel', name: 'Panels & Automation', short: 'Panels' }, { id: 'test', name: 'Testing Systems', short: 'Testing' },

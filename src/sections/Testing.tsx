@@ -6,8 +6,16 @@ import { createTestingMotion } from './testingMotion';
 import { useCinematic } from '../hooks/useCinematic';
 import { TESTS } from '../data/testing';
 
-// TODO: CONFIRM — draft tests list, shared with /transformer-testing (src/data/testing.ts).
-const NAMES = TESTS.map(t => t.name);
+/** 5 key representative tests mapped to the 2D cutaway Blueprint hotspots */
+const BLUEPRINT_TESTS = [
+  TESTS[10] ?? TESTS[0], // Winding Resistance (Windings)
+  TESTS[9] ?? TESTS[1],  // Voltage Ratio & Phase Displacement (HV bushings & leads)
+  TESTS[0] ?? TESTS[2],  // No-Load Loss & Current (Core)
+  TESTS[1] ?? TESTS[3],  // Load Loss (LV terminals, shorted)
+  TESTS[5] ?? TESTS[4],  // Induced Over Voltage (HV winding insulation)
+];
+
+const NAMES = BLUEPRINT_TESTS.map(t => t.name);
 const CYCLE_MS = 5000; // time on each test before moving to the next
 
 export default function Testing() {
@@ -15,7 +23,7 @@ export default function Testing() {
   useCinematic(ref, '.tx-wrap');
   const [active, setActive] = useState(0);
   const [narrow, setNarrow] = useState(() => matchMedia('(max-width: 900px)').matches);
-  const test = TESTS[active];
+  const test = BLUEPRINT_TESTS[active];
 
   useEffect(() => {
     const mq = matchMedia('(max-width: 900px)'), on = () => setNarrow(mq.matches);
@@ -40,7 +48,7 @@ export default function Testing() {
   const running = drawn && inView && !reduce;
   useEffect(() => {
     if (!running) return;
-    const id = window.setTimeout(() => setActive(a => (a + 1) % TESTS.length), CYCLE_MS);
+    const id = window.setTimeout(() => setActive(a => (a + 1) % BLUEPRINT_TESTS.length), CYCLE_MS);
     return () => window.clearTimeout(id);
   }, [running, active]);
 
@@ -53,9 +61,9 @@ export default function Testing() {
 
           <div className="tx-card" aria-live="polite">
             <div className="tx-meta">
-              <span>Test {active + 1} of {TESTS.length} · {SPOTS[active].part}</span>
+              <span>Test {active + 1} of {BLUEPRINT_TESTS.length} · {SPOTS[active]?.part ?? test.part}</span>
               <span className="tx-steps">
-                {TESTS.map((t, i) => <button key={t.id} type="button" aria-label={t.name} className={i === active ? (running ? 'on run' : 'on') : i < active ? 'done' : ''} onClick={() => setActive(i)}><i key={`${active}-${running}`} /></button>)}
+                {BLUEPRINT_TESTS.map((t, i) => <button key={t.id} type="button" aria-label={t.name} className={i === active ? (running ? 'on run' : 'on') : i < active ? 'done' : ''} onClick={() => setActive(i)}><i key={`${active}-${running}`} /></button>)}
               </span>
             </div>
             <h3 key={test.id}>{test.name}</h3>
