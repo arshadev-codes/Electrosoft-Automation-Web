@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { magnetic } from '../hooks/magnetic';
+import { posToMva } from '../data/testing';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,7 +84,7 @@ export function createTestingSolutionsMotion(root: HTMLElement, reduce: boolean,
       onUpdate: s => {
         marks.forEach((m, i) => m.classList.toggle('on', s.progress * top >= pos[i] - 0.001));
         if (read) {
-          const v = Math.pow(200, s.progress * top);
+          const v = posToMva(s.progress * top * 100);
           read.textContent = v < 10 ? `${v.toFixed(1)} MVA` : `${Math.round(v)} MVA`;
           read.classList.toggle('rest', s.progress > 0.995); // settled: the nameplate labels take over
         }

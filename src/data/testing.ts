@@ -118,6 +118,12 @@ export const BLUEPRINT_TESTS: TestItem[] = [
   TESTS[1],  // Load Loss (LV terminals, shorted)
   TESTS[5],  // Induced Over Voltage (HV winding insulation)
 ];
+export const TEMPTEST:string[]=["Winding resistance",
+"Ratio & vector group",
+"No-load loss",
+"Load loss & impedance",
+"Induced over-voltage ",
+]
 
 /** Who does a step: the system (auto) or the operator at the desk (hand). */
 export type Duty = 'auto' | 'hand';
@@ -139,18 +145,16 @@ export const SYSTEMS: { id: string; pos: string; name: string; text: string; dut
     id: 'manual', pos: 'MAN', name: 'Manual',
     text: 'Every test run from the control desk, with minimal training.',
     duties: [['hand', 'Run each test from the control desk'], ['hand', 'Read results on meters, HMI or X\'mer Prime™'], ['hand', 'From heat run to resistance measurement']],
-    ref: 'Crompton Greaves · up to 150 MVA / 66 kV',
+    ref: 'Set-On-Site · up to 250 MVA / 66 kV',
   },
 ];
 
-/** Testing system projects; `mva` places each on the rating scale. */
+/** Testing system projects; `mva` places each on the rating scale (0 to 750 MVA). */
 export const PROJECTS = [
   { id: 'msedcl', client: 'MSEDCL', full: 'Maharashtra State Electricity Distribution Co. (Mahavitaran)', system: 'Fully automatic', mva: 1.5,
     rating: '1500 kVA', kv: '33 kV', scope: ['Distribution transformers'], status: 'completed' },
   { id: 'tata-power', client: 'Tata Power', system: 'Semi automatic', mva: 10,
     rating: '10 MVA', kv: '33 kV', scope: ['Test bench', 'Power panel', '1.1 kV HT capacitor panel'], status: 'completed' },
-  { id: 'crompton-greaves', client: 'Crompton Greaves', system: 'Manual', mva: 150,
-    rating: '150 MVA', kv: '66 kV · 50 & 60 Hz', scope: ['Test bench; power, PLC, RIO and protection panels', '12.5 MVA / 11 kV / 50 Hz and 5 MVA / 11 kV / 200 Hz MG sets', '6.6 kV / 630 A motorised changeover panel'], status: 'completed' },
   { id: 'kptcl', client: 'KPTCL', system: 'Power transformers', mva: 160,
     rating: '160 MVA', kv: '220 kV', scope: ['Automated test floor', 'Protection suite', 'Real-time report portal'], status: 'completed' },
       { id: 'nucon', client: 'Nucon Switchgear Pvt Ltd', full: 'Nucon Switchgear Pvt Ltd', system: 'Conventional type', mva: 160,
@@ -182,7 +186,75 @@ export const PROJECTS = [
   { id: 'toshiba-ttd', client: 'Toshiba T&D Systems India', full: 'Toshiba Transmission & Distribution Systems (India) Pvt. Ltd.', system: 'Transformer testing', mva: 1,
     rating: '1 MVA', kv: '33 kV', scope: ['Transformer testing system'], status: 'under-execution' },
 ] as { id: string; client: string; full?: string; system: string; mva: number; rating: string; kv: string; scope: string[]; status: string }[];
+// Created sub array  for projects on a rating scale
+const PROJECTS2_IDS = [
+  'msedcl',
+  'tata-power',
+  'kptcl',
+  'set-on-site',
+  'atlanta-500mva',
+  'cg-power',
+] as const;
 
+export const PROJECTS2 = PROJECTS.filter(project =>
+  PROJECTS2_IDS.includes(project.id as typeof PROJECTS2_IDS[number])
+);
+
+/**
+ * Custom checkpoint positions for the transformer capacity timeline:
+ * 1 MVA -> 0%
+ * 1.5 MVA -> 8%
+ * 10 MVA -> 19%
+ * 160 MVA -> 34%
+ * 250 MVA -> 52%
+ * 500 MVA -> 72%
+ * 750 MVA -> 100%
+ */
+export const CHECKPOINTS = [
+  { mva: 1, pos: 0 },
+  { mva: 1.5, pos: 8 },
+  { mva: 10, pos: 19 },
+  { mva: 160, pos: 34 },
+  { mva: 250, pos: 52 },
+  { mva: 500, pos: 72 },
+  { mva: 750, pos: 100 },
+] as const;
+
+export const TICKS = [1, 1.5, 10, 160, 250, 500, 750];
+
+/** Piecewise linear interpolation from MVA rating to horizontal percentage [0, 100]. */
+export function mvaToPos(mva: number): number {
+  if (mva <= CHECKPOINTS[0].mva) return CHECKPOINTS[0].pos;
+  const last = CHECKPOINTS[CHECKPOINTS.length - 1];
+  if (mva >= last.mva) return last.pos;
+
+  for (let i = 0; i < CHECKPOINTS.length - 1; i++) {
+    const curr = CHECKPOINTS[i];
+    const next = CHECKPOINTS[i + 1];
+    if (mva >= curr.mva && mva <= next.mva) {
+      const t = (mva - curr.mva) / (next.mva - curr.mva);
+      return curr.pos + t * (next.pos - curr.pos);
+    }
+  }
+  return 0;
+}
+
+/** Inverse interpolation: from horizontal percentage [0, 100] to MVA rating. */
+export function posToMva(pos: number): number {
+  if (pos <= CHECKPOINTS[0].pos) return CHECKPOINTS[0].mva;
+  const last = CHECKPOINTS[CHECKPOINTS.length - 1];
+  if (pos >= last.pos) return last.mva;
+
+  for (let i = 0; i < CHECKPOINTS.length - 1; i++) {
+    const curr = CHECKPOINTS[i];
+    const next = CHECKPOINTS[i + 1];
+    if (pos >= curr.pos && pos <= next.pos) {
+      const t = (pos - curr.pos) / (next.pos - curr.pos);
+      return curr.mva + t * (next.mva - curr.mva);
+    }
+  }
+  return CHECKPOINTS[0].mva;
+}
 // TODO: CONFIRM — reactor and motor benches are not on the old site; added at the owner's request
 // (2026-10-23). Only the DC-supply link is sourced (CONTENT.md · DC Panels: "reactor testing").
 

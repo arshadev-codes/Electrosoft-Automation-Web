@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import type { Project } from '../data/projects';
 
-/** Position of a rating on the 1–200 MVA log scale (0..1), as on the testing page. */
-export const ratingLog = (mva: number) => Math.log10(mva) / Math.log10(200);
+/** Position of a rating on the 1–750 MVA log scale (0..1), as on the testing page. */
+export const ratingLog = (mva: number) => Math.log10(Math.max(1, mva)) / Math.log10(750);
 
 /**
  * A testing project, drawn: the transformer elevation at a size set by its rating (1.5 MVA small,

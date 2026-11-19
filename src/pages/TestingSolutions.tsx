@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type CSSP
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { holdReveal } from '../components/PageTransition';
-import { BENCHES, PROJECTS, SYSTEMS, TESTS } from '../data/testing';
+import { BENCHES, PROJECTS, SYSTEMS, TESTS,TEMPTEST, PROJECTS2, TICKS, mvaToPos } from '../data/testing';
 import { createTestingSolutionsMotion, heroIn, modeScrollY } from './testingSolutionsMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
 import { useCinematic } from '../hooks/useCinematic';
@@ -22,9 +22,18 @@ const STOPS = [
   { id: 'buyer', name: 'Real-time online access', text: 'Your buyer sees the test data online, as it happens.' },
 ];
 
-// rating scale: 1 to 200 MVA, logarithmic, so 1.5 MVA and 160 MVA both read
-const LOG = (mva: number) => (Math.log10(mva) / Math.log10(200)) * 100;
-const TICKS = [1, 2, 5, 10, 20, 50, 100, 200];
+interface MarkLayout {
+  side: 'up' | 'dn';
+  align: 'start' | 'center' | 'end';
+  level: 1 | 2;
+}
+
+const getDefaultLayout = (index: number, mva: number): MarkLayout => {
+  const pos = mvaToPos(mva);
+  const side: 'up' | 'dn' = index % 2 === 0 ? 'up' : 'dn';
+  const align: 'start' | 'center' | 'end' = pos <= 10 ? 'start' : pos >= 88 ? 'end' : 'center';
+  return { side, align, level: 1 };
+};
 
 /** One phase on the hero scope: three periods of a sine (120 units each), so it loops by one period. */
 const WAVE = (shift: number) => {
@@ -61,9 +70,89 @@ function Artifact({ id }: { id: string }) {
 export default function TestingSolutions() {
   const ref = useRef<HTMLElement>(null), heroRef = useRef<HTMLElement>(null);
   const benchRef = useRef<HTMLElement>(null);
+  const scaleRef = useRef<HTMLDivElement>(null);
+  const markRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [mode, setMode] = useState(0), [hot, setHot] = useState<string | null>(null);
   const [step, setStep] = useState(0); // hero HUD: which test is running
+  const [markLayouts, setMarkLayouts] = useState<MarkLayout[]>(() =>
+    PROJECTS2.map((p, i) => getDefaultLayout(i, p.mva))
+  );
+
+  useLayoutEffect(() => {
+    const scaleEl = scaleRef.current;
+    if (!scaleEl) return;
+
+    const updateLayouts = () => {
+      const rect = scaleEl.getBoundingClientRect();
+      const width = rect.width;
+      if (width <= 0) return;
+
+      const GAP = 12; // clearance in px between adjacent labels on same level
+
+      const items = PROJECTS2.map((p, i) => {
+        const el = markRefs.current[i];
+        const pos = mvaToPos(p.mva);
+        const anchorX = (pos / 100) * width;
+        const elWidth = el ? el.getBoundingClientRect().width : Math.min(130, Math.max(60, p.client.length * 7.5));
+
+        let align: 'start' | 'center' | 'end' = 'center';
+        let left = anchorX - elWidth / 2;
+        let right = anchorX + elWidth / 2;
+
+        if (anchorX - elWidth / 2 < 0 || pos <= 10) {
+          align = 'start';
+          left = anchorX;
+          right = anchorX + elWidth;
+        } else if (anchorX + elWidth / 2 > width || pos >= 88) {
+          align = 'end';
+          left = anchorX - elWidth;
+          right = anchorX;
+        }
+
+        const side: 'up' | 'dn' = i % 2 === 0 ? 'up' : 'dn';
+
+        return {
+          index: i,
+          pos,
+          left,
+          right,
+          side,
+          align,
+          level: 1 as 1 | 2,
+        };
+      });
+
+      for (const side of ['up', 'dn'] as const) {
+        const sideItems = items.filter(it => it.side === side).sort((a, b) => a.pos - b.pos);
+        const level1Intervals: { left: number; right: number }[] = [];
+
+        for (const item of sideItems) {
+          const collides = level1Intervals.some(
+            inv => !(item.right + GAP < inv.left || item.left - GAP > inv.right)
+          );
+
+          if (collides) {
+            item.level = 2;
+          } else {
+            item.level = 1;
+            level1Intervals.push({ left: item.left, right: item.right });
+          }
+        }
+      }
+
+      setMarkLayouts(items.map(it => ({
+        side: it.side,
+        align: it.align,
+        level: it.level,
+      })));
+    };
+
+    updateLayouts();
+    const observer = new ResizeObserver(updateLayouts);
+    observer.observe(scaleEl);
+    return () => observer.disconnect();
+  }, []);
   useLayoutEffect(() => {
     const el = ref.current, hero = heroRef.current;
     if (!el || !hero) return;
@@ -84,8 +173,8 @@ export default function TestingSolutions() {
 
   // the hero's test run: steps through the tests, then holds on "complete" and starts again
   useEffect(() => {
-    if (reduce) { setStep(TESTS.length); return; }
-    const id = window.setInterval(() => setStep(s => (s + 1) % (TESTS.length + 2)), 1500);
+    if (reduce) { setStep(TEMPTEST.length); return; }
+    const id = window.setInterval(() => setStep(s => (s + 1) % (TEMPTEST.length + 2)), 1500);
     return () => window.clearInterval(id);
   }, [reduce]);
 
@@ -110,15 +199,15 @@ export default function TestingSolutions() {
           </div>
         </div>
         <ol className="ts-hud mono" aria-label="Routine tests">
-          {TESTS.map((t, i) => <li key={t.id} className={i < step ? 'done' : i === step ? 'run' : ''}><i />{t.name}</li>)}
+          {TEMPTEST.map((t, i) => <li key={t} className={i < step ? 'done' : i === step ? 'run' : ''}><i />{t}</li>)}
         </ol>
         {/* the scope on the bench: three phases while a test runs, flat once the run is complete */}
-        <div className={`ts-scope${step < TESTS.length ? '' : ' idle'}`} aria-hidden="true">
+        <div className={`ts-scope${step < TEMPTEST.length ? '' : ' idle'}`} aria-hidden="true">
           <svg viewBox="0 0 240 72" preserveAspectRatio="none">
             <path className="grid" d="M0 36H240M60 0V72M120 0V72M180 0V72" />
             <g className="phs">{PHASES.map(([c, sh]) => <path key={c} className={`ph ${c}`} d={WAVE(sh)} />)}</g>
           </svg>
-          <p className="mono">{step < TESTS.length ? <><i className="run" />{TESTS[step].name}</> : <><i className="ok" />All tests passed</>}</p>
+          <p className="mono">{step < TEMPTEST.length ? <><i className="run" />{TEMPTEST[step]}</> : <><i className="ok" />All tests passed</>}</p>
         </div>
       </section>
 
@@ -217,18 +306,41 @@ export default function TestingSolutions() {
       <section className="ts-proj gut" aria-labelledby="ts-proj-h">
         <div className="wrap">
           <div className="sec-head">
-            <h2 id="ts-proj-h">In service, up to 160 MVA.</h2>
-            <p>Four testing systems, from distribution transformers to 160 MVA power units.</p>
+            <h2 id="ts-proj-h">In service, up to 750 MVA.</h2>
+            <p>Testing systems from distribution transformers to 750 MVA power units.</p>
           </div>
-          <div className="ts-scale" style={{ '--n': reduce ? LOG(160) / 100 : 0 } as CSSProperties} aria-hidden="true">
+          <div
+            ref={scaleRef}
+            className="ts-scale"
+            style={{ '--n': reduce ? 1 : 0 } as CSSProperties}
+            aria-hidden="true"
+          >
             <i className="ts-rule" />
-            {TICKS.map(t => <span key={t} className="ts-tk mono" style={{ left: `${LOG(t)}%` }}>{t}{t === 200 ? ' MVA' : ''}</span>)}
-            <i className="ts-needle"><em className="mono" /></i>
-            {PROJECTS.map((p, i) => (
-              <span key={p.id} className={`ts-mark ${i % 2 ? 'dn' : 'up'}${LOG(p.mva) > 80 ? ' end' : ''}`} data-hot={hot === p.id || undefined} style={{ '--x': LOG(p.mva) } as CSSProperties}>
-                <b>{p.client}</b><em className="mono">{p.rating}</em>
+            {TICKS.map(t => (
+              <span key={t} className="ts-tk mono" style={{ left: `${mvaToPos(t)}%` }}>
+                {t}{t === 750 ? ' MVA' : ''}
               </span>
             ))}
+            <i className="ts-needle">
+              <em className={`mono${reduce ? ' rest' : ''}`}>{reduce ? '750 MVA' : ''}</em>
+            </i>
+            {PROJECTS2.map((p, i) => {
+              const layout = markLayouts[i] || getDefaultLayout(i, p.mva);
+              const pos = mvaToPos(p.mva);
+              return (
+                <span
+                  key={p.id}
+                  ref={el => { markRefs.current[i] = el; }}
+                  className={`ts-mark ${layout.side} ${layout.align} lvl-${layout.level}`}
+                  data-hot={hot === p.id || undefined}
+                  style={{ '--x': pos } as CSSProperties}
+                >
+                  <span className="ts-mark-stem" aria-hidden="true" />
+                  <b>{p.client}</b>
+                  <em className="mono">{p.rating}</em>
+                </span>
+              );
+            })}
           </div>
           {/* hover state is a data attribute: the scroll motion owns the class lists (.on) */}
           <div className="ts-plates">

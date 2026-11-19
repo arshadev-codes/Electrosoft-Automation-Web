@@ -18,8 +18,12 @@ const PANEL: Project[] = [
 ];
 
 const NAME: Record<string, string> = {
-  msedcl: 'Fully automatic transformer testing system', 'tata-power': 'Semi automatic transformer testing system',
-  'crompton-greaves': 'Manual transformer testing system', nucon: 'Transformer testing system',
+  msedcl: 'Fully automatic transformer testing system',
+  'tata-power': 'Semi automatic transformer testing system',
+  kptcl: 'Power transformer testing suite',
+  'set-on-site': 'Conventional transformer testing system',
+  'atlanta-500mva': 'Conventional transformer testing system',
+  'cg-power': 'Fully advance automatic transformer testing system',
 };
 const TEST: Project[] = TESTING.map(p => ({
   id: p.id, kind: 'test', name: NAME[p.id] ?? 'Transformer testing system', client: p.client, tag: p.client, full: p.full,
