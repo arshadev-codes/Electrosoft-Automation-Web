@@ -8,10 +8,10 @@ gsap.registerPlugin(ScrollTrigger);
 // Numeric figures roll on drums; standard names roll in letter by letter.
 type Stat = { n?: number; value?: string; unit?: string; certified?: boolean; text: string; label: string };
 const STATS: Stat[] = [
-  { value: 'IEC 61439', certified: true, text: 'Certified Panels.', label: 'IEC 61439 certified Panels' },
-  { value: '3 QAP', certified: true, text: '3-step Quality Assurance Plan.', label: '3-step Quality Assurance Plan.' },
+  { n: 1989, unit: '', certified: false,text: 'Established', label: 'Established 1989' },
+  { value: 'IEC 61439', certified: false, text: 'Certified Panels.', label: 'IEC 61439 certified Panels' },
+  { value: '3',unit:"Step" ,certified: false, text: ' Quality Assurance Plan.', label: 'Quality Assurance Plan.' },
 
-  { n: 1989, unit: '', certified: true,text: 'Established', label: 'Established 1989' },
   { n: 750, unit: 'MVA', text: 'Largest transformer rating our test systems handle', label: '750 MVA, the largest transformer rating our test systems handle' },
   { n: 400, unit: 'kV ', text: 'Largest transformer rating our test systems handle', label: '400 kV Class, the largest transformer rating our test systems handle' },
   { n: 65, unit: 'kA', text: 'STC & CPRI-approved panel design · IP65', label: '65 kA / IP65 CPRI-approved panel design' },

@@ -6,6 +6,7 @@ import { CATS, PHOTOS, PLACES, type Photo, type Place } from '../data/gallery';
 import { createGalleryMotion, revealNew } from './galleryMotion';
 import { holdScroll } from '../hooks/useSmoothScroll';
 import { Arrow, FeederCta } from '../components/ui';
+import { useSectionPath } from '../hooks/useSectionPath';
 
 gsap.registerPlugin(Flip);
 
@@ -18,8 +19,9 @@ const label = (p: Photo) => p.place === 'products' ? p.cats.map(catName).join(' 
  */
 function Viewer({ list, at, from, onGo, onClose }: { list: Photo[]; at: number; from: DOMRect | null; onGo: (i: number) => void; onClose: () => void }) {
   const box = useRef<HTMLDivElement>(null), img = useRef<HTMLImageElement>(null), first = useRef(true);
-  const p = list[at];
-  const product = p.place === 'products' ? CATS.find(c => c.id === p.cats[0]) : undefined;
+  const { toPath } = useSectionPath();
+  const ph = list[at];
+  const product = ph.place === 'products' ? CATS.find(c => c.id === ph.cats[0]) : undefined;
 
   // open: grow out of the thumbnail; later photos slide in
   useLayoutEffect(() => {
@@ -57,7 +59,7 @@ function Viewer({ list, at, from, onGo, onClose }: { list: Photo[]; at: number; 
   // swipe
   const sx = useRef<number | null>(null);
   return (
-    <div className="vw" ref={box} role="dialog" aria-modal="true" aria-label={`${p.name}, photo ${at + 1} of ${list.length}`}
+    <div className="vw" ref={box} role="dialog" aria-modal="true" aria-label={`${ph.name}, photo ${at + 1} of ${list.length}`}
       onPointerDown={e => { sx.current = e.clientX; }}
       onPointerUp={e => { if (sx.current !== null && Math.abs(e.clientX - sx.current) > 50) go(e.clientX < sx.current ? 1 : -1); sx.current = null; }}>
       <button type="button" className="vw-bg" aria-label="Close" tabIndex={-1} onClick={onClose} />
@@ -66,15 +68,15 @@ function Viewer({ list, at, from, onGo, onClose }: { list: Photo[]; at: number; 
         <button type="button" className="vw-close" onClick={onClose}>Close<span aria-hidden="true">Esc</span></button>
       </div>
       <figure className="vw-fig">
-        <img ref={img} key={p.id} src={p.src} alt={`${p.name} by Electrosoft`} width={p.w} height={p.h} draggable={false} />
+        <img ref={img} key={ph.id} src={ph.src} alt={`${ph.name} by Electrosoft`} width={ph.w} height={ph.h} draggable={false} />
         <i className="vw-marks" aria-hidden="true" />
       </figure>
       <div className="vw-bot vw-ui">
         <button type="button" className="vw-arrow" aria-label="Previous photo" onClick={() => go(-1)}><Arrow /></button>
         <div className="vw-cap">
-          <b>{p.name}</b>
-          <span>{label(p)}</span>
-          {product && <Link to={`/products#${product.product}`} onClick={onClose}>See {product.name}<Arrow /></Link>}
+          <b>{ph.name}</b>
+          <span>{label(ph)}</span>
+          {product && <Link to={toPath(`/products#${product.product}`)} onClick={onClose}>See {product.name}<Arrow /></Link>}
         </div>
         <button type="button" className="vw-arrow next" aria-label="Next photo" onClick={() => go(1)}><Arrow /></button>
       </div>
@@ -89,6 +91,7 @@ function Viewer({ list, at, from, onGo, onClose }: { list: Photo[]; at: number; 
  */
 export default function Gallery() {
   const ref = useRef<HTMLElement>(null), grid = useRef<HTMLDivElement>(null), tabs = useRef<HTMLDivElement>(null);
+  const { toPath } = useSectionPath();
   const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [place, setPlace] = useState<'all' | Place>('all');
   const [cat, setCat] = useState<string | null>(null);
@@ -191,8 +194,8 @@ export default function Gallery() {
       </section>
 
       <FeederCta id="gl-cta-h" tag="Your panel">
-        <Link className="pill" to="/contact">Get a Quote<Arrow /></Link>
-        <Link className="line-btn" to="/products">See all products</Link>
+        <Link className="pill" to={toPath('/contact')}>Get a Quote<Arrow /></Link>
+        <Link className="line-btn" to={toPath('/products')}>See all products</Link>
       </FeederCta>
 
       {open && list[open.at] && <Viewer list={list} at={open.at} from={open.from} onGo={goTo} onClose={close} />}

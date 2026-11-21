@@ -15,13 +15,28 @@ type Need = typeof NEEDS[number];
 // ?product=<id>[,<id>…] (every "Request a quote" link on the site; the home line-up sends several)
 // → what they asked about, and which requirement (the first item's)
 const AUTOMATION = ['plc-scada', 'vfd', 'control-desk', 'console'];
+
+const TEST_BENCHES_MAP: Record<string, string> = {
+  'ai-powered': 'Advanced Fully Automatic Transformer Test Bench (MOD-ETB-9000-AI)',
+  'aipowered': 'Advanced Fully Automatic Transformer Test Bench (MOD-ETB-9000-AI)',
+  'fully-automatic': 'Fully Automatic Transformer Test Bench (MOD-ETB-7000-FA)',
+  'fullyautomatic': 'Fully Automatic Transformer Test Bench (MOD-ETB-7000-FA)',
+  'semi-automatic': 'Semi-automatic Transformer Test Bench (MOD-ETB-5000-SA)',
+  'semiautomatic': 'Semi-automatic Transformer Test Bench (MOD-ETB-5000-SA)',
+  'conventional': 'Conventional Transformer Test Bench (MOD-ETB-3000-CV)',
+  'low-voltage': 'Low Voltage Mobile Test Trolley (MOD-LTT-1200-MB)',
+  'lowvoltage': 'Low Voltage Mobile Test Trolley (MOD-LTT-1200-MB)',
+};
+
 function lookup(id: string): { need: Need | null; about: string } {
-  if (id === 'transformer-testing') return { need: 'Transformer Testing', about: 'Transformer Testing Suite' };
-  const bench = BENCHES.find(b => b.id === id);
+  const norm = id.toLowerCase().trim();
+  if (norm === 'transformer-testing') return { need: 'Transformer Testing', about: 'Transformer Testing Suite' };
+  if (TEST_BENCHES_MAP[norm]) return { need: 'Transformer Testing', about: TEST_BENCHES_MAP[norm] };
+  const bench = BENCHES.find(b => b.id.toLowerCase() === norm);
   if (bench) return { need: 'Transformer Testing', about: bench.name };
-  const p = RANGE.flatMap(g => g.items).find(x => x.id === id);
+  const p = RANGE.flatMap(g => g.items).find(x => x.id.toLowerCase() === norm);
   if (!p) return { need: null, about: '' };
-  return { need: AUTOMATION.includes(id) ? 'Automation' : id === 'turnkey' || id === 'assembly' ? 'Other' : 'Panels', about: p.name };
+  return { need: AUTOMATION.includes(norm) ? 'Automation' : norm === 'turnkey' || norm === 'assembly' ? 'Other' : 'Panels', about: p.name };
 }
 function fromProduct(param: string | null): { need: Need | null; about: string } {
   const found = (param ?? '').split(',').map(id => lookup(id.trim())).filter(x => x.about);
@@ -45,15 +60,49 @@ export default function Contact() {
   const ref = useRef<HTMLElement>(null);
   const [params] = useSearchParams();
   const pre = fromProduct(params.get('product'));
-  const [f, setF] = useState({ name: '', company: '', phone: '', email: '', need: pre.need as Need | null, message: pre.about ? `Enquiry about: ${pre.about}\n\n` : '' });
+  const urlMessage = params.get('message');
+  const urlNeed = params.get('need') as Need | null;
+
+  const getCleanMessage = (m: string | null, about: string) => {
+    if (m) return m.endsWith('\n') ? m : `${m}\n\n`;
+    if (about) return `Enquiry about: ${about}\n\n`;
+    return '';
+  };
+
+  const initialNeed = (urlNeed && NEEDS.includes(urlNeed)) ? urlNeed : pre.need;
+  const initialMessage = getCleanMessage(urlMessage, pre.about);
+
+  const [f, setF] = useState({
+    name: '',
+    company: '',
+    phone: '',
+    email: '',
+    need: initialNeed as Need | null,
+    message: initialMessage
+  });
   const [sent, setSent] = useState<'mail' | 'wa' | null>(null);
   const [tried, setTried] = useState(false);
+
+  useEffect(() => {
+    const p = fromProduct(params.get('product'));
+    const msg = params.get('message');
+    const nd = params.get('need') as Need | null;
+    const resolvedNeed = (nd && NEEDS.includes(nd)) ? nd : p.need;
+    const resolvedMsg = getCleanMessage(msg, p.about);
+    if (resolvedNeed || resolvedMsg) {
+      setF(prev => ({
+        ...prev,
+        need: resolvedNeed ?? prev.need,
+        message: resolvedMsg || prev.message
+      }));
+    }
+  }, [params]);
 
   const checks = [
     { id: 'name', label: 'Name', ok: f.name.trim().length > 1 },
     { id: 'reach', label: 'Phone or email', ok: (f.phone !== '' || f.email !== '') && (f.phone === '' || okPhone(f.phone)) && (f.email === '' || okEmail(f.email)) },
     { id: 'need', label: 'Requirement', ok: f.need !== null },
-    { id: 'msg', label: 'Message', ok: f.message.replace(/^Enquiry about:.*$/m, '').trim().length > 9 },
+    { id: 'msg', label: 'Message', ok: f.message.replace(/^Enquiry about:.*$/m, '').trim().length > 9 || f.message.trim().length > 9 },
   ];
   const ready = checks.every(c => c.ok);
 

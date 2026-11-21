@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { createLinesMotion } from './linesMotion';
@@ -44,20 +44,20 @@ export default function Lines() {
         <p>Fully automatic, semi automatic and manual test systems powered by Electrosoft X'mer Edge™, supplied to MSEDCL, Tata Power, Crompton Greaves and more.</p>
         <dl className="lx-plate">
           <div><dt>Largest rating</dt><dd>750 MVA</dd></div>
-          <div><dt>At</dt><dd>132 kV</dd></div>
+          <div><dt>At</dt><dd>400 kV</dd></div>
         </dl>
         <Link className="pill" to="/transformer-testing">Explore testing solutions</Link>
       </div>
 
       {/* pinned to the 3D model; positioned every frame by LinesScene, in this order */}
-      <div className="callouts lx-callouts" aria-hidden="true">
+      {/* <div className="callouts lx-callouts" aria-hidden="true">
         <div hidden className="callout" style={{ '--l': '110px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
         <div hidden className="callout right" style={{ '--l': '84px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Ratio &amp; vector group</b><span>Measured and verified</span></div></div>
         <div hidden className="callout down" style={{ '--l': '190px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Report generated</b><span>Test results ready to share</span></div></div>
         <div className="callout left" style={{ '--l': '40px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Up to 750 MVA</b><span>Largest rating our systems test</span></div></div>
         <div className="callout" style={{ '--l': '50px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b><em className="live" />X'mer Edge™</b><span>Runs every test, writes the report</span></div></div>
         <div className="callout down" style={{ '--l': '60px' } as CSSProperties}><i className="stem" /><i className="pin" /><div className="card"><b>Zero human error</b><span>Connections switched automatically</span></div></div>
-      </div>
+      </div> */}
 
       <div className="hud lx-hud mono" aria-hidden="true">
         <span data-k="a" className="on">X'mer Edge™</span>

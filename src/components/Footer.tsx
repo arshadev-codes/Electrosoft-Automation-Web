@@ -22,16 +22,27 @@ const DOWNLOADS = [
   ['Company Profile', 'COMPANY_PROFILE.pdf'], ['CPRI IP65 Certificate', 'CPRI_IP65_CERTIFICATE.pdf'], ['CPRI 65kA Certificate', 'CPRI_65KA_CERTIFICATE.pdf'], ['ISO Certificate', 'ISO_CERTIFICATE.pdf'],
   ['MSME Certificate', 'MSME_CERTIFICATE.pdf'], ['QAP for Electrical Panels', 'QAP_FOR_ELECTRICAL_PANELS.pdf'], ['QAP for Automation Panels', 'QAP_FOR_AUTOMATION_PANELS.pdf'], ['Transformer Testing Suite Brochure', 'COMPANY_PROFILE1.pdf'],
 ];
-const CERTS = ['IEC 61439 certified','CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered',];
+const CERTS = ['IEC 61439 certified', 'CPRI 65kA', 'CPRI IP65', 'ISO certified', 'MSME registered'];
+
+interface FooterProps {
+  /** '/panel' for the panels section, '' (default) for the testing section. */
+  basePath?: string;
+}
 
 // The page ends the way an engineering drawing does: a ruled title block.
-export default function Footer() {
+export default function Footer({ basePath = '' }: FooterProps) {
+  const isPanel = basePath === '/panel';
+  const logoTo = isPanel ? '/panel' : '/';
+  const contactPath = `${basePath}/contact`;
+  const productsPath = `${basePath}/products`;
+
   return (
     <footer className="ft gut">
       <div className="wrap">
         <div className="ft-head">
           <div className="ft-brand">
-            <Link className="logo" to="/" aria-label="Electrosoft home">
+            {/* Logo: / for testing, /panel for panels */}
+            <Link className="logo" to={logoTo} aria-label={isPanel ? "Electrosoft Panels home" : "Electrosoft home"}>
               <svg viewBox="0 0 16 22" aria-hidden="true"><path d="M10 0L0 13h6l-2 9 12-14H9z" fill="#0B5BD3" /></svg>
               ELECTROSOFT
             </Link>
@@ -40,7 +51,7 @@ export default function Footer() {
           <div className="ft-reach">
             <a href={`tel:${TEL}`}>{PHONE}</a>
             <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-            <Link className="pill" to="/contact">Get a Quote</Link>
+            <Link className="pill" to={contactPath}>Get a Quote</Link>
           </div>
         </div>
 
@@ -55,7 +66,7 @@ export default function Footer() {
 
           <nav className="ft-cell ft-products" aria-label="Products">
             <h3>Products</h3>
-            <ul>{PRODUCTS.map(([n, id]) => <li key={id}><Link to={`/products#${id}`}>{n}</Link></li>)}</ul>
+            <ul>{PRODUCTS.map(([n, id]) => <li key={id}><Link to={`${productsPath}#${id}`}>{n}</Link></li>)}</ul>
           </nav>
 
           <nav className="ft-cell" aria-label="Downloads">

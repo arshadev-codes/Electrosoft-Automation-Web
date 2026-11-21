@@ -6,6 +6,7 @@ import { createAboutMotion, revScrollY, YEAR, FROM } from './aboutMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
 import { Arrow, FeederCta } from '../components/ui';
 import RouteArt from '../components/RouteArt';
+import { useSectionPath } from '../hooks/useSectionPath';
 
 /** One roller of the meter's register: 0–9 four times over, so it can spin several turns. */
 const Drum = ({ i, d }: { i: number; d: number }) => (
@@ -124,6 +125,7 @@ function RouteStep({ s, side, art }: { s: Step; side: 'l' | 'r'; art?: boolean }
  */
 export default function About() {
   const ref = useRef<HTMLElement>(null);
+  const { toPath } = useSectionPath();
   const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [rev, setRev] = useState(reduce ? CHAPTERS.length - 1 : 0);
 
@@ -278,7 +280,7 @@ export default function About() {
       </section>
 
       <FeederCta id="ab-cta-h" tag="Your project">
-        <Link className="pill" to="/contact">Get a Quote<Arrow /></Link>
+        <Link className="pill" to={toPath('/contact')}>Get a Quote<Arrow /></Link>
         <a className="line-btn" href="tel:+918692888444">Call +91 86928 88444</a>
       </FeederCta>
     </main>

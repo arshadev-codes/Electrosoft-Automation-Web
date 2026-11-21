@@ -79,7 +79,7 @@ export default function Hero() {
 
       <div className="hud mono">
         <span id="hudState" hidden ><b>Ready</b></span>
-        <span className="bar"><i id="hudBar" /></span>
+        {/* <span className="bar"><i id="hudBar" /></span> */}
         <span id="hudCount">0 / 9</span>
       </div>
       <p className="fallback mono" id="fallback" hidden>3D view unavailable in this browser</p>

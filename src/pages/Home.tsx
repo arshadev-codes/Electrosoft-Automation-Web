@@ -1,6 +1,7 @@
 import Hero from '../sections/Hero';
 import Proof from '../sections/Proof';
 import Lines from '../sections/Lines';
+import TestBenches from '../sections/TestBenches';
 import Testing from '../sections/Testing';
 import Report from '../sections/Report';
 import Why from '../sections/Why';
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <Proof />
       <Lines />
+      <TestBenches />
       <Dossier />
       <Testing />
       <Report />

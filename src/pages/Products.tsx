@@ -5,6 +5,7 @@ import { RANGE, type Product } from '../data/products';
 import { createProductsMotion } from './productsMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
 import { Arrow, FeederCta, tilt, untilt } from '../components/ui';
+import { useSectionPath } from '../hooks/useSectionPath';
 
 const COUNT = RANGE.flatMap(g => g.items).length;
 const SHORT: Record<string, string> = { assembly: 'Assembly & Wiring', turnkey: 'Turnkey Projects' };
@@ -30,27 +31,28 @@ const Feeder = () => (
   </svg>
 );
 
-function Item({ p, flip }: { p: Product; flip: boolean }) {
-  const src = img(p.id);
+function Item({ p: product, flip }: { p: Product; flip: boolean }) {
+  const { toPath } = useSectionPath();
+  const src = img(product.id);
   return (
-    <article className={`pr-item${flip ? ' flip' : ''}`} id={p.id} aria-labelledby={`${p.id}-h`}>
+    <article className={`pr-item${flip ? ' flip' : ''}`} id={product.id} aria-labelledby={`${product.id}-h`}>
       <Feeder />
-      <figure className={`pr-shot ${p.cut ? 'cut' : 'frame'}`} onPointerMove={tilt} onPointerLeave={untilt}>
+      <figure className={`pr-shot ${product.cut ? 'cut' : 'frame'}`} onPointerMove={tilt} onPointerLeave={untilt}>
         <div className="pr-stage">
           <i className="pr-grid" aria-hidden="true" />
           <img className="pr-ghost" src={src} alt="" loading="lazy" decoding="async" draggable={false} />
-          <div className="pr-live"><img src={src} alt={`${p.name} by Electrosoft`} loading="lazy" decoding="async" draggable={false} /></div>
+          <div className="pr-live"><img src={src} alt={`${product.name} by Electrosoft`} loading="lazy" decoding="async" draggable={false} /></div>
           <i className="pr-scan" aria-hidden="true" />
         </div>
         <i className="pr-crop" aria-hidden="true" />
       </figure>
       <div className="pr-txt">
-        <h3 id={`${p.id}-h`}><span className="ln"><span>{p.name}</span></span></h3>
-        {p.sub && <p className="pr-sub">{p.sub}</p>}
-        <p className="pr-text">{p.text}</p>
-        {p.points.length > 0 && <ul className="pr-pts">{p.points.map(pt => <li key={pt}>{pt}</li>)}</ul>}
+        <h3 id={`${product.id}-h`}><span className="ln"><span>{product.name}</span></span></h3>
+        {product.sub && <p className="pr-sub">{product.sub}</p>}
+        <p className="pr-text">{product.text}</p>
+        {product.points.length > 0 && <ul className="pr-pts">{product.points.map(pt => <li key={pt}>{pt}</li>)}</ul>}
         {/* TODO: CONFIRM — /contact (quote form) isn't built yet; it should read ?product= to prefill the requirement */}
-        <Link className="line-btn" to={`/contact?product=${p.id}`}>Request a quote<span className="sr"> for {p.name}</span><Arrow /></Link>
+        <Link className="line-btn" to={toPath(`/contact?product=${product.id}`)}>Request a quote<span className="sr"> for {product.name}</span><Arrow /></Link>
       </div>
     </article>
   );
@@ -64,6 +66,7 @@ function Item({ p, flip }: { p: Product; flip: boolean }) {
  */
 export default function Products() {
   const ref = useRef<HTMLElement>(null);
+  const { toPath } = useSectionPath();
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -136,7 +139,7 @@ export default function Products() {
 
       {/* CONTENT.md · Home §10 contact CTA */}
       <FeederCta id="pr-cta-h" tag="Your project">
-        <Link className="pill" to="/contact">Get a Quote<Arrow /></Link>
+        <Link className="pill" to={toPath('/contact')}>Get a Quote<Arrow /></Link>
         <a className="line-btn" href="tel:+918692888444">Call +91 86928 88444</a>
       </FeederCta>
     </main>

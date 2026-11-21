@@ -6,6 +6,7 @@ import { createProjectsMotion, sheetsIn } from './projectsMotion';
 import { scrollToY } from '../hooks/useSmoothScroll';
 import { Arrow, FeederCta } from '../components/ui';
 import { Elevation, ratingLog as LOG } from '../components/Elevation';
+import { useSectionPath } from '../hooks/useSectionPath';
 
 const COUNT = { all: ALL.length, panel: ALL.filter(p => p.kind === 'panel').length, test: ALL.filter(p => p.kind === 'test').length };
 
@@ -25,30 +26,31 @@ const Mini = ({ mva }: { mva: number }) => {
   );
 };
 
-function Sheet({ p, i, n }: { p: Project; i: number; n: number }) {
-  const test = p.kind === 'test';
+function Sheet({ p: project, i, n }: { p: Project; i: number; n: number }) {
+  const { toPath } = useSectionPath();
+  const test = project.kind === 'test';
   return (
-    <article className={`pj-sheet ${p.kind}`} id={p.id} style={{ '--i': i } as CSSProperties} aria-labelledby={`${p.id}-h`}>
+    <article className={`pj-sheet ${project.kind}`} id={project.id} style={{ '--i': i } as CSSProperties} aria-labelledby={`${project.id}-h`}>
       <div className="pj-vis">
-        {test ? <Elevation p={p} />
-          : <figure><img src={p.img} alt={`${p.name}, ${p.place}`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" /></figure>}
+        {test ? <Elevation p={project} />
+          : <figure><img src={project.img} alt={`${project.name}, ${project.place}`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" /></figure>}
         <i className="pj-marks" aria-hidden="true" />
       </div>
       <div className="pj-tb">
         <div className="pj-tb-top"><span className="mono">Sheet {String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span><span className="pj-kind">{test ? 'Testing system' : 'Panels & automation'}</span></div>
-        <h2 id={`${p.id}-h`}>{p.name}</h2>
-        <p className="pj-sub">{test ? p.client : p.place}</p>
+        <h2 id={`${project.id}-h`}>{project.name}</h2>
+        <p className="pj-sub">{test ? project.client : project.place}</p>
         <dl>
-          <div><dt>End user</dt><dd>{p.full ?? p.client}</dd></div>
+          <div><dt>End user</dt><dd>{project.full ?? project.client}</dd></div>
           {test ? <>
-            <div className="half"><dt>System</dt><dd>{p.system}</dd></div>
-            <div className="half"><dt>Rating</dt><dd className="mono">up to {p.rating} · {p.kv}</dd></div>
-            <div><dt>Scope</dt><dd><ul>{p.scope?.map(s => <li key={s}>{s}</li>)}</ul></dd></div>
-          </> : <><div className="half"><dt>Location</dt><dd>{p.place}</dd></div><div className="half"><dt>Client</dt><dd>{p.sector}</dd></div><div><dt>Line</dt><dd>Electrical control panels and automation</dd></div></>}
+            <div className="half"><dt>System</dt><dd>{project.system}</dd></div>
+            <div className="half"><dt>Rating</dt><dd className="mono">up to {project.rating} · {project.kv}</dd></div>
+            <div><dt>Scope</dt><dd><ul>{project.scope?.map(s => <li key={s}>{s}</li>)}</ul></dd></div>
+          </> : <><div className="half"><dt>Location</dt><dd>{project.place}</dd></div><div className="half"><dt>Client</dt><dd>{project.sector}</dd></div><div><dt>Line</dt><dd>Electrical control panels and automation</dd></div></>}
         </dl>
         {test
           ? <Link className="line-btn" to="/transformer-testing">See the testing suite<Arrow /></Link>
-          : <Link className="line-btn" to="/contact">Talk to us about a similar plant<Arrow /></Link>}
+          : <Link className="line-btn" to={toPath('/contact')}>Talk to us about a similar plant<Arrow /></Link>}
       </div>
       <i className="pj-dim" aria-hidden="true" />
     </article>
@@ -62,6 +64,7 @@ function Sheet({ p, i, n }: { p: Project; i: number; n: number }) {
  */
 export default function Projects() {
   const ref = useRef<HTMLElement>(null), tabs = useRef<HTMLDivElement>(null);
+  const { toPath } = useSectionPath();
   const [reduce] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [filter, setFilter] = useState<'all' | Kind>('all');
   const list = filter === 'all' ? ALL : ALL.filter(p => p.kind === filter);
@@ -153,7 +156,7 @@ export default function Projects() {
       </section>
 
       <FeederCta id="pj-cta-h" tag="Your project">
-        <Link className="pill" to="/contact">Get a Quote<Arrow /></Link>
+        <Link className="pill" to={toPath('/contact')}>Get a Quote<Arrow /></Link>
         <a className="line-btn" href="tel:+918692888444">Call +91 86928 88444</a>
       </FeederCta>
     </main>
