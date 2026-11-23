@@ -1,8 +1,31 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+/**
+ * ============================================================================
+ * TestBenches.tsx — 3D Transformer Testing Systems Showcase
+ * Electrosoft Design System (DESIGN.md)
+ * ============================================================================
+ * Architecture Overview:
+ * 1. 3D Spatial Ring: Projects cards on a virtual cylinder using 3D transforms
+ *    (translate3d, rotateY, scale, opacity) driven by continuous float `motion.pos`.
+ * 2. GSAP Momentum & Snapping: Interpolates float positions to integer indices
+ *    with smooth cubic easing (`power3.out`).
+ * 3. Fast-to-Slow ScrollTrigger: Sweeps cards into view with `expo.out` easing
+ *    (explosive launch decelerating into a smooth glide) when the section scrolls in.
+ * 4. Auto-Scroll with Pause on Hover: Cycles cards every 3.8s; pauses on hover,
+ *    active drag, image preview open, or document invisibility.
+ * 5. Direct Card Click Activation: Clicking any peripheral card animates it to
+ *    the active center; clicking the active card opens the high-definition image preview.
+ * 6. Contact Prefill: "Inquire for this System" serializes technical specs directly
+ *    into `/contact` URL search parameters.
+ * ============================================================================
+ */
+
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useCinematic } from '../hooks/useCinematic';
+import { holdScroll } from '../hooks/useSmoothScroll';
+import { Arrow } from '../components/ui';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -97,9 +120,179 @@ const PRODUCTS: Product[] = [
 ];
 
 const N = PRODUCTS.length;
+
+// Safe positive modulo for continuous cyclic wrapping: [0, n - 1]
 const mod = (v: number, n: number) => ((v % n) + n) % n;
+
+// Clamps a numeric value between bounds [a, b]
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+
+// Hermite cubic ease-in-out for natural spatial dispersion: 3u^2 - 2u^3
 const ease = (u: number) => u * u * (3 - 2 * u);
+
+/**
+ * BenchImagePreview:
+ * Inspection photo viewer for transformer test benches adhering to Electrosoft DESIGN.md.
+ * Features:
+ * - High-definition image display with natural drop-shadow against a frosted backdrop.
+ * - Keyboard navigation (Esc to exit, Arrow keys to traverse).
+ * - Touch swipe gesture detection.
+ * - Prev/Next navigation that stays synchronized with the carousel.
+ * - Direct enquiry action linking to the prefilled Contact flow.
+ */
+interface BenchImagePreviewProps {
+  items: Product[];
+  activeIdx: number;
+  onClose: () => void;
+  onNavigate: (idx: number) => void;
+  onInquire: (item: Product) => void;
+}
+
+function BenchImagePreview({ items, activeIdx, onClose, onNavigate, onInquire }: BenchImagePreviewProps) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const firstRef = useRef(true);
+  const swipeStartX = useRef<number | null>(null);
+
+  const total = items.length;
+  const current = items[activeIdx];
+
+  const go = useCallback(
+    (delta: number) => {
+      const next = (activeIdx + delta + total) % total;
+      onNavigate(next);
+    },
+    [activeIdx, total, onNavigate]
+  );
+
+  // Entrance and photo swap animations
+  useLayoutEffect(() => {
+    const root = boxRef.current;
+    const el = imgRef.current;
+    if (!root || !el) return;
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (firstRef.current) {
+      firstRef.current = false;
+      gsap.fromTo(root, { '--fade': 0 }, { '--fade': 1, duration: reduce ? 0 : 0.35, ease: 'power2.out' });
+      gsap.fromTo(el, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: reduce ? 0 : 0.45, ease: 'expo.out' });
+      gsap.fromTo(
+        root.querySelectorAll('.vw-ui'),
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.4, delay: reduce ? 0 : 0.15, stagger: 0.05, ease: 'power2.out' }
+      );
+    } else if (!reduce) {
+      gsap.fromTo(el, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'expo.out' });
+    }
+  }, [activeIdx]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'ArrowLeft') go(-1);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [go, onClose]);
+
+  // Lock document scroll while preview is active
+  useEffect(() => {
+    holdScroll(true);
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      holdScroll(false);
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
+  return (
+    <div
+      className="vw"
+      ref={boxRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${current.title} image preview`}
+      onPointerDown={e => { swipeStartX.current = e.clientX; }}
+      onPointerUp={e => {
+        if (swipeStartX.current !== null && Math.abs(e.clientX - swipeStartX.current) > 50) {
+          go(e.clientX < swipeStartX.current ? 1 : -1);
+        }
+        swipeStartX.current = null;
+      }}
+    >
+      {/* Light frosted backdrop (click to dismiss) */}
+      <button
+        type="button"
+        className="vw-bg"
+        aria-label="Close image preview"
+        tabIndex={-1}
+        onClick={onClose}
+      />
+
+      {/* Top Header: Bench Counter & Close Action */}
+      <div className="vw-top vw-ui">
+        <span className="mono">
+          {String(activeIdx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')} &bull; {current.code}
+        </span>
+        <button type="button" className="vw-close" onClick={onClose}>
+          Close <span aria-hidden="true">Esc</span>
+        </button>
+      </div>
+
+      {/* Center High-Definition Image Showcase */}
+      <figure className="vw-fig">
+        <img
+          ref={imgRef}
+          key={current.id}
+          src={`${BASE}${current.img}`}
+          alt={current.title}
+          draggable={false}
+        />
+      </figure>
+
+      {/* Bottom Bar: Prev arrow, system specifications + CTA, Next arrow */}
+      <div className="vw-bot vw-ui">
+        <button
+          type="button"
+          className="vw-arrow"
+          aria-label="Previous test bench"
+          onClick={() => go(-1)}
+        >
+          <Arrow />
+        </button>
+
+        <div className="vw-cap">
+          <b>{current.title}</b>
+          <span>{current.badge} &bull; Up to {current.voltage} kV &bull; Class {current.accuracy}%</span>
+          <button
+            type="button"
+            className="pill"
+            style={{ marginTop: '8px', fontSize: '13px', padding: '9px 20px', cursor: 'pointer' }}
+            onClick={() => {
+              onClose();
+              onInquire(current);
+            }}
+          >
+            <span>Inquire for this System</span>
+            <Arrow />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="vw-arrow next"
+          aria-label="Next test bench"
+          onClick={() => go(1)}
+        >
+          <Arrow />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function TestBenches() {
   const navigate = useNavigate();
@@ -111,12 +304,16 @@ export default function TestBenches() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [active, setActive] = useState(0);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalItem, setModalItem] = useState<Product>(PRODUCTS[0]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewIdx, setPreviewIdx] = useState(0);
   const [cadText, setCadText] = useState('POS [X: 620.0  Y: 280.0] • 50 Hz');
 
+  /**
+   * Serializes active bench specifications and navigates to the Contact page
+   * with pre-filled enquiry requirements and circuit-breakers satisfied.
+   */
   const handleInquire = useCallback((item: Product) => {
-    setModalOpen(false);
+    setPreviewOpen(false);
     const messageLines = [
       `Enquiry about: ${item.title} (${item.code})`,
       '',
@@ -138,25 +335,37 @@ export default function TestBenches() {
     navigate(`/contact?${searchParams.toString()}`);
   }, [navigate]);
 
-  // Motion controller reference (interpolated with GSAP)
+  // Interpolated continuous motion state
   const motion = useRef({ pos: 0, target: 0 });
   const tweenRef = useRef<gsap.core.Tween | null>(null);
 
-  // Drag physics state
+  // Pointer drag & gesture state
   const dragRef = useRef({
     isDragging: false,
     dragMoved: false,
     startX: 0,
     startPos: 0,
+    clickedIdx: -1,
     samples: [] as { t: number; p: number }[],
     cardW: 460
   });
 
-  // Wheel throttle state
-  const wheelLock = useRef({ last: 0, acc: 0 });
+  // Auto-scroll controller refs
+  const isHoveredRef = useRef(false);
+  const previewOpenRef = useRef(previewOpen);
+  previewOpenRef.current = previewOpen;
+  const autoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 3D positioning update function
-  const renderCards = useCallback((pos: number) => {
+  /**
+   * 3D Geometry Projection Engine:
+   * Maps each card along a curved spatial ring based on signed distance `o` from `pos`.
+   * - `o`: circular distance [-N/2, N/2] relative to current view position.
+   * - `x`: horizontal bezier displacement across the stage.
+   * - `z`: receding depth into 3D space.
+   * - `ry`: inward Y-axis tilt to face the user.
+   * - `sc` & `op`: depth scaling and distance-based opacity falloff.
+   */
+  const renderCards = useCallback((pos: number, syncState = true) => {
     const cardW = dragRef.current.cardW;
 
     itemRefs.current.forEach((el, i) => {
@@ -189,12 +398,14 @@ export default function TestBenches() {
       }
     });
 
-    // Check active index change
-    const curActive = mod(Math.round(pos), N);
-    setActive(prev => (prev !== curActive ? curActive : prev));
+    // Synchronize active indicator index (bypassed during fast entrance tween for 60/120 FPS)
+    if (syncState) {
+      const curActive = mod(Math.round(pos), N);
+      setActive(prev => (prev !== curActive ? curActive : prev));
+    }
   }, []);
 
-  // Measure stage dimensions
+  // Measures stage container dimensions to size cards responsively
   const measure = useCallback(() => {
     const stg = stageRef.current;
     if (!stg) return;
@@ -208,7 +419,37 @@ export default function TestBenches() {
     renderCards(motion.current.pos);
   }, [renderCards]);
 
-  // Smooth GSAP Tween to a whole integer index
+  /**
+   * Auto-Advance Carousel Controller:
+   * Automatically cycles to the next card every 3.8s. Pauses if the stage is hovered,
+   * user is actively dragging, image preview is open, or browser tab is hidden.
+   */
+  const resetAutoTimer = useCallback(() => {
+    if (autoTimerRef.current) clearInterval(autoTimerRef.current);
+    autoTimerRef.current = setInterval(() => {
+      if (
+        !isHoveredRef.current &&
+        !dragRef.current.isDragging &&
+        !previewOpenRef.current &&
+        !document.hidden
+      ) {
+        const dest = Math.round(motion.current.target) + 1;
+        motion.current.target = dest;
+        tweenRef.current?.kill();
+        tweenRef.current = gsap.to(motion.current, {
+          pos: dest,
+          duration: 0.9,
+          ease: 'power3.out',
+          onUpdate: () => renderCards(motion.current.pos)
+        });
+      }
+    }, 1900);
+  }, [renderCards]);
+
+  /**
+   * Rotates smoothly to target integer index via the shortest circular path
+   * (e.g. from index 4 to 0 spins forward +1 rather than rewinding -4).
+   */
   const goToIndex = useCallback((targetIdx: number, speed = 0.95) => {
     const curPos = motion.current.pos;
     const curRound = Math.round(curPos);
@@ -223,8 +464,10 @@ export default function TestBenches() {
       ease: 'power3.out',
       onUpdate: () => renderCards(motion.current.pos)
     });
-  }, [renderCards]);
+    resetAutoTimer();
+  }, [renderCards, resetAutoTimer]);
 
+  // Steps carousel by signed integer (+1 next, -1 previous)
   const step = useCallback((delta: number) => {
     const dest = Math.round(motion.current.target) + delta;
     motion.current.target = dest;
@@ -235,9 +478,10 @@ export default function TestBenches() {
       ease: 'power3.out',
       onUpdate: () => renderCards(motion.current.pos)
     });
-  }, [renderCards]);
+    resetAutoTimer();
+  }, [renderCards, resetAutoTimer]);
 
-  // Window Resize & Initialization
+  // Sizing & Resize Observer
   useEffect(() => {
     measure();
     const stg = stageRef.current;
@@ -247,7 +491,99 @@ export default function TestBenches() {
     return () => ro.disconnect();
   }, [measure]);
 
-  // Pointer Drag Handling (Gentle drag, never too fast, snaps cleanly)
+  /**
+   * ScrollTrigger Entrance Animation (Fast-to-Slow & Lag-Free):
+   * When the section scrolls into the viewport (top 70%), cards sweep dynamically
+   * from `START_OFFSET` to `0`.
+   *
+   * Kinematics & Seamlessness:
+   * 1. Start Offset (-5.0): Represents 1 full 360-degree revolution of all 5 testing systems.
+   * 2. Perfect Pre-Render Sync: `motion.current.pos` and `renderCards` start at identical values,
+   *    guaranteeing ZERO visual jumps, pop-in, or frame discontinuity when the tween fires.
+   * 3. Explosive Deceleration (`expo.out`): Starts with rapid launch speed across the stage,
+   *    then effortlessly decelerates into a silky, majestic glide into position 0.
+   * 4. 60/120 FPS Throughput (`syncState: false`): Bypasses intermediate React component
+   *    re-renders during the high-speed sweep so the GPU handles 100% of the workload.
+   */
+  useEffect(() => {
+    const sec = sectionRef.current;
+    if (!sec) return;
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    // Fast-to-slow kinematic parameters:
+    // START_OFFSET = -5 gives 1 full revolution (can adjust to -4 or -6 as desired)
+    // DURATION = 1.8s allows aggressive launch burst followed by silky glide
+    const START_OFFSET = -10;
+    const DURATION = 1.8;
+
+    // Initialize position and pre-render cards at exact offset to prevent any visual jump
+    motion.current.pos = START_OFFSET;
+    motion.current.target = 0;
+    renderCards(START_OFFSET, false);
+
+    const st = ScrollTrigger.create({
+      trigger: sec,
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        tweenRef.current?.kill();
+        tweenRef.current = gsap.fromTo(
+          motion.current,
+          { pos: START_OFFSET },
+          {
+            pos: 0,
+            duration: DURATION,
+            ease: 'expo.out', // Rapid initial velocity that smoothly eases into rest
+            onUpdate: () => renderCards(motion.current.pos, false),
+            onComplete: () => {
+              motion.current.pos = 0;
+              motion.current.target = 0;
+              renderCards(0, true);
+              resetAutoTimer();
+            }
+          }
+        );
+      }
+    });
+
+    return () => st.kill();
+  }, [renderCards, resetAutoTimer]);
+
+  // Hover & Visibility listeners to manage auto-scroll pausing
+  useEffect(() => {
+    const box = stageBoxRef.current;
+    if (!box) return;
+
+    const onEnter = () => { isHoveredRef.current = true; };
+    const onLeave = () => {
+      isHoveredRef.current = false;
+      resetAutoTimer();
+    };
+
+    box.addEventListener('mouseenter', onEnter);
+    box.addEventListener('mouseleave', onLeave);
+
+    const onVisChange = () => {
+      if (!document.hidden) resetAutoTimer();
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+
+    resetAutoTimer();
+
+    return () => {
+      box.removeEventListener('mouseenter', onEnter);
+      box.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('visibilitychange', onVisChange);
+      if (autoTimerRef.current) clearInterval(autoTimerRef.current);
+    };
+  }, [resetAutoTimer]);
+
+  /**
+   * Pointer Drag & Gesture Handling:
+   * Supports smooth mouse/touch dragging with velocity momentum and click detection.
+   */
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     const d = dragRef.current;
@@ -256,6 +592,11 @@ export default function TestBenches() {
     d.startX = e.clientX;
     d.startPos = motion.current.pos;
     d.samples = [{ t: performance.now(), p: motion.current.pos }];
+
+    // Cache the clicked card index BEFORE pointer capture redirects events to stageBoxRef
+    const target = e.target as HTMLElement;
+    const cardEl = target.closest<HTMLElement>('.tb-item');
+    d.clickedIdx = cardEl && cardEl.dataset.i !== undefined ? Number(cardEl.dataset.i) : -1;
 
     tweenRef.current?.kill();
 
@@ -267,6 +608,7 @@ export default function TestBenches() {
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Update live CAD crosshair coordinates
     const box = stageBoxRef.current;
     if (box) {
       const rect = box.getBoundingClientRect();
@@ -279,15 +621,17 @@ export default function TestBenches() {
     if (!d.isDragging) return;
 
     const dx = e.clientX - d.startX;
+    // 6px deadzone avoids treating tiny taps as drags
     if (!d.dragMoved && Math.abs(dx) > 6) d.dragMoved = true;
     if (!d.dragMoved) return;
 
-    // pxPerStep is calibrated to 460px so dragging feels grounded and smooth
+    // Displacement ratio calibrated to card width for grounded feel
     const pxPerStep = d.cardW * 1.15;
     const newPos = d.startPos - dx / pxPerStep;
     motion.current.pos = newPos;
     renderCards(newPos);
 
+    // Track time-stamped positions for momentum release
     const now = performance.now();
     d.samples.push({ t: now, p: newPos });
     while (d.samples.length > 2 && now - d.samples[0].t > 120) d.samples.shift();
@@ -301,61 +645,36 @@ export default function TestBenches() {
     const box = stageBoxRef.current;
     if (box) {
       box.classList.remove('grabbing');
-      try { box.releasePointerCapture(e.pointerId); } catch (_) {}
+      try { box.releasePointerCapture(e.pointerId); } catch (_) { }
     }
 
+    // 1. Tapped without dragging: Activate clicked card, or open high-res preview if already active
     if (!d.dragMoved) {
-      const target = e.target as HTMLElement;
-      const cardEl = target.closest<HTMLElement>('.tb-item');
-      if (cardEl && cardEl.dataset.i !== undefined) {
-        const clickedIdx = Number(cardEl.dataset.i);
-        if (mod(clickedIdx, N) === active) {
-          setModalItem(PRODUCTS[active]);
-          setModalOpen(true);
+      if (d.clickedIdx >= 0) {
+        const clickedIdx = d.clickedIdx;
+        const curActive = mod(Math.round(motion.current.pos), N);
+        if (clickedIdx === curActive) {
+          setPreviewIdx(curActive);
+          setPreviewOpen(true);
         } else {
           goToIndex(clickedIdx);
         }
       }
+      d.clickedIdx = -1;
       return;
     }
 
-    // Velocity calculation on release
+    // 2. Dragged: Compute release velocity and project to nearest whole card integer
     const a = d.samples[0];
     const b = d.samples[d.samples.length - 1];
     const v = b && a && b.t - a.t > 8 ? ((b.p - a.p) / (b.t - a.t)) * 1000 : 0;
     const vel = clamp(v, -15, 15);
 
-    // Projected target rounded strictly to nearest whole integer
     const projected = motion.current.pos + vel * 0.16;
     const snapTarget = clamp(Math.round(projected), Math.round(motion.current.pos) - 2, Math.round(motion.current.pos) + 2);
 
     goToIndex(snapTarget, 1.0);
   };
-
-  // Throttled Wheel / Trackpad Scroll (Smoothed so it never fires too fast)
-  useEffect(() => {
-    const box = stageBoxRef.current;
-    if (!box) return;
-
-    const onWheel = (e: WheelEvent) => {
-      const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      const delta = isHorizontal ? e.deltaX : e.deltaY;
-      const now = performance.now();
-
-      if (Math.abs(delta) > 18) {
-        wheelLock.current.acc += delta;
-        if (Math.abs(wheelLock.current.acc) >= 36 && now - wheelLock.current.last > 520) {
-          e.preventDefault();
-          step(wheelLock.current.acc > 0 ? 1 : -1);
-          wheelLock.current.acc = 0;
-          wheelLock.current.last = now;
-        }
-      }
-    };
-
-    box.addEventListener('wheel', onWheel, { passive: false });
-    return () => box.removeEventListener('wheel', onWheel);
-  }, [step]);
 
   // Keyboard navigation
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -364,17 +683,17 @@ export default function TestBenches() {
     if (e.key >= '1' && e.key <= '5') { e.preventDefault(); goToIndex(Number(e.key) - 1); }
     if (e.key === 'Enter') {
       e.preventDefault();
-      setModalItem(PRODUCTS[active]);
-      setModalOpen(true);
+      setPreviewIdx(active);
+      setPreviewOpen(true);
     }
   };
 
-  const curr = PRODUCTS[active];
+  // const curr = PRODUCTS[active];
 
   return (
     <section id="transformer-benches" className="tb-section" ref={sectionRef} aria-labelledby="tb-head-title">
       <div className="tb-wrap">
-        
+
         {/* Section Header */}
         <header className="tb-head">
           <div>
@@ -387,23 +706,11 @@ export default function TestBenches() {
           <p>Discover a comprehensive suite of automated and conventional testing benches engineered for IEC 61439 &amp; IEEE C57 compliance.</p>
         </header>
 
-        {/* Top System Switcher Tabs */}
-        <div className="tb-tabs-bar" role="tablist" aria-label="Transformer Testing Bench Variants">
-          {PRODUCTS.map((p, i) => (
-            <button
-              key={p.id}
-              className={`tb-tab ${i === active ? 'active' : ''}`}
-              type="button"
-              onClick={() => goToIndex(i)}
-            >
-              <span className="tb-tab-idx">0{i + 1}</span>
-              <span>{p.tabLabel}</span>
-            </button>
-          ))}
-        </div>
+   
 
         {/* Landscape Blueprint 3D Stage */}
         <div
+        style={{marginTop:"60px"}}
           className="tb-stage-box"
           ref={stageBoxRef}
           tabIndex={0}
@@ -433,9 +740,19 @@ export default function TestBenches() {
                 ref={el => { itemRefs.current[i] = el; }}
                 className={`tb-item ${i === active ? 'is-active' : ''}`}
                 data-i={i}
+                onClick={() => {
+                  if (dragRef.current.dragMoved) return;
+                  const curActive = mod(Math.round(motion.current.pos), N);
+                  if (i === curActive) {
+                    setPreviewIdx(curActive);
+                    setPreviewOpen(true);
+                  } else {
+                    goToIndex(i);
+                  }
+                }}
               >
                 <div className="tb-card">
-                  <div className="tb-card-hud">
+                  {/* <div className="tb-card-hud">
                     <span className="tb-badge-code">{p.code}</span>
                     <div className="tb-phase-dots">
                       <span className="p-dot r" />
@@ -449,16 +766,27 @@ export default function TestBenches() {
                     <div className="tb-vf-b tr" />
                     <div className="tb-vf-b bl" />
                     <div className="tb-vf-b br" />
-                  </div>
+                  </div> */}
 
                   <div className="tb-img-box">
                     <img src={`${BASE}${p.img}`} alt={p.title} draggable={false} loading="eager" />
                   </div>
 
-                  <div className="tb-card-bezel">
+                  {/* Interactive Hover Preview Pill */}
+                  <div className="tb-preview-pill" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="M21 21l-4.35-4.35" />
+                      <line x1="11" y1="8" x2="11" y2="14" />
+                      <line x1="8" y1="11" x2="14" y2="11" />
+                    </svg>
+                    <span>PREVIEW</span>
+                  </div>
+
+                  {/* <div className="tb-card-bezel">
                     <div className="tb-bezel-title">{p.title}</div>
                     <span className="tb-bezel-tag">{p.badge}</span>
-                  </div>
+                  </div> */}
 
                   <div className="tb-haze" />
                 </div>
@@ -496,7 +824,7 @@ export default function TestBenches() {
         </div>
 
         {/* Concise Spec & Telemetry Strip (Short & Impactful) */}
-        <div className="tb-spec-strip">
+        {/* <div className="tb-spec-strip">
           <div className="tb-spec-left">
             <div className="tb-spec-header-row">
               <span className="tb-spec-step-tag">BENCH 0{active + 1} / 0{N}</span>
@@ -507,7 +835,7 @@ export default function TestBenches() {
           </div>
 
           <div className="tb-spec-right">
-            {/* 4 Key Metrics */}
+            {/* 4 Key Metrics */} {/*
             <div className="tb-metrics-row">
               <div className="tb-metric-box">
                 <div className="tb-metric-k">Max Rating</div>
@@ -527,7 +855,7 @@ export default function TestBenches() {
               </div>
             </div>
 
-            {/* Action Row */}
+            {/* Action Row *
             <div className="tb-action-row" >
               <div className="tb-ref-tag">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -543,7 +871,7 @@ export default function TestBenches() {
                   setModalItem(curr);
                   setModalOpen(true);
                 }}
-                
+
               >
                 <span>Explore Specifications</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -553,63 +881,23 @@ export default function TestBenches() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
       </div>
 
-      {/* Modal Technical Dossier Window */}
-      <div
-        className={`tb-modal-overlay ${modalOpen ? 'open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-bench-title"
-        onClick={e => { if (e.target === e.currentTarget) setModalOpen(false); }}
-      >
-        <div className="tb-modal-window">
-          <div className="tb-modal-head">
-            <div>
-              <div style={{ fontFamily: 'var(--f-mono)', fontSize: '11px', color: 'var(--brand)', fontWeight: 600 }}>
-                {modalItem.code} &bull; TECHNICAL SPECIFICATION
-              </div>
-              <h3 id="modal-bench-title" style={{ fontFamily: 'var(--f-display)', fontWeight: 600, fontSize: '18px', marginTop: '2px' }}>
-                {modalItem.title}
-              </h3>
-            </div>
-            <button className="tb-modal-close" aria-label="Close dialog" onClick={() => setModalOpen(false)}>
-              &times;
-            </button>
-          </div>
-          <div className="tb-modal-body">
-            <p style={{ color: 'var(--ink-2)', marginBottom: '18px', fontSize: '14px', lineHeight: 1.6 }}>
-              {modalItem.text}
-            </p>
-            
-            <h4 style={{ fontFamily: 'var(--f-display)', fontWeight: 600, fontSize: '14px', color: 'var(--ink)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Routine Tests Supported (IEC 61439 / IS 2026):
-            </h4>
-            <div className="tb-modal-test-grid">
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Measurement of No-Load Loss &amp; Current</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Measurement of Load Loss &amp; Impedance</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Winding Resistance (HV/LV)</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Voltage Ratio &amp; Vector Group</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Separate Source AC Withstand (HV Test)</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Induced Over Voltage Test (DVDF)</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Magnetic Balance &amp; Neutral Current</span></div>
-              <div className="tb-modal-test-card"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Harmonics FFT &amp; Acoustic Sound Level</span></div>
-            </div>
-
-            <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                className="pill"
-                type="button"
-                onClick={() => handleInquire(modalItem)}
-              >
-                Inquire for this System &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* High-Definition Inspection Image Preview */}
+      {previewOpen && (
+        <BenchImagePreview
+          items={PRODUCTS}
+          activeIdx={previewIdx}
+          onClose={() => setPreviewOpen(false)}
+          onNavigate={idx => {
+            setPreviewIdx(idx);
+            goToIndex(idx);
+          }}
+          onInquire={handleInquire}
+        />
+      )}
     </section>
   );
 }
