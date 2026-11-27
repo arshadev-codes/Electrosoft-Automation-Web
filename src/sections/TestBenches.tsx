@@ -376,11 +376,11 @@ export default function TestBenches() {
       const e = ease(Math.min(u, 1));
       const far = Math.max(0, u - 1);
 
-      // Smooth curved landscape positioning
-      const x = s * (e * cardW * 0.76 + far * cardW * 0.32);
-      const z = -e * (cardW * 0.48) - far * (cardW * 0.22);
-      const ry = -s * e * 50;
-      const sc = 1 - 0.11 * e - far * 0.05;
+      // Smooth curved landscape positioning with prominent hero scaling on the active middle card
+      const x = s * (e * cardW * 0.80 + far * cardW * 0.32);
+      const z = (1 - e) * 45 - e * (cardW * 0.50) - far * (cardW * 0.22);
+      const ry = -s * e * 48;
+      const sc = 1.30 - 0.62 * e - far * 0.05;
       const op = u > 2.8 ? 0 : u > 2.2 ? 1 - (u - 2.2) / 0.6 : 1;
 
       el.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(2)}px, 0, ${z.toFixed(2)}px) rotateY(${ry.toFixed(2)}deg) scale(${sc.toFixed(4)})`;

@@ -2,11 +2,12 @@ import Hero from '../sections/Hero';
 import Proof from '../sections/Proof';
 import Lines from '../sections/Lines';
 import TestBenches from '../sections/TestBenches';
-import Testing from '../sections/Testing';
+// import Testing from '../sections/Testing';
 import Report from '../sections/Report';
 import Why from '../sections/Why';
 import RoutineTests from '../sections/RoutineTests';
-import Dossier from '../sections/Dossier';
+import Clients from '../sections/Clients';
+// import Dossier from '../sections/Dossier';
 
 export default function Home() {
   return (
@@ -15,11 +16,12 @@ export default function Home() {
       <Proof />
       <Lines />
       <TestBenches />
-      <Dossier />
-      <Testing />
+      {/* <Dossier /> */}
+      {/* <Testing /> */}
       <Report />
       <Why />
       <RoutineTests />
+      <Clients/>
     </main>
   );
 }

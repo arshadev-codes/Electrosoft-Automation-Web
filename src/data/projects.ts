@@ -7,6 +7,7 @@ export type Kind = 'panel' | 'test';
 export type Project = {
   id: string; kind: Kind; name: string; client: string; full?: string;
   place?: string; tag?: string; sector?: string; img?: string; system?: string; mva?: number; rating?: string; kv?: string; scope?: string[]; status?: string;
+  year?: string;
 };
 
 const PANEL: Project[] = [
@@ -17,21 +18,27 @@ const PANEL: Project[] = [
   
 ];
 
-const NAME: Record<string, string> = {
-  msedcl: 'Fully automatic transformer testing system',
-  'tata-power': 'Semi automatic transformer testing system',
-  kptcl: 'Power transformer testing suite',
-  'set-on-site': 'Conventional transformer testing system',
-  'atlanta-500mva': 'Conventional transformer testing system',
-  'cg-power': 'Fully advance automatic transformer testing system',
-};
 const TEST: Project[] = TESTING.map(p => ({
-  id: p.id, kind: 'test', name: NAME[p.id] ?? 'Transformer testing system', client: p.client, tag: p.client, full: p.full,
-  system: p.system, mva: p.mva, rating: p.rating, kv: p.kv, scope: p.scope, status: p.status,
+  id: p.id,
+  kind: 'test',
+  name: p.name,
+  client: p.client,
+  tag: p.client,
+  full: p.full,
+  system: p.system,
+  mva: p.mva,
+  rating: p.rating,
+  kv: p.kv,
+  scope: p.scope,
+  status: p.status,
+  year: p.year,
 }));
 
-// the two lines alternate, so the register reads as one company
-export const ALL: Project[] = PANEL.flatMap((p, i) => [p, TEST[i]]).filter(Boolean);
+// Alternating panel and test projects for the register, preserving all items
+export const ALL: Project[] = Array.from(
+  { length: Math.max(PANEL.length, TEST.length) },
+  (_, i) => [PANEL[i], TEST[i]]
+).flat().filter((p): p is Project => Boolean(p));
 
 // All testing projects for the dossier (complete + under execution)
 export const ALL_TEST: Project[] = TEST;

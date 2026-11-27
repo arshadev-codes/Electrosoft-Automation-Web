@@ -19,7 +19,7 @@ import About from './pages/About';
 import Products from './pages/Products';
 import TestingSolutions from './pages/TestingSolutions';
 import PanelHome from './pages/PanelHome';
-import Projects from './pages/Projects';
+// import Projects from './pages/Projects'; // NOTE: Uncomment to restore Projects page
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 
@@ -55,7 +55,11 @@ export default function App() {
             {/* Testing shared pages */}
             <Route path="/about" element={<About />} />
             <Route path="/products" element={<Products />} />
-            <Route path="/projects" element={<Projects />} />
+            {/* NOTE: Projects page temporarily commented out for deployment.
+                Redirects safely prevent broken links or 404s.
+                To restore: uncomment import at line 22 and route below, then remove Navigate. */}
+            {/* <Route path="/projects" element={<Projects />} /> */}
+            <Route path="/projects" element={<Navigate to="/" replace />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
 
@@ -63,7 +67,11 @@ export default function App() {
             <Route path="/panel" element={<PanelHome />} />
             <Route path="/panel/about" element={<About />} />
             <Route path="/panel/products" element={<Products />} />
-            <Route path="/panel/projects" element={<Projects />} />
+            {/* NOTE: Projects page temporarily commented out for deployment.
+                Redirects safely prevent broken links or 404s.
+                To restore: uncomment import at line 22 and route below, then remove Navigate. */}
+            {/* <Route path="/panel/projects" element={<Projects />} /> */}
+            <Route path="/panel/projects" element={<Navigate to="/panel" replace />} />
             <Route path="/panel/gallery" element={<Gallery />} />
             <Route path="/panel/contact" element={<Contact />} />
 

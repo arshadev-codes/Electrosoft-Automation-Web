@@ -7,46 +7,167 @@ import { useCinematic } from '../hooks/useCinematic';
 
 const FEATURED: Project[] = ALL_TEST;
 const N_PROJ = FEATURED.length;        // 17 projects
-const N = Math.ceil(N_PROJ / 2);       // 9 spreads = leaves to turn
-const NUM_LEAVES = N + 1;              // 10 leaves (cover + 9)
+const PROJ_PER_SPREAD = 4;             // 2 records on left page + 2 on right page
+const N = Math.ceil(N_PROJ / PROJ_PER_SPREAD); // 5 spreads = 5 folios
+const NUM_LEAVES = N + 1;              // 6 leaves (cover + 5 content leaves)
 const pad = (n: number) => String(n).padStart(2, '0');
 const RINGS = [0.17, 0.5, 0.83];
 
-/*
- * Two-per-spread dossier. Each open spread shows:
- *   LEFT  page = back  of leaf (f-1)  → FEATURED[2*(f-1)]
- *   RIGHT page = front of leaf f      → FEATURED[2*(f-1)+1]
- *
- * Tab logic — no spread number ever appears on both sides at once:
- *   LEFT  tabs: spreads 0 … f-1   (current + past)   shown when f > k
- *   RIGHT tabs: spreads f … N-1   (future)            shown when f ≤ k
- *
- * The current spread's tab is always the LAST tab on the left (highlighted).
- * Left tab text uses scaleX(-1) to cancel the back-face rotateY(180deg) mirror.
+/**
+ * Single Project Technical Record:
+ * High-density engineering card with Company, Status badge, Rating & Voltage,
+ * Year, System type, and Scope tags.
  */
-
-function Facts({ p, k, live, mirrored }: { p: Project; k: number; live: boolean; mirrored?: boolean }) {
+function RecordCard({
+  p,
+  k,
+  live
+}: {
+  p: Project;
+  k: number;
+  live: boolean;
+}) {
   const isUnder = p.status === 'under-execution';
-  const hasRating = p.rating && p.rating !== '—';
+  const hasRating = Boolean(p.rating && p.rating !== '—');
+
+  return (
+    <article className="dz-record">
+      <div className="dz-record-head">
+        <div className="dz-record-id-wrap">
+          <span className="dz-record-num">{pad(k + 1)}</span>
+          <div style={{ minWidth: 0 }}>
+            <h4 className="dz-record-title" title={p.full ?? p.client}>
+              {p.client}
+            </h4>
+            <div className="dz-record-client" title={p.name}>
+              {p.name}
+            </div>
+          </div>
+        </div>
+        <div className="dz-record-badges">
+          <span className={`dz-status-pill ${isUnder ? 'under' : 'done'}`}>
+            <span className="p-dot" />
+            {isUnder ? 'Under Execution' : 'Completed'}
+          </span>
+          {p.year && <span className="dz-year-pill">{p.year}</span>}
+        </div>
+      </div>
+
+      <div className="dz-record-specs">
+        <div className="dz-spec-item">
+          <span className="dz-spec-k">System</span>
+          <span className="dz-spec-v" title={p.system}>{p.system}</span>
+        </div>
+        <div className="dz-spec-item">
+          <span className="dz-spec-k">Rating &amp; Voltage</span>
+          <span className={`dz-spec-v ${hasRating ? 'mono' : ''}`}>
+            {hasRating ? (p.kv && p.kv !== '—' ? `up to ${p.rating} · ${p.kv}` : `up to ${p.rating}`) : 'Custom Plant Setup'}
+          </span>
+        </div>
+        {p.scope && p.scope.length > 0 && (
+          <div className="dz-spec-item dz-spec-item--full">
+            <span className="dz-spec-k">Scope</span>
+            <span className="dz-spec-v" title={p.scope.join(' · ')}>{p.scope.join(' · ')}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="dz-record-foot">
+        {/* NOTE: When re-enabling Projects page, change to={`/projects#${p.id}`} */}
+        <Link className="dz-record-link" to="/contact" tabIndex={live ? undefined : -1}>
+          <span>Inquire about system</span>
+          <Arrow />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * Certified Handover Protocol Card:
+ * Balances the final page (Spread 5 right side) alongside project 19.
+ */
+function QualityHandoverCard({ live }: { live: boolean }) {
+  return (
+    <article className="dz-record dz-record--certified">
+      <div className="dz-record-head">
+        <div className="dz-record-id-wrap">
+          <span className="dz-record-num" style={{ background: 'rgba(48, 209, 88, 0.12)', color: '#1b7a37' }}>QA</span>
+          <div style={{ minWidth: 0 }}>
+            <h4 className="dz-record-title">Factory Acceptance &amp; Handover Protocol</h4>
+            <div className="dz-record-client">ISO 9001:2015 &bull; CPRI Approved &bull; CE Compliance</div>
+          </div>
+        </div>
+        <span className="dz-status-pill done">
+          <span className="p-dot" /> Certified
+        </span>
+      </div>
+
+      <div className="dz-record-specs">
+        <div className="dz-spec-item">
+          <span className="dz-spec-k">FAT Protocol</span>
+          <span className="dz-spec-v">100% FAT Routine Test Verified</span>
+        </div>
+        <div className="dz-spec-item">
+          <span className="dz-spec-k">Highest Rating</span>
+          <span className="dz-spec-v mono">750 MVA · up to 765 kV Class</span>
+        </div>
+        <div className="dz-spec-item dz-spec-item--full">
+          <span className="dz-spec-k">Documentation</span>
+          <span className="dz-spec-v">Certified test reports, schematics &amp; client dossier signed</span>
+        </div>
+      </div>
+
+      <div className="dz-record-foot">
+        {/* NOTE: When re-enabling Projects page, change to="/projects" */}
+        <Link className="dz-record-link" to="/contact" tabIndex={live ? undefined : -1}>
+          <span>Inquire about FAT</span>
+          <Arrow />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * 2 Records Per Page Sheet Component
+ */
+function PageOfProjects({
+  p1,
+  p2,
+  k1,
+  k2,
+  live,
+  mirrored,
+  side,
+  isFinalSpreadRight
+}: {
+  p1: Project | null;
+  p2: Project | null;
+  k1: number;
+  k2: number;
+  live: boolean;
+  mirrored?: boolean;
+  side: 'left' | 'right';
+  isFinalSpreadRight?: boolean;
+}) {
   return (
     <div className={`dz-facts${mirrored ? ' dz-facts--mirror' : ''}`}>
-      <div className="dz-facts-top">
-        <span className="mono">Sheet {pad(k + 1)} / {pad(N_PROJ)}</span>
-        <span className="dz-kind">{isUnder ? 'Under Execution' : 'Completed'}</span>
+      <div className="dz-page-head">
+        <span className="mono">
+          PROJECTS {pad(k1 + 1)}–{pad(Math.min(isFinalSpreadRight ? k1 + 1 : k2 + 1, N_PROJ))} / {pad(N_PROJ)}
+        </span>
+        <span className="dz-folio-tag">{side === 'left' ? 'LEFT SHEET' : 'RIGHT SHEET'}</span>
       </div>
-      <h3 id={`dz-${p.id}`}>{p.name}</h3>
-      <p className="dz-sub">{p.client}</p>
-      <dl>
-        <div><dt>Client</dt><dd>{p.full ?? p.client}</dd></div>
-        <div className="half"><dt>System</dt><dd>{p.system}</dd></div>
-        {hasRating && (
-          <div className="half"><dt>Rating</dt><dd className="mono">up to {p.rating} · {p.kv}</dd></div>
+
+      <div className="dz-records-stack">
+        {p1 && <RecordCard p={p1} k={k1} live={live} />}
+        {isFinalSpreadRight ? (
+          <QualityHandoverCard live={live} />
+        ) : (
+          p2 && <RecordCard p={p2} k={k2} live={live} />
         )}
-        {p.scope && p.scope.length > 0 && (
-          <div><dt>Scope</dt><dd>{p.scope.join(' · ')}</dd></div>
-        )}
-      </dl>
-      <Link className="line-btn" to={`/projects#${p.id}`} tabIndex={live ? undefined : -1}>Open in the register<Arrow /></Link>
+      </div>
     </div>
   );
 }
@@ -164,37 +285,32 @@ export default function Dossier() {
   };
 
   /**
-   * Index tab for spread k (0-based).
-   *
-   * RIGHT (front face, outer right edge):
-   *   Shown when k >= f  →  f <= k  (future spreads only — not yet visited)
-   *
-   * LEFT  (back face, outer left edge):
-   *   Shown when k < f   →  f > k   (current + past — visited or on-screen now)
-   *   Text uses scaleX(-1) in CSS to cancel the back-face rotateY(180°) mirror.
-   *   The current spread is always the rightmost/last left tab (highlighted in brand colour).
-   *
-   * A given spread number k is NEVER on both sides at once.
+   * Index Bookmark Tab:
+   * Attached directly to the turning page edge (.dz-tab.r on front face, .dz-tab.l on back face).
+   * Both faces of leaf k carry Tab (k + 1) at identical vertical slot k.
+   *  - Turning right to left: 0°..90° shows front tab, 90°..180° shows back tab seamlessly.
+   *  - Turning left to right: 180°..90° shows back tab, 90°..0° shows front tab seamlessly.
+   * Physical 3D continuity with zero disappearance or jumps at 50% rotation!
    */
-  const tab = (k: number, side: 'r' | 'l') => {
-  const shown = side === 'r' ? f <= k : f > k;
-
-  // Do not render tabs that should be hidden
-  if (!shown) return null;
-
-  return (
-    <button
-      type="button"
-      className={`dz-tab ${side}`}
-      style={{ '--k': k , borderRadius:side !== 'r' ? '8px 0 0 8px' : '0 8px 8px 0'} as CSSProperties}
-      onClick={() => go.current(k + 1)}
-      aria-current={spread === k || undefined}
-      aria-label={`Spread ${k + 1}: sheets ${pad(2 * k + 1)}–${pad(Math.min(2 * k + 2, N_PROJ))}`}
-    >
-      {pad(k + 1)}
-    </button>
-  );
-};
+  const renderTab = (k: number, side: 'r' | 'l') => {
+    const isActive = f - 1 === k;
+    return (
+      <button
+        key={`tab-${side}-${k}`}
+        type="button"
+        className={`dz-tab ${side}${isActive ? ' active' : ''}`}
+        style={{ '--k': k, '--n-tabs': N } as CSSProperties}
+        onClick={(e) => {
+          e.stopPropagation();
+          go.current(k + 1);
+        }}
+        aria-current={isActive || undefined}
+        aria-label={`Folio ${pad(k + 1)}`}
+      >
+        {pad(k + 1)}
+      </button>
+    );
+  };
 
   return (
     <section id="projects" ref={ref} className="dz gut" aria-labelledby="dz-h">
@@ -214,13 +330,21 @@ export default function Dossier() {
             <i className="dz-spine" aria-hidden="true" />
             <i className="dz-edges r" aria-hidden="true" /><i className="dz-edges l" aria-hidden="true" />
 
+            {/* ── Turning Leaves with Physically Attached Index Tabs ── */}
             {Array.from({ length: NUM_LEAVES }, (_, i) => {
-              // Front face of leaf i (i≥1) = RIGHT page of spread i  → project index 2i−1
-              const frontIdx = 2 * i - 1;
-              const frontProj = i >= 1 && frontIdx < N_PROJ ? FEATURED[frontIdx] : null;
-              // Back face of leaf i        = LEFT  page of spread i+1 → project index 2i
-              const backIdx = 2 * i;
-              const backProj = backIdx < N_PROJ ? FEATURED[backIdx] : null;
+              // Right page of spread i:
+              const rightSpreadIdx = i - 1;
+              const rightProjIdx1 = rightSpreadIdx * 4 + 2;
+              const rightProjIdx2 = rightSpreadIdx * 4 + 3;
+              const rightP1 = rightSpreadIdx >= 0 && rightProjIdx1 < N_PROJ ? FEATURED[rightProjIdx1] : null;
+              const rightP2 = rightSpreadIdx >= 0 && rightProjIdx2 < N_PROJ ? FEATURED[rightProjIdx2] : null;
+
+              // Left page of spread i+1:
+              const leftSpreadIdx = i;
+              const leftProjIdx1 = leftSpreadIdx * 4 + 0;
+              const leftProjIdx2 = leftSpreadIdx * 4 + 1;
+              const leftP1 = leftProjIdx1 < N_PROJ ? FEATURED[leftProjIdx1] : null;
+              const leftP2 = leftProjIdx2 < N_PROJ ? FEATURED[leftProjIdx2] : null;
 
               return (
                 <div
@@ -228,55 +352,82 @@ export default function Dossier() {
                   key={i}
                   ref={el => { if (el) leaves.current[i] = el; }}
                 >
-                  {/* ── FRONT: cover (i=0) or RIGHT page of spread i ── */}
+                  {/* ── FRONT FACE: Cover (i=0), Project Sheet, or Summary Sheet ── */}
                   <div className="dz-face front">
                     {i === 0 ? (
-                      <div className="dz-cover" onClick={() => { if (f === 0) go.current(1); }}>
-                        <div className="dz-label">
-                          <span className="dz-logo">
-                            <svg viewBox="0 0 16 22" aria-hidden="true"><path d="M10 0L0 13h6l-2 9 12-14H9z" /></svg>
-                            ELECTROSOFT
-                          </span>
-                          <b>Project dossier</b>
-                          <span className="mono">Testing Systems · {pad(N_PROJ)} projects</span>
-                        </div>
-                        <button type="button" className="dz-open" onClick={() => go.current(1)} tabIndex={f === 0 ? undefined : -1}>
-                          Open the dossier<Arrow />
-                        </button>
-                      </div>
-                    ) : (
-                      /* Content leaves: Facts + holes + RIGHT tab (always, even on the blank last page) */
                       <>
-                        {frontProj
-                          ? <Facts p={frontProj} k={frontIdx} live={spread === i - 1} />
-                          : <div className="dz-facts-empty" />
-                        }
-                        <i className="dz-holes" aria-hidden="true" />
-                        {tab(i - 1, 'r')}
+                        <div className="dz-cover" onClick={() => { if (f === 0) go.current(1); }}>
+                          <div className="dz-label">
+                            <span className="dz-logo">
+                              <svg viewBox="0 0 16 22" aria-hidden="true"><path d="M10 0L0 13h6l-2 9 12-14H9z" /></svg>
+                              ELECTROSOFT
+                            </span>
+                            <b>Project dossier</b>
+                            <span className="mono">Testing Systems &bull; {pad(N_PROJ)} projects</span>
+                          </div>
+                          <button type="button" className="dz-open" onClick={() => go.current(1)} tabIndex={f === 0 ? undefined : -1}>
+                            Open the dossier<Arrow />
+                          </button>
+                        </div>
+                        {renderTab(0, 'r')}
                       </>
+                    ) : (
+                      /* Regular right page or final spread right page */
+                      rightP1 && (
+                        <>
+                          <PageOfProjects
+                            p1={rightP1}
+                            p2={rightP2}
+                            k1={rightProjIdx1}
+                            k2={rightProjIdx2}
+                            live={spread === i - 1}
+                            side="right"
+                            isFinalSpreadRight={rightSpreadIdx === N - 1}
+                          />
+                          <i className="dz-holes" aria-hidden="true" />
+                          {i < N && renderTab(i, 'r')}
+                        </>
+                      )
                     )}
                   </div>
 
-                  {/* ── BACK: LEFT page of spread i (0-based spread index i) ── */}
+                  {/* ── BACK FACE: Left page of spread i+1 (physically attached tab flips to left) ── */}
                   <div className="dz-face back" aria-hidden={spread !== i || undefined}>
-                    {i === 0
-                      ? /* Cover leaf: .dz-mount gives the white paper background over the dark cover board */
-                        backProj && (
-                          <div className="dz-mount">
-                            <Facts p={backProj} k={backIdx} live={spread === 0} mirrored />
-                            <i className="dz-holes" aria-hidden="true" />
-                            {tab(i, 'l')}
-                          </div>
-                        )
-                      : /* Regular leaf back — .dz-face already has white paper background */
-                        backProj && (
-                          <>
-                            <Facts p={backProj} k={backIdx} live={spread === i} mirrored />
-                            <i className="dz-holes" aria-hidden="true" />
-                            {tab(i, 'l')}
-                          </>
-                        )
-                    }
+                    {i === 0 ? (
+                      /* Cover leaf back face: .dz-mount holds the paper surface */
+                      leftP1 && (
+                        <div className="dz-mount">
+                          <PageOfProjects
+                            p1={leftP1}
+                            p2={leftP2}
+                            k1={leftProjIdx1}
+                            k2={leftProjIdx2}
+                            live={spread === 0}
+                            mirrored
+                            side="left"
+                          />
+                          <i className="dz-holes" aria-hidden="true" />
+                          {renderTab(0, 'l')}
+                        </div>
+                      )
+                    ) : (
+                      /* Regular leaf back */
+                      leftP1 && (
+                        <>
+                          <PageOfProjects
+                            p1={leftP1}
+                            p2={leftP2}
+                            k1={leftProjIdx1}
+                            k2={leftProjIdx2}
+                            live={spread === i}
+                            mirrored
+                            side="left"
+                          />
+                          <i className="dz-holes" aria-hidden="true" />
+                          {i < N && renderTab(i, 'l')}
+                        </>
+                      )
+                    )}
                   </div>
                 </div>
               );
@@ -294,7 +445,7 @@ export default function Dossier() {
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" /></svg>
             </button>
             <span className="mono" aria-live="polite">
-              {f === 0 ? 'Closed' : `Sheets ${pad(2 * f - 1)}–${pad(Math.min(2 * f, N_PROJ))} / ${pad(N_PROJ)}`}
+              {f === 0 ? 'Closed' : `Projects ${pad(Math.min(4 * f - 3, N_PROJ))}–${pad(Math.min(4 * f, N_PROJ))} / ${pad(N_PROJ)}`}
             </span>
             <button type="button" onClick={() => go.current(f + 1)} disabled={f >= N} aria-label="Next spread">
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" /></svg>
@@ -304,7 +455,8 @@ export default function Dossier() {
             <span className="fine">Drag a page over, or pick a tab.</span>
             <span className="touch">Swipe sideways to turn a sheet.</span>
           </p>
-          <Link className="line-btn" to="/projects">The full register<Arrow /></Link>
+          {/* NOTE: When re-enabling Projects page, change to="/projects" */}
+          <Link className="line-btn" to="/contact">Request full register<Arrow /></Link>
         </div>
       </div>
     </section>

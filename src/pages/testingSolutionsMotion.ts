@@ -6,7 +6,7 @@ import { posToMva } from '../data/testing';
 gsap.registerPlugin(ScrollTrigger);
 
 /** Live values XfmrScene reads every frame: haze in (load) / out (scroll away), bushing glow. */
-export const ts = { hazeIn: 1, hazeOut: 0, glow: 0 };
+export const ts = { hazeIn: 0, hazeOut: 0, glow: 1 };
 
 /*
  * /transformer-testing motion, one moment per section, each in the test floor's own terms:
@@ -30,7 +30,7 @@ export function createTestingSolutionsMotion(root: HTMLElement, reduce: boolean,
     [...stops, ...marks, ...plates].forEach(el => el.classList.add('on'));
     return;
   }
-  Object.assign(ts, { hazeIn: 1, hazeOut: 0, glow: 0 });
+  Object.assign(ts, { hazeIn: 0, hazeOut: 0, glow: 1 });
 
   // hero: text now, the transformer once its scene is ready (TestingSolutions calls heroIn)
   gsap.timeline({ delay: 0.1 })

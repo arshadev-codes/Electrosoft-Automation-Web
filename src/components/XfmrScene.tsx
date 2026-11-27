@@ -233,7 +233,7 @@ export default function XfmrScene({ sectionRef }: { sectionRef: RefObject<HTMLEl
         M.copper.emissiveIntensity = live * 0.3;
         glows.forEach((sp, i) => { sp.material.opacity = ts.glow * (0.7 + 0.3 * Math.sin(t * 6 + i * 2.1)); });
 
-        world.setHaze(Math.max(ts.hazeIn, ts.hazeOut), cam.r);
+        world.setHaze(Math.min(0.85, Math.max(ts.hazeIn, ts.hazeOut) * 0.8), cam.r);
         world.render(rawDt);
       };
 

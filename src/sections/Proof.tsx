@@ -12,8 +12,8 @@ const STATS: Stat[] = [
   { value: 'IEC 61439', certified: false, text: 'Certified Panels.', label: 'IEC 61439 certified Panels' },
   { value: '3',unit:"Step" ,certified: false, text: ' Quality Assurance Plan.', label: 'Quality Assurance Plan.' },
 
-  { n: 750, unit: 'MVA', text: 'Largest transformer rating our test systems handle', label: '750 MVA, the largest transformer rating our test systems handle' },
-  { n: 400, unit: 'kV ', text: 'Largest transformer rating our test systems handle', label: '400 kV Class, the largest transformer rating our test systems handle' },
+  { n: 750, unit: 'MVA', text: 'Largest transformer rating tested using our supplied systems', label: '750 MVA, Largest transformer rating tested using our supplied systems' },
+  { n: 765, unit: 'kV ', text: 'Highest voltage tested on supplied system', label: '765 kV Class, Highest voltage tested on supplied system' },
   { n: 65, unit: 'kA', text: 'STC & CPRI-approved panel design · IP65', label: '65 kA / IP65 CPRI-approved panel design' },
 ];
 

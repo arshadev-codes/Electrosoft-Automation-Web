@@ -8,11 +8,11 @@ import { TESTS } from '../data/testing';
 
 /** 5 key representative tests mapped to the 2D cutaway Blueprint hotspots */
 const BLUEPRINT_TESTS = [
-  TESTS[10] ?? TESTS[0], // Winding Resistance (Windings)
-  TESTS[9] ?? TESTS[1],  // Voltage Ratio & Phase Displacement (HV bushings & leads)
-  TESTS[0] ?? TESTS[2],  // No-Load Loss & Current (Core)
-  TESTS[1] ?? TESTS[3],  // Load Loss (LV terminals, shorted)
-  TESTS[5] ?? TESTS[4],  // Induced Over Voltage (HV winding insulation)
+  TESTS.find(t => t.id === 'winding-resistance') ?? TESTS[10] ?? TESTS[0], // Winding Resistance (Windings)
+  TESTS.find(t => t.id === 'voltage-ratio') ?? TESTS[11] ?? TESTS[1],       // Voltage Ratio & Phase Displacement (HV bushings & leads)
+  TESTS.find(t => t.id === 'no-load-loss') ?? TESTS[0] ?? TESTS[2],        // No-Load Loss (Core)
+  TESTS.find(t => t.id === 'load-loss') ?? TESTS[4] ?? TESTS[3],           // Load Loss (LV terminals, shorted)
+  TESTS.find(t => t.id === 'induced-overvoltage') ?? TESTS[3] ?? TESTS[4], // Induced Over Voltage (HV winding insulation)
 ];
 
 const NAMES = BLUEPRINT_TESTS.map(t => t.name);

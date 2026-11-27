@@ -7,17 +7,19 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Nav items per section. The cross-link to the other section is added automatically.
 const TESTING_NAV = [
+   ['Home', '/'],
   ['About', '/about'],
   ['Products', '/products'],
-  ['Projects', '/projects'],
+  // ['Projects', '/projects'], // NOTE: Uncomment to restore Projects page in Testing section
   ['Gallery', '/gallery'],
   ['Contact', '/contact'],
 ] as const;
 
 const PANEL_NAV = [
+  ['Home', '/panel'],
   ['About', '/panel/about'],
   ['Products', '/panel/products'],
-  ['Projects', '/panel/projects'],
+  // ['Projects', '/panel/projects'], // NOTE: Uncomment to restore Projects page in Panel section
   ['Gallery', '/panel/gallery'],
   ['Contact', '/panel/contact'],
 ] as const;

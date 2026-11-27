@@ -60,7 +60,6 @@ export default function Footer({ basePath = '' }: FooterProps) {
             <h3>Address</h3>
             <address>S7-1/2, Jai Mata Di Compound, Bhiwandi Road, Kalher, Dist. Thane – 421 302</address>
             <a className="ft-map" href={MAP} target="_blank" rel="noopener noreferrer">Open in Google Maps<span aria-hidden="true">↗</span></a>
-            <p className="ft-hours">At work 362 days a year, 14 hours a day.</p>
             <ul className="ft-certs" aria-label="Certifications">{CERTS.map(c => <li key={c}>{c}</li>)}</ul>
           </div>
 

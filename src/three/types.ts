@@ -62,7 +62,7 @@ export const TAGS: { part: PartKey; name: string; sub: string; flip?: boolean }[
   { part: 'lv', name: 'LV Windings', sub: 'Copper foil' },
   { part: 'core', name: 'CRGO Core', sub: 'Three-limb, stepped', flip: true },
   { part: 'leads', name: 'Test Leads', sub: 'Connections switched automatically' },
-  { part: 'benchFascia', name: "Test Bench · X'mer Prime™", sub: 'HMI and digital meters' },
+  { part: 'benchFascia', name: "Test Bench · X'mer Edge™", sub: 'HMI and digital meters' },
   { part: 'benchInternals', name: 'PLC · RIO', sub: 'Switches every test connection' },
   { part: 'panelInternals', name: 'Power Panel', sub: 'Incomer, busbars and feeders', flip: true },
 ];

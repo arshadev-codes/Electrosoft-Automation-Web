@@ -1,12 +1,21 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { magnetic } from '../hooks/magnetic';
-import { posToMva } from '../data/testing';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Live values XfmrScene reads every frame: haze in (load) / out (scroll away), bushing glow. */
-export const panelTs = { hazeIn: 1, hazeOut: 0, glow: 0 };
+/** Live values ControlPanelScene reads every frame: haze in (load) / out (scroll away), bushing glow. */
+export const panelTs = { hazeIn: 0, hazeOut: 0, glow: 1 };
+
+/** Convert scale percentage [0, 100] to Amperes rating (100A to 6300A). */
+export function posToAmps(pos: number): number {
+  const minAmps = 100, maxAmps = 6300;
+  const p = Math.max(0, Math.min(100, pos)) / 100;
+  const logMin = Math.log10(minAmps), logMax = Math.log10(maxAmps);
+  const logA = logMin + p * (logMax - logMin);
+  const raw = Math.pow(10, logA);
+  return raw < 1000 ? Math.round(raw / 50) * 50 : Math.round(raw / 100) * 100;
+}
 
 /*
  * /panel motion — mirrors testingSolutionsMotion.ts exactly.
@@ -62,16 +71,18 @@ export function createPanelMotion(root: HTMLElement, reduce: boolean, onMode: (i
     },
   });
 
-  // signal path: the pulse runs the wire; each stop lights once it's reached
+  // signal path (if present): the pulse runs the wire; each stop lights once it's reached
   const sig = one('.ts-sig');
-  const at = stops.map((_, i) => (i + 0.5) / stops.length);
-  gsap.fromTo(sig, { '--p': 0 }, {
-    '--p': 1, ease: 'none',
-    scrollTrigger: {
-      trigger: sig, start: 'top 70%', end: 'bottom 60%', scrub: 0.4,
-      onUpdate: s => stops.forEach((el, i) => el.classList.toggle('on', s.progress >= at[i] - 0.06)),
-    },
-  });
+  if (sig && stops.length > 0) {
+    const at = stops.map((_, i) => (i + 0.5) / stops.length);
+    gsap.fromTo(sig, { '--p': 0 }, {
+      '--p': 1, ease: 'none',
+      scrollTrigger: {
+        trigger: sig, start: 'top 70%', end: 'bottom 60%', scrub: 0.4,
+        onUpdate: s => stops.forEach((el, i) => el.classList.toggle('on', s.progress >= at[i] - 0.06)),
+      },
+    });
+  }
 
   // ratings: the needle sweeps the scale; projects light as it passes them
   const scale = one('.ts-scale');
@@ -85,8 +96,8 @@ export function createPanelMotion(root: HTMLElement, reduce: boolean, onMode: (i
       onUpdate: s => {
         marks.forEach((m, i) => m.classList.toggle('on', s.progress * top >= pos[i] - 0.001));
         if (read) {
-          const v = posToMva(s.progress * top * 100);
-          read.textContent = v < 10 ? `${v.toFixed(1)} MVA` : `${Math.round(v)} MVA`;
+          const v = posToAmps(s.progress * top * 100);
+          read.textContent = `${Math.round(v)} A`;
           read.classList.toggle('rest', s.progress > 0.995);
         }
       },
@@ -99,11 +110,11 @@ export function createPanelMotion(root: HTMLElement, reduce: boolean, onMode: (i
   return magnetic(one('.pr-cta .pill'));
 }
 
-/** Called when the 3D transformer has drawn its first frame. */
+/** Called when the 3D model has drawn its first frame. */
 export function panelHeroIn(reduce: boolean) {
   if (reduce) return;
-  gsap.to(panelTs, { hazeIn: 0, duration: 1.8, ease: 'power2.out' });
-  gsap.to(panelTs, { glow: 1, duration: 1.2, delay: 1.1, ease: 'power2.out' });
+  gsap.to(panelTs, { hazeIn: 0, duration: 1.2, ease: 'power2.out' });
+  gsap.to(panelTs, { glow: 1, duration: 1.0, delay: 0.5, ease: 'power2.out' });
 }
 
 /** Scroll to a switch position (0 AUTO, 1 SEMI, 2 MAN). */

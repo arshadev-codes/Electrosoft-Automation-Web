@@ -5,8 +5,8 @@ import { RANGE } from '../data/products';
 import { BENCHES } from '../data/testing';
 import { createContactMotion } from './contactMotion';
 import { Arrow } from '../components/ui';
+import PhoneField, { hasPhoneDigits, isPhoneValid } from '../components/PhoneField';
 import { EMAIL, MAP, PHONE, TEL } from '../data/site';
-
 // CONTENT.md · Company facts and Contact
 const ADDRESS = ['S7-1/2, Jai Mata Di Compound,', 'Bhiwandi Road, Kalher,', 'Dist. Thane – 421 302'];
 const NEEDS = ['Panels', 'Automation', 'Transformer Testing', 'Other'] as const;
@@ -45,7 +45,6 @@ function fromProduct(param: string | null): { need: Need | null; about: string }
 }
 
 const okEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
-const okPhone = (v: string) => v.replace(/\D/g, '').length >= 8;
 
 /*
  * 7 · Contact: the enquiry form is wired like a circuit. Four breakers in series (name, a way to reach
@@ -82,6 +81,7 @@ export default function Contact() {
   });
   const [sent, setSent] = useState<'mail' | 'wa' | null>(null);
   const [tried, setTried] = useState(false);
+  const [reachTouched, setReachTouched] = useState(false);
 
   useEffect(() => {
     const p = fromProduct(params.get('product'));
@@ -98,9 +98,14 @@ export default function Contact() {
     }
   }, [params]);
 
+  const hasPhone = hasPhoneDigits(f.phone);
+  const hasEmail = f.email.trim() !== '';
+  const phoneOk = !hasPhone || isPhoneValid(f.phone);
+  const emailOk = !hasEmail || okEmail(f.email);
+
   const checks = [
     { id: 'name', label: 'Name', ok: f.name.trim().length > 1 },
-    { id: 'reach', label: 'Phone or email', ok: (f.phone !== '' || f.email !== '') && (f.phone === '' || okPhone(f.phone)) && (f.email === '' || okEmail(f.email)) },
+    { id: 'reach', label: 'Phone or email', ok: (hasPhone || hasEmail) && phoneOk && emailOk },
     { id: 'need', label: 'Requirement', ok: f.need !== null },
     { id: 'msg', label: 'Message', ok: f.message.replace(/^Enquiry about:.*$/m, '').trim().length > 9 || f.message.trim().length > 9 },
   ];
@@ -119,9 +124,20 @@ export default function Contact() {
     return () => { document.title = before; };
   }, []);
 
-  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF(s => ({ ...s, [k]: e.target.value })); setSent(null); };
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => {
+    setF(s => ({ ...s, [k]: e.target.value }));
+    setSent(null);
+  };
+  const setPhone = (val: string) => {
+    setF(s => ({ ...s, phone: val }));
+    setSent(null);
+  };
   const text = () => [
-    ['Name', f.name], ['Company', f.company], ['Phone', f.phone], ['Email', f.email], ['Requirement', f.need ?? ''],
+    ['Name', f.name],
+    ['Company', f.company],
+    ['Phone', hasPhone ? f.phone : ''],
+    ['Email', f.email],
+    ['Requirement', f.need ?? ''],
   ].filter(([, v]) => v.trim()).map(([k, v]) => `${k}: ${v.trim()}`).join('\n') + '\n\n' + f.message.trim();
 
   const send = (via: 'mail' | 'wa') => {
@@ -159,13 +175,28 @@ export default function Contact() {
               <label className="fld"><span>Company <em>optional</em></span>
                 <input name="company" autoComplete="organization" value={f.company} onChange={set('company')} /></label>
             </div>
-            <div className="ct-row two">
-              <label className={`fld${bad('reach') ? ' bad' : ''}`}><span>Phone</span>
-                <input data-check="reach" name="phone" type="tel" inputMode="tel" autoComplete="tel" value={f.phone} onChange={set('phone')} aria-invalid={bad('reach')} /></label>
-              <label className={`fld${bad('reach') ? ' bad' : ''}`}><span>Email</span>
-                <input name="email" type="email" autoComplete="email" value={f.email} onChange={set('email')} aria-invalid={bad('reach')} /></label>
+            <div className="ct-row two" onBlur={() => setReachTouched(true)}>
+              <div className={`fld${(tried || reachTouched) && !phoneOk ? ' bad' : bad('reach') ? ' bad' : ''}`}>
+                <span>Phone <em>or Email</em></span>
+                <PhoneField
+                  value={f.phone}
+                  onChange={setPhone}
+                  required={!hasEmail}
+                  invalid={(tried || reachTouched) && (!phoneOk || (!hasPhone && !hasEmail && tried))}
+                />
+              </div>
+              <label className={`fld${(tried || reachTouched) && !emailOk ? ' bad' : bad('reach') ? ' bad' : ''}`}><span>Email <em>or phone</em></span>
+                <input name="email" type="email" autoComplete="email" placeholder="name@company.com" value={f.email} onChange={set('email')} aria-invalid={(tried || reachTouched) && !emailOk} /></label>
             </div>
-            {bad('reach') && <p className="ct-err" role="alert">Add a phone number or an email we can reply to.</p>}
+            {(bad('reach') || (reachTouched && ((hasEmail && !emailOk) || (hasPhone && !phoneOk)))) && (
+              <p className="ct-err" role="alert">
+                {!hasPhone && !hasEmail
+                  ? 'Add a valid phone number or an email we can reply to.'
+                  : !phoneOk
+                    ? 'Enter a valid phone number for the selected country.'
+                    : 'Enter a valid email address (e.g. name@company.com).'}
+              </p>
+            )}
 
             <fieldset className={`ct-need${bad('need') ? ' bad' : ''}`}>
               <legend>Requirement</legend>
@@ -183,22 +214,27 @@ export default function Contact() {
               <textarea data-check="msg" name="message" rows={5} value={f.message} onChange={set('message')} aria-invalid={bad('msg')}
                 placeholder="The load list, the plant, the transformer rating, or simply what you need, in your words." /></label>
 
-            {/* the circuit: four breakers in series, a lamp at the end */}
+            {/* the circuit: solid start/end, dotted connections with midpoint junctions between fields */}
             <div className={`ct-circuit${ready ? ' is-live' : ''}`} aria-hidden="true">
               <svg viewBox="0 0 480 56" preserveAspectRatio="xMidYMid meet">
                 <circle className="tap" cx="8" cy="22" r="5" />
                 {checks.map((c, i) => {
                   const x = 34 + i * 100;
+                  const inStart = i ? x - 34 : 13;
+                  const outEnd = i < 3 ? x + 66 : 406;
                   return (
                     <g key={c.id} className={`brk${c.ok ? ' on' : ''}`}>
-                      <path className="w" d={`M${i ? x - 34 : 13} 22H${x}`} />
+                      <path className="w w-solid" d={`M${inStart} 22H${x}`} />
                       <path className="blade" d={`M${x} 22H${x + 32}`} style={{ transformOrigin: `${x}px 22px` }} />
-                      <circle className="pin" cx={x} cy="22" r="3" /><circle className="pin" cx={x + 32} cy="22" r="3" />
+                      <path className="w w-dot" d={`M${x + 32} 22H${outEnd}`} />
+                      <circle className="pin" cx={x} cy="22" r="3" />
+                      <circle className="pin" cx={x + 32} cy="22" r="3" />
+                      <circle className="junc" cx={outEnd} cy="22" r="2.8" />
                       <text x={x + 16} y="50" textAnchor="middle">{c.label}</text>
                     </g>
                   );
                 })}
-                <path className="w end" d="M398 22H446" />
+                <path className="w w-solid end" d="M406 22H446" />
                 <path className="flow" d="M13 22H446" />
                 <circle className="lamp" cx="458" cy="22" r="11" />
                 <path className="lamp-x" d="M451 15L465 29M465 15L451 29" />
@@ -214,39 +250,25 @@ export default function Contact() {
             <p className="ct-note" id="ct-note" role="status">
               {sent === 'mail' ? 'Your email app should open with the enquiry written out. Press send there.'
                 : sent === 'wa' ? 'WhatsApp should open with the enquiry written out. Press send there.'
-                : 'Sending opens your email app (or WhatsApp) with everything filled in.'}
+                  : 'Sending opens your email app (or WhatsApp) with everything filled in.'}
             </p>
           </form>
 
           <aside className="ct-side">
             <ul className="ct-ways">
-              <li><span>Call</span><a href={`tel:${TEL}`}>{PHONE}</a></li>
+              <li><span>Call</span><div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px' }}><a href={`tel:${TEL}`}>{PHONE}</a><a href="tel:908988444">908988444</a></div></li>
               <li><span>Email</span><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
               <li><span>WhatsApp</span><a href={`https://wa.me/${TEL.slice(1)}`} target="_blank" rel="noopener noreferrer">{PHONE}</a></li>
-              <li><span>At work</span><p>362 days a year, 14 hours a day</p></li>
             </ul>
 
-            {/* location, drawn: a schematic of Bhiwandi Road, not to scale */}
             <div className="ct-map">
-              <svg viewBox="0 0 360 250" aria-hidden="true">
-                <defs><pattern id="ctGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="rgba(11,91,211,.07)" /></pattern></defs>
-                <rect width="360" height="250" fill="url(#ctGrid)" />
-                <path className="road-edge" pathLength={1} d="M226 -10C214 60 150 92 146 140S118 214 104 262" />
-                <path className="road" pathLength={1} d="M226 -10C214 60 150 92 146 140S118 214 104 262" />
-                <path className="road-mid" d="M226 -10C214 60 150 92 146 140S118 214 104 262" />
-                <text className="town" x="248" y="24">to Bhiwandi</text>
-                <text className="town" x="118" y="238">to Thane</text>
-                <text className="rd" x="148" y="226" transform="rotate(-71 148 226)">Bhiwandi Road</text>
-                <g className="pin-g">
-                  <circle className="pulse" cx="148" cy="130" r="10" />
-                  <path className="pin" d="M148 132c-9-12-13-18-13-24a13 13 0 0 1 26 0c0 6-4 12-13 24z" />
-                  <circle cx="148" cy="108" r="4.5" fill="#fff" />
-                </g>
-                <text className="site" x="172" y="112">Electrosoft</text>
-                <text className="site-2" x="172" y="128">Kalher</text>
-                <g className="north"><path d="M330 46V22M324 30l6-8 6 8" /><text x="330" y="60" textAnchor="middle">N</text></g>
-                <text className="nts" x="14" y="240">Not to scale</text>
-              </svg>
+              <iframe
+                title="Electrosoft Automation Pvt. Ltd. location on Google Maps"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3766.927956812092!2d73.01540339987989!3d19.241971299898577!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7bc1923e04d09%3A0x57feba79ed217de5!2sElectrosoft%20Automation%20Pvt.%20Ltd.!5e0!3m2!1sen!2sin!4v1795589362752!5m2!1sen!2sin"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+              />
               <div className="ct-map-foot">
                 <address>{ADDRESS.map(l => <span key={l}>{l}</span>)}</address>
                 <a className="line-btn" href={MAP} target="_blank" rel="noopener noreferrer">Open in Google Maps<Arrow /></a>

@@ -44,7 +44,7 @@ export default function Lines() {
         <p>Fully automatic, semi automatic and manual test systems powered by Electrosoft X'mer Edge™, supplied to MSEDCL, Tata Power, Crompton Greaves and more.</p>
         <dl className="lx-plate">
           <div><dt>Largest rating</dt><dd>750 MVA</dd></div>
-          <div><dt>At</dt><dd>400 kV</dd></div>
+          <div><dt>At</dt><dd>765 kV</dd></div>
         </dl>
         <Link className="pill" to="/transformer-testing">Explore testing solutions</Link>
       </div>
